@@ -1196,7 +1196,7 @@ var require_main = __commonJS({
     var packageJson = require_package();
     var version = packageJson.version;
     var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
-    function parse4(src) {
+    function parse3(src) {
       const obj = {};
       let lines = src.toString();
       lines = lines.replace(/\r\n?/mg, "\n");
@@ -1439,7 +1439,7 @@ var require_main = __commonJS({
       _parseVault,
       config,
       decrypt,
-      parse: parse4,
+      parse: parse3,
       populate
     };
     module2.exports.configDotenv = DotenvModule.configDotenv;
@@ -3473,7 +3473,7 @@ var require_fast_content_type_parse = __commonJS({
     var defaultContentType = { type: "", parameters: new NullObject() };
     Object.freeze(defaultContentType.parameters);
     Object.freeze(defaultContentType);
-    function parse4(header) {
+    function parse3(header) {
       if (typeof header !== "string") {
         throw new TypeError("argument header is required and must be a string");
       }
@@ -3549,8 +3549,8 @@ var require_fast_content_type_parse = __commonJS({
       }
       return result;
     }
-    module2.exports.default = { parse: parse4, safeParse: safeParse3 };
-    module2.exports.parse = parse4;
+    module2.exports.default = { parse: parse3, safeParse: safeParse3 };
+    module2.exports.parse = parse3;
     module2.exports.safeParse = safeParse3;
     module2.exports.defaultContentType = defaultContentType;
   }
@@ -10009,7 +10009,7 @@ var require_lib3 = __commonJS({
       return new fetch3.Promise(function(resolve, reject) {
         const request3 = new Request2(url, opts);
         const options = getNodeRequestOptions(request3);
-        const send2 = (options.protocol === "https:" ? https : http).request;
+        const send = (options.protocol === "https:" ? https : http).request;
         const signal = request3.signal;
         let response = null;
         const abort = function abort2() {
@@ -10029,7 +10029,7 @@ var require_lib3 = __commonJS({
           abort();
           finalize();
         };
-        const req = send2(options);
+        const req = send(options);
         let reqTimeout;
         if (signal) {
           signal.addEventListener("abort", abortAndFinalize);
@@ -30752,9 +30752,9 @@ var require_before_after_hook = __commonJS({
   }
 });
 
-// node_modules/@octokit/endpoint/dist-node/index.js
+// node_modules/@actions/github/node_modules/@octokit/endpoint/dist-node/index.js
 var require_dist_node2 = __commonJS({
-  "node_modules/@octokit/endpoint/dist-node/index.js"(exports2, module2) {
+  "node_modules/@actions/github/node_modules/@octokit/endpoint/dist-node/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -30779,7 +30779,7 @@ var require_dist_node2 = __commonJS({
     });
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_universal_user_agent7 = require_dist_node();
-    var VERSION11 = "9.0.6";
+    var VERSION11 = "9.0.4";
     var userAgent3 = `octokit-endpoint.js/${VERSION11} ${(0, import_universal_user_agent7.getUserAgent)()}`;
     var DEFAULTS3 = {
       method: "GET",
@@ -30868,9 +30868,9 @@ var require_dist_node2 = __commonJS({
         return `${name}=${encodeURIComponent(parameters[name])}`;
       }).join("&");
     }
-    var urlVariableRegex3 = /\{[^{}}]+\}/g;
+    var urlVariableRegex3 = /\{[^}]+\}/g;
     function removeNonChars3(variableName) {
-      return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
+      return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
     }
     function extractUrlVariableNames3(url) {
       const matches = url.match(urlVariableRegex3);
@@ -31018,7 +31018,7 @@ var require_dist_node2 = __commonJS({
         return template.replace(/\/$/, "");
       }
     }
-    function parse4(options) {
+    function parse3(options) {
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -31050,7 +31050,7 @@ var require_dist_node2 = __commonJS({
         }
         if (url.endsWith("/graphql")) {
           if (options.mediaType.previews?.length) {
-            const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
+            const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
               return `application/vnd.github.${preview}-preview${format}`;
@@ -31082,7 +31082,7 @@ var require_dist_node2 = __commonJS({
       );
     }
     function endpointWithDefaults3(defaults, route, options) {
-      return parse4(merge3(defaults, route, options));
+      return parse3(merge3(defaults, route, options));
     }
     function withDefaults6(oldDefaults, newDefaults) {
       const DEFAULTS22 = merge3(oldDefaults, newDefaults);
@@ -31091,7 +31091,7 @@ var require_dist_node2 = __commonJS({
         DEFAULTS: DEFAULTS22,
         defaults: withDefaults6.bind(null, DEFAULTS22),
         merge: merge3.bind(null, DEFAULTS22),
-        parse: parse4
+        parse: parse3
       });
     }
     var endpoint3 = withDefaults6(null, DEFAULTS3);
@@ -41496,7 +41496,7 @@ var require_extension = __commonJS({
       if (dest[name] === void 0) dest[name] = [elem];
       else dest[name].push(elem);
     }
-    function parse4(header) {
+    function parse3(header) {
       const offers = /* @__PURE__ */ Object.create(null);
       let params = /* @__PURE__ */ Object.create(null);
       let mustUnescape = false;
@@ -41636,7 +41636,7 @@ var require_extension = __commonJS({
         }).join(", ");
       }).join(", ");
     }
-    module2.exports = { format, parse: parse4 };
+    module2.exports = { format, parse: parse3 };
   }
 });
 
@@ -41669,7 +41669,7 @@ var require_websocket2 = __commonJS({
     var {
       EventTarget: { addEventListener, removeEventListener }
     } = require_event_target();
-    var { format, parse: parse4 } = require_extension();
+    var { format, parse: parse3 } = require_extension();
     var { toBuffer } = require_buffer_util();
     var closeTimeout = 30 * 1e3;
     var kAborted = Symbol("kAborted");
@@ -42336,7 +42336,7 @@ var require_websocket2 = __commonJS({
           }
           let extensions;
           try {
-            extensions = parse4(secWebSocketExtensions);
+            extensions = parse3(secWebSocketExtensions);
           } catch (err) {
             const message = "Invalid Sec-WebSocket-Extensions header";
             abortHandshake(websocket, socket, message);
@@ -42626,7 +42626,7 @@ var require_subprotocol = __commonJS({
   "node_modules/ws/lib/subprotocol.js"(exports2, module2) {
     "use strict";
     var { tokenChars } = require_validation();
-    function parse4(header) {
+    function parse3(header) {
       const protocols = /* @__PURE__ */ new Set();
       let start = -1;
       let end = -1;
@@ -42662,7 +42662,7 @@ var require_subprotocol = __commonJS({
       protocols.add(protocol);
       return protocols;
     }
-    module2.exports = { parse: parse4 };
+    module2.exports = { parse: parse3 };
   }
 });
 
@@ -43936,7 +43936,7 @@ var require_postgres_interval = __commonJS({
       if (!(this instanceof PostgresInterval)) {
         return new PostgresInterval(raw);
       }
-      extend(this, parse4(raw));
+      extend(this, parse3(raw));
     }
     var properties = ["seconds", "minutes", "hours", "days", "months", "years"];
     PostgresInterval.prototype.toPostgres = function() {
@@ -43997,7 +43997,7 @@ var require_postgres_interval = __commonJS({
       var microseconds = fraction + "000000".slice(fraction.length);
       return parseInt(microseconds, 10) / 1e3;
     }
-    function parse4(interval) {
+    function parse3(interval) {
       if (!interval) return {};
       var matches = INTERVAL.exec(interval);
       var isNegative = matches[8] === "-";
@@ -44483,13 +44483,13 @@ var require_binaryParsers = __commonJS({
           console.log("ERROR: ElementType not implemented: " + elementType2);
         }
       };
-      var parse4 = function(dimension, elementType2) {
+      var parse3 = function(dimension, elementType2) {
         var array = [];
         var i2;
         if (dimension.length > 1) {
           var count = dimension.shift();
           for (i2 = 0; i2 < count; i2++) {
-            array[i2] = parse4(dimension, elementType2);
+            array[i2] = parse3(dimension, elementType2);
           }
           dimension.unshift(count);
         } else {
@@ -44499,7 +44499,7 @@ var require_binaryParsers = __commonJS({
         }
         return array;
       };
-      return parse4(dims, elementType);
+      return parse3(dims, elementType);
     };
     var parseText = function(value) {
       return value.toString("utf8");
@@ -45142,7 +45142,7 @@ var require_type_overrides = __commonJS({
 var require_pg_connection_string = __commonJS({
   "node_modules/pg-connection-string/index.js"(exports2, module2) {
     "use strict";
-    function parse4(str) {
+    function parse3(str) {
       if (str.charAt(0) === "/") {
         const config2 = str.split(" ");
         return { host: config2[0], database: config2[1] };
@@ -45218,8 +45218,8 @@ var require_pg_connection_string = __commonJS({
       }
       return config;
     }
-    module2.exports = parse4;
-    parse4.parse = parse4;
+    module2.exports = parse3;
+    parse3.parse = parse3;
   }
 });
 
@@ -45229,7 +45229,7 @@ var require_connection_parameters = __commonJS({
     "use strict";
     var dns = require("dns");
     var defaults = require_defaults();
-    var parse4 = require_pg_connection_string().parse;
+    var parse3 = require_pg_connection_string().parse;
     var val = function(key, config, envVar) {
       if (envVar === void 0) {
         envVar = process.env["PG" + key.toUpperCase()];
@@ -45264,9 +45264,9 @@ var require_connection_parameters = __commonJS({
     };
     var ConnectionParameters = class {
       constructor(config) {
-        config = typeof config === "string" ? parse4(config) : config || {};
+        config = typeof config === "string" ? parse3(config) : config || {};
         if (config.connectionString) {
-          config = Object.assign({}, config, parse4(config.connectionString));
+          config = Object.assign({}, config, parse3(config.connectionString));
         }
         this.user = val("user", config);
         this.database = val("database", config);
@@ -45936,7 +45936,7 @@ var require_serializer = __commonJS({
       );
     };
     var emptyArray = [];
-    var parse4 = (query2) => {
+    var parse3 = (query2) => {
       const name = query2.name || "";
       if (name.length > 63) {
         console.error("Warning! Postgres only supports 63 characters for query names.");
@@ -46085,7 +46085,7 @@ var require_serializer = __commonJS({
       sendSASLInitialResponseMessage,
       sendSCRAMClientFinalMessage,
       query,
-      parse: parse4,
+      parse: parse3,
       bind: bind2,
       execute,
       describe,
@@ -46463,12 +46463,12 @@ var require_dist = __commonJS({
       return serializer_1.serialize;
     } });
     var parser_1 = require_parser();
-    function parse4(stream2, callback) {
+    function parse3(stream2, callback) {
       const parser = new parser_1.Parser();
       stream2.on("data", (buffer) => parser.parse(buffer, callback));
       return new Promise((resolve) => stream2.on("end", () => resolve()));
     }
-    exports2.parse = parse4;
+    exports2.parse = parse3;
   }
 });
 
@@ -46514,7 +46514,7 @@ var require_connection2 = __commonJS({
     "use strict";
     var net = require("net");
     var EventEmitter = require("events").EventEmitter;
-    var { parse: parse4, serialize } = require_dist();
+    var { parse: parse3, serialize } = require_dist();
     var { getStream, getSecureStream } = require_stream2();
     var flushBuffer = serialize.flush();
     var syncBuffer = serialize.sync();
@@ -46601,7 +46601,7 @@ var require_connection2 = __commonJS({
         });
       }
       attachListeners(stream2) {
-        parse4(stream2, (msg) => {
+        parse3(stream2, (msg) => {
           var eventName = msg.name === "error" ? "errorMessage" : msg.name;
           if (this._emitMessage) {
             this.emit("message", msg);
@@ -53021,6 +53021,32 @@ var TypeConversionFailure = class extends Exception {
     this.location = location;
   }
 };
+var ObjectConversionFailure = class extends TypeConversionFailure {
+  constructor(failures, opts) {
+    const [key, f] = Object.entries(failures)[0];
+    if (!f) {
+      throw new InvalidArgument2("Expected at least one failure");
+    }
+    super(f.expectedType, f.value, f.location ? `${key}.${f.location}` : key, opts);
+    this.failures = failures;
+  }
+};
+var ArrayConversionFailure = class extends TypeConversionFailure {
+  constructor(failures, opts) {
+    const [index, f] = Object.entries(failures)[0];
+    if (!f) {
+      throw new InvalidArgument2("Expected at least one failure");
+    }
+    super(f.expectedType, f.value, f.location ? `[${index}].${f.location}` : `[${index}]`, opts);
+    this.failures = failures;
+  }
+};
+var MultiTypeConversionFailure = class extends TypeConversionFailure {
+  constructor(failures, value, location, opts) {
+    super(failures.map((f) => f.expectedType).join("|"), value, location, opts);
+    this.failures = failures;
+  }
+};
 var isOfType = (x, converter) => {
   return !threw(() => converter(x));
 };
@@ -53028,19 +53054,24 @@ var readOnly = (convert) => convert;
 var toAny = (x) => x;
 var toArray = (convert) => {
   return (x) => {
-    if (Array.isArray(x)) {
-      return x.map((value, index) => {
-        try {
-          return convert(value);
-        } catch (e) {
-          if (!(e instanceof TypeConversionFailure)) {
-            throw e;
-          }
-          throw new TypeConversionFailure(e.expectedType, e.value, e.location ? `[${index}].${e.location}` : `[${index}]`);
-        }
-      });
+    if (!Array.isArray(x)) {
+      throw new TypeConversionFailure("Array", x);
     }
-    throw new TypeConversionFailure("Array", x);
+    const a = x.map((value) => {
+      try {
+        return { value: convert(value) };
+      } catch (e) {
+        if (e instanceof TypeConversionFailure) {
+          return { error: e };
+        }
+        throw e;
+      }
+    });
+    const failures = a.map((v, index) => [index, v.error]).filter(([_, err]) => !!err);
+    if (failures.length > 0) {
+      throw new ArrayConversionFailure(Object.fromEntries(failures));
+    }
+    return a.map(({ value }) => value);
   };
 };
 var toNonEmptyArray = (convert) => (x) => {
@@ -53111,7 +53142,21 @@ var toRecord = (toValue) => {
     if (!isRecord(x)) {
       throw new TypeConversionFailure("record", x);
     }
-    return Object.fromEntries(Object.entries(x).map(([k, v]) => [toString(k), toValue(v)]));
+    const entries = Object.entries(x).map(([k, v]) => {
+      try {
+        return [toString(k), { value: toValue(v) }];
+      } catch (e) {
+        if (e instanceof TypeConversionFailure) {
+          return [k, { error: e }];
+        }
+        throw e;
+      }
+    });
+    const failures = entries.filter(([_, { error }]) => error !== void 0).map(([k, { error: e }]) => [k, e]);
+    if (failures.length > 0) {
+      throw new ObjectConversionFailure(Object.fromEntries(failures));
+    }
+    return Object.fromEntries(entries.map(([k, { value: v }]) => [k, v]));
   };
 };
 var toString = (x) => {
@@ -53144,19 +53189,29 @@ var toObject = (spec, options) => {
     if (!isRecord(obj)) {
       throw new TypeConversionFailure(expectedObj, obj);
     }
-    return Object.fromEntries(Object.entries(spec).map(([name, convert]) => {
+    const entries = Object.entries(spec).map(([name, convert]) => {
       try {
         if ((options === null || options === void 0 ? void 0 : options.strict) && !(name in obj)) {
-          throw new TypeConversionFailure("not absent", name);
+          return [
+            name,
+            {
+              error: new TypeConversionFailure("not absent", name)
+            }
+          ];
         }
-        return [name, convert(obj[name])];
+        return [name, { value: convert(obj[name]) }];
       } catch (e) {
-        if (!(e instanceof TypeConversionFailure)) {
-          throw e;
+        if (e instanceof TypeConversionFailure) {
+          return [name, { error: e }];
         }
-        throw new TypeConversionFailure(e.expectedType, e.value, e.location ? `${name}.${e.location}` : name);
+        throw e;
       }
-    }).filter(([_, value]) => value !== void 0));
+    });
+    const failures = entries.filter(([_, { error }]) => error !== void 0).map(([k, { error: e }]) => [k, e]);
+    if (failures.length > 0) {
+      throw new ObjectConversionFailure(Object.fromEntries(failures));
+    }
+    return Object.fromEntries(entries.filter(([_, { value, error }]) => !error && value !== void 0).map(([k, { value }]) => [k, value]));
   };
 };
 var asObjectNoCopy = (spec) => {
@@ -53164,12 +53219,23 @@ var asObjectNoCopy = (spec) => {
     if (!isRecord(obj)) {
       throw new TypeConversionFailure("object", obj);
     }
-    Object.entries(spec).forEach(([name, convert]) => {
-      const c = convert(obj[name]);
-      if (c !== void 0 || name in obj) {
-        obj[name] = c;
+    const failures = Object.entries(spec).map(([name, convert]) => {
+      try {
+        const c = convert(obj[name]);
+        if (c !== void 0 || name in obj) {
+          obj[name] = c;
+        }
+        return void 0;
+      } catch (e) {
+        if (e instanceof TypeConversionFailure) {
+          return [name, e];
+        }
+        throw e;
       }
-    });
+    }).filter(has);
+    if (failures.length > 0) {
+      throw new ObjectConversionFailure(Object.fromEntries(failures));
+    }
     return obj;
   };
 };
@@ -53190,7 +53256,10 @@ var toOr2 = (convert1, convert2) => {
       if (!(e instanceof TypeConversionFailure)) {
         throw e;
       }
-      throw new TypeConversionFailure(`${err1.expectedType}|${e.expectedType}`, x);
+      throw new MultiTypeConversionFailure([
+        ...err1 instanceof MultiTypeConversionFailure ? err1.failures : [err1],
+        ...e instanceof MultiTypeConversionFailure ? e.failures : [e]
+      ], x);
     }
   };
 };
@@ -53630,7 +53699,7 @@ var runMain = (main2) => {
 };
 
 // packages/deployment-service/common/lib/api/replica.js
-var import_inversify = __toESM(require_inversify(), 1);
+var import_inversify2 = __toESM(require_inversify(), 1);
 
 // packages/utils/common/lib/injectable.js
 var import_inversify_binding_decorators = __toESM(require_lib6(), 1);
@@ -54130,7 +54199,7 @@ var MessageKind;
 })(MessageKind || (MessageKind = {}));
 var toProcedureRequest = toObject({
   kind: toLiteral(MessageKind.ProcedureRequest),
-  id: toPositiveInteger,
+  id: toNonNegativeInteger,
   service: toString,
   method: toString,
   context: toUndefOr(toUnknown),
@@ -54138,13 +54207,13 @@ var toProcedureRequest = toObject({
 });
 var toProcedureDataResponse = toObject({
   kind: toLiteral(MessageKind.ProcedureResponse),
-  id: toPositiveInteger,
+  id: toNonNegativeInteger,
   data: toUndefOr(toUnknown)
 });
 var toError2 = toObject({ name: toString, data: toUnknown });
 var toProcedureErrorResponse = toObject({
   kind: toLiteral(MessageKind.ProcedureError),
-  id: toPositiveInteger,
+  id: toNonNegativeInteger,
   error: toError2
 });
 var toNewProcedureResponse = toOr(toProcedureDataResponse, toProcedureErrorResponse);
@@ -54159,35 +54228,35 @@ var toProcedureResponse = (x, ver) => {
   return (_a = ignoreError(() => toNewProcedureResponse(x))) !== null && _a !== void 0 ? _a : procedureResponseFromLegacy(x);
 };
 var toDataRequest = toObject({
-  streamId: toPositiveInteger,
+  streamId: toNonNegativeInteger,
   method: toUndefOr(toString),
   data: toUndefOr(toUnknown)
 });
 var toOpenRequest = toObject({
-  streamId: toPositiveInteger,
+  streamId: toNonNegativeInteger,
   service: toString,
   method: toString,
   context: toUndefOr(toUnknown),
   protocolVersion: toUndefOr(toProtocolVersion)
 });
 var toCloseRequest = toObject({
-  streamId: toPositiveInteger,
+  streamId: toNonNegativeInteger,
   close: toLiteral(true)
 });
 var toErrorRequest = toObject({
-  streamId: toPositiveInteger,
+  streamId: toNonNegativeInteger,
   error: toObject({
     name: toString,
     message: toString
   })
 });
 var toDataResponse = toObject({
-  streamId: toPositiveInteger,
+  streamId: toNonNegativeInteger,
   data: toUndefOr(toUnknown)
 });
 var toCloseResponse = toCloseRequest;
 var toErrorResponse = toObject({
-  streamId: toPositiveInteger,
+  streamId: toNonNegativeInteger,
   error: toObject({
     name: toString,
     message: toString
@@ -54278,7 +54347,7 @@ var streamResponseFromLegacy = (msg) => {
   const isOk = Status2.Ok === ((_b = (_a = replyMsg.reply) === null || _a === void 0 ? void 0 : _a.code) !== null && _b !== void 0 ? _b : Status2.Ok);
   const r = replyMsg.reply;
   return {
-    streamId: toPositiveInteger(replyMsg.endpointId),
+    streamId: toNonNegativeInteger(replyMsg.endpointId),
     ...isOk ? replyMsg.complete ? { close: true } : { data: r !== null && r !== void 0 ? r : null } : { error: { name: `${r.errName}`, message: `${r.errMessage}` } }
   };
 };
@@ -54898,7 +54967,7 @@ var PlanId;
   PlanId2[PlanId2["MicroOnDemand"] = 20] = "MicroOnDemand";
   PlanId2[PlanId2["Gpu"] = 27] = "Gpu";
 })(PlanId || (PlanId = {}));
-var toPlanId = toPositiveInteger;
+var toPlanId = toNonNegativeInteger;
 var basicPlan = {
   title: "Free",
   priceUsd: 0,
@@ -55034,7 +55103,7 @@ var Role;
 })(Role || (Role = {}));
 var toRole = toNumericEnum("Role", Role);
 var team = {
-  id: readOnly(toPositiveInteger),
+  id: readOnly(toNonNegativeInteger),
   defaultDataCenterId: readOnly(toNumber),
   name: readOnly(toString),
   description: readOnly(toUndefOr(toNullOr(toString))),
@@ -55049,8 +55118,8 @@ var toTeamWithRole = toObject({
   role: readOnly(toRole)
 });
 var toTeamMember = toObject({
-  userId: readOnly(toPositiveInteger),
-  teamId: readOnly(toPositiveInteger),
+  userId: readOnly(toNonNegativeInteger),
+  teamId: readOnly(toNonNegativeInteger),
   role: readOnly(toRole),
   pending: readOnly(toBoolean),
   createdAt: readOnly(toDate),
@@ -55064,23 +55133,112 @@ var toTeamWithMembers = toObject({
   members: toArray(toTeamMember)
 });
 
+// packages/workspace-service/common/lib/api/envVars.js
+var import_inversify = __toESM(require_inversify(), 1);
+
+// packages/utils/common/lib/inputCheck.js
+var isEnvVarName = (value) => envVarNamePattern.test(value);
+var envVarNamePattern = /^[A-Za-z_][A-Za-z0-9_.-]*$/;
+var INVALID_CI_PROFILE_NAME = [
+  "The profile name must only consist of",
+  " letters, numbers, underscores (`_`)",
+  " and hyphens (`-`)."
+].join("");
+var ipv4Regex = "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])";
+var ipv6Regex = "([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}";
+var ipv4 = new RegExp(`^${ipv4Regex}$`);
+var ipv6 = new RegExp(`^${ipv6Regex}$`);
+var ipv4Subnet = "/(?:[1-9]|[1-2][0-9]|3[0-2])";
+var ipv6Subnet = "/(?:[1-9]|[1-5][0-9]|6[0-4])";
+var ipv4WithSubnets = new RegExp(`^${ipv4Regex}${ipv4Subnet}(?:,\\s*${ipv4Regex}${ipv4Subnet})*$`);
+var ipv6WithSubnets = new RegExp(`^${ipv6Regex}${ipv6Subnet}(?:,\\s*${ipv6Regex}${ipv6Subnet})*$`);
+
+// packages/workspace-service/common/lib/api/envVars.js
+var __decorate2 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var toWorkspaceServiceArgs = toObject({
+  workspaceId: toNumber
+});
+var toEnvVarName = (x) => {
+  const s = toString(x);
+  if (isEnvVarName(s)) {
+    return s;
+  }
+  throw new TypeConversionFailure("EnvVarName", x);
+};
+var toEnvVars = (x) => {
+  if (!isObject(x)) {
+    throw new TypeConversionFailure("record", x);
+  }
+  return Object.fromEntries(Object.entries(x).map(([k, v]) => [toEnvVarName(k), toString(v)]));
+};
+var toEnvironmentVariable = toObject({
+  name: toEnvVarName,
+  value: toString
+});
+var toUpdateEnvVarsArgs = toObject({
+  workspaceId: toNonNegativeInteger,
+  envVars: toEnvVars
+});
+var toCopyEnvVarArgs = toObject({
+  sourceWorkspaceId: toNonNegativeInteger,
+  targetWorkspaceId: toNonNegativeInteger
+});
+var envVarsService = {
+  name: "EnvVars",
+  context: toHttpContext,
+  methods: {
+    listEnvironmentVariables: rpc({
+      access: "public",
+      request: toWorkspaceServiceArgs,
+      response: toArray(toEnvironmentVariable)
+    }),
+    updateEnvironmentVariables: rpc({
+      access: "public",
+      request: toUpdateEnvVarsArgs,
+      response: toVoid,
+      defaultOptions: { timeout: { seconds: 10 } }
+    }),
+    copyEnvVars: rpc({
+      access: "public",
+      request: toCopyEnvVarArgs,
+      response: toVoid
+    }),
+    envVarsStream: stream({
+      access: "public",
+      response: toArray(toEnvironmentVariable),
+      request: toWorkspaceServiceArgs
+    })
+  }
+};
+var envVarsStub = createAuthnStubClass("EnvVarsStub", envVarsService);
+var EnvVarsStub = class EnvVarsStub2 extends envVarsStub {
+};
+EnvVarsStub = __decorate2([
+  (0, import_inversify.injectable)()
+], EnvVarsStub);
+
 // packages/workspace-service/common/lib/serviceArgs.js
 var workspaceServiceArgs = {
-  workspaceId: toPositiveInteger
+  workspaceId: toNonNegativeInteger
 };
-var toWorkspaceServiceArgs = toObject(workspaceServiceArgs);
+var toWorkspaceServiceArgs2 = toObject(workspaceServiceArgs);
 var toStartWorkspaceServiceParams = toOr(toObject({
-  workspaceId: toPositiveInteger,
+  workspaceId: toNonNegativeInteger,
   update: toUndefOr(toBoolean)
 }), toObject({
-  workspaceId: toPositiveInteger,
+  workspaceId: toNonNegativeInteger,
   updateIfOutdated: toUndefOr(toBoolean)
 }));
 var toGetWorkspaceServiceArgs = toObject({
-  id: toPositiveInteger
+  id: toNonNegativeInteger
 });
 var toCreateWorkspaceServiceArgs = toObject({
-  teamId: toPositiveInteger,
+  teamId: toNonNegativeInteger,
   name: toString,
   planId: toPlanId,
   baseImage: toUndefOr(toString),
@@ -55088,15 +55246,16 @@ var toCreateWorkspaceServiceArgs = toObject({
   gitUrl: toNullOr(toString),
   initialBranch: toNullOr(toString),
   cloneDepth: toUndefOr(toPositiveInteger),
-  sourceWorkspaceId: toNullOr(toPositiveInteger),
+  sourceWorkspaceId: toNullOr(toNonNegativeInteger),
   welcomeMessage: toNullOr(toString),
   replicas: toPositiveInteger,
   vpnConfig: toNullOr(toString),
-  restricted: toUndefOr(toBoolean)
+  restricted: toUndefOr(toBoolean),
+  env: toUndefOr(toEnvVars)
 });
 var toUpdateWorkspaceServiceArgs = toObject({
-  workspaceId: toPositiveInteger,
-  teamId: toUndefOr(toPositiveInteger),
+  workspaceId: toNonNegativeInteger,
+  teamId: toUndefOr(toNonNegativeInteger),
   planId: toUndefOr(toPlanId),
   baseImage: toUndefOr(toString),
   name: toUndefOr(toString),
@@ -55191,7 +55350,7 @@ var toLandscapeErrorStatus = toObject({
 var toWorkspaceInfoOrErrorStatus = toOr(toWorkspaceInfo, toWorkspaceErrorStatus, toLandscapeInfo, toLandscapeErrorStatus, toReplicaInfo, toReplicaErrorStatus);
 
 // packages/deployment-service/common/lib/api/replica.js
-var __decorate2 = function(decorators, target, key, desc) {
+var __decorate3 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -55204,7 +55363,7 @@ var replicaService = {
     electLeader: rpc({
       access: "public",
       response: toString,
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     }),
     listHealthy: rpc({
       access: "public",
@@ -55212,7 +55371,7 @@ var replicaService = {
         replica: toString,
         server: toString
       })),
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     }),
     listReady: rpc({
       access: "public",
@@ -55220,23 +55379,23 @@ var replicaService = {
         replica: toString,
         server: toString
       })),
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     }),
     info: stream({
       access: "public",
       response: toWorkspaceInfoOrErrorStatus,
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     })
   }
 };
 var ReplicaStub = class ReplicaStub2 extends createAuthnStubClass("ReplicaStub", replicaService) {
 };
-ReplicaStub = __decorate2([
-  (0, import_inversify.injectable)()
+ReplicaStub = __decorate3([
+  (0, import_inversify2.injectable)()
 ], ReplicaStub);
 
 // packages/deployment-service/common/lib/api/workspaceDeployment.js
-var import_inversify2 = __toESM(require_inversify(), 1);
+var import_inversify3 = __toESM(require_inversify(), 1);
 
 // packages/user-activity/common/lib/CountryCode.js
 var CountryCode;
@@ -55572,7 +55731,7 @@ var StartWorkspaceStatus;
 var toStartWorkspaceStatus = toStringEnum("StartWorkspaceStatus", StartWorkspaceStatus);
 
 // packages/deployment-service/common/lib/api/workspaceDeployment.js
-var __decorate3 = function(decorators, target, key, desc) {
+var __decorate4 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -55598,8 +55757,8 @@ var toDeployConfig = toObject({
   images: toRecord(toImageConfig)
 });
 var toRemovePvcArgs = toObject({
-  workspaceId: toPositiveInteger,
-  sourceWorkspaceId: toNullOr(toPositiveInteger)
+  workspaceId: toNonNegativeInteger,
+  sourceWorkspaceId: toNullOr(toNonNegativeInteger)
 });
 var toWorkspaceHost = toObject({
   agent: toString,
@@ -55607,7 +55766,7 @@ var toWorkspaceHost = toObject({
   vpn: toString
 });
 var toGetWorkspaceHostArgs = toObject({
-  workspaceId: toPositiveInteger,
+  workspaceId: toNonNegativeInteger,
   replica: toUndefOr(toString),
   server: toUndefOr(toString)
 });
@@ -55616,11 +55775,11 @@ var toConfigUpdateArgs = toObject({
   envVars: toRecord(toString)
 });
 var toHasCapacityArgs = toObject({
-  productId: toPositiveInteger,
+  productId: toNonNegativeInteger,
   replicas: toPositiveInteger
 });
 var toRestartArgs = toObject({
-  workspaceId: toPositiveInteger,
+  workspaceId: toNonNegativeInteger,
   podName: toUndefOr(toString)
 });
 var toReplicaResourceUtilization = toObject({
@@ -55641,7 +55800,7 @@ var workspaceDeploymentService = {
     workspaceIsOutdated: rpc({
       access: "public",
       response: toBoolean,
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     }),
     hasCapacity: rpc({
       access: "public",
@@ -55688,7 +55847,7 @@ var workspaceDeploymentService = {
     uninstallDeployment: rpc({
       access: "internal",
       response: toVoid,
-      request: toWorkspaceServiceArgs,
+      request: toWorkspaceServiceArgs2,
       defaultOptions: { timeout: duration({ seconds: 25 }) }
     })
   }
@@ -55706,7 +55865,7 @@ var workspaceDeploymentServiceNotImplemented = {
     getStorageMountPath: rpc({
       access: "internal",
       response: toString,
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     })
   }
 };
@@ -55720,12 +55879,12 @@ var workspaceDeploymentStub = createAuthnStubClass("WorkspaceDeploymentStub", {
 });
 var WorkspaceDeploymentStub = class WorkspaceDeploymentStub2 extends workspaceDeploymentStub {
 };
-WorkspaceDeploymentStub = __decorate3([
-  (0, import_inversify2.injectable)()
+WorkspaceDeploymentStub = __decorate4([
+  (0, import_inversify3.injectable)()
 ], WorkspaceDeploymentStub);
 
 // packages/ide/common/lib/api/config.js
-var import_inversify3 = __toESM(require_inversify(), 1);
+var import_inversify4 = __toESM(require_inversify(), 1);
 
 // packages/utils/common/lib/preconditions.js
 var checkHas = (x, description = "") => {
@@ -56013,6 +56172,18 @@ var createAuthnReplyStubClass = (name, spec) => {
   return klass;
 };
 
+// packages/auth/common/lib/oauth.js
+var baseOAuthProviders = [
+  "bitbucket",
+  "github",
+  "gitlab",
+  "google",
+  "facebook"
+];
+var toBaseOAuthProviderId = toLiteralUnion("BaseOauthProviders", baseOAuthProviders);
+var ALL_OAUTH_PROVIDER_IDS = [...baseOAuthProviders, "oidc"];
+var toOAuthProviderId = toLiteralUnion("OauthProviderId", ALL_OAUTH_PROVIDER_IDS);
+
 // packages/auth-service/common/lib/session/types.js
 var toSessionId = toObject({
   id: toUndefOr(readOnly(toString))
@@ -56024,16 +56195,6 @@ var toCreds = toObject({
 var toSessionString = readOnly(toString);
 
 // packages/auth-service/common/lib/Authentication.js
-var baseOAuthProviders = [
-  "bitbucket",
-  "github",
-  "gitlab",
-  "google",
-  "facebook"
-];
-var toBaseOAuthProviderId = toLiteralUnion("BaseOauthProviders", baseOAuthProviders);
-var ALL_OAUTH_PROVIDER_IDS = [...baseOAuthProviders, "oidc"];
-var toOAuthProviderId = toLiteralUnion("OauthProviderId", ALL_OAUTH_PROVIDER_IDS);
 var oAuthProviderConfigBase = {
   name: toString,
   clientId: toString,
@@ -56127,12 +56288,14 @@ var AVAILABLE_EXPERIMENTS = [
   "git-panel",
   "gpu-plan",
   "hermetic",
+  "ide-react",
   "language-server",
   MAINTENANCE_MODE_EXP_NAME,
   "msd",
   "o11y",
   "persistent-logs",
   "persistent-nix",
+  "privileged-ports",
   "plan-characteristics-db",
   "public-api",
   "pubsub-postgres",
@@ -56192,7 +56355,7 @@ var toBrowserConfig = toObject({
 var browserConfigId = serviceId("BrowserConfig");
 
 // packages/ide/common/lib/api/config.js
-var __decorate4 = function(decorators, target, key, desc) {
+var __decorate5 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -56211,17 +56374,17 @@ var configService = {
 };
 var ConfigStub = class ConfigStub2 extends createAuthnStubClass("ConfigStub", configService) {
 };
-ConfigStub = __decorate4([
-  (0, import_inversify3.injectable)()
+ConfigStub = __decorate5([
+  (0, import_inversify4.injectable)()
 ], ConfigStub);
 var ConfigReplyStub = class ConfigReplyStub2 extends createAuthnReplyStubClass("configReplyStub", configService) {
 };
-ConfigReplyStub = __decorate4([
-  (0, import_inversify3.injectable)()
+ConfigReplyStub = __decorate5([
+  (0, import_inversify4.injectable)()
 ], ConfigReplyStub);
 
 // packages/ide/common/lib/api/gitAuth.js
-var import_inversify4 = __toESM(require_inversify(), 1);
+var import_inversify5 = __toESM(require_inversify(), 1);
 
 // packages/utils/common/lib/git.js
 var GitProviderKind;
@@ -56314,7 +56477,7 @@ var SUPPORTED_GIT_PROVIDERS = [
 ];
 
 // packages/ide/common/lib/api/gitAuth.js
-var __decorate5 = function(decorators, target, key, desc) {
+var __decorate6 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -56327,7 +56490,7 @@ var NotConnectedToProvider = class NotConnectedToProvider2 extends SimpleSeriali
     return new this(`Not connected to git provider: ${providerName}. Connect to the provider in the create workspace modal.`, opts);
   }
 };
-NotConnectedToProvider = __decorate5([
+NotConnectedToProvider = __decorate6([
   registerError()
 ], NotConnectedToProvider);
 var toAuthCode = readOnly(toObject({
@@ -56390,8 +56553,8 @@ var gitAuthService = {
 var gitAuthStub = createAuthnStubClass("GitAuthStub", gitAuthService);
 var GitAuthStub = class GitAuthStub2 extends gitAuthStub {
 };
-GitAuthStub = __decorate5([
-  (0, import_inversify4.injectable)()
+GitAuthStub = __decorate6([
+  (0, import_inversify5.injectable)()
 ], GitAuthStub);
 
 // packages/payment-service/common/lib/Product.js
@@ -56444,7 +56607,7 @@ var toDockerImageHostingPlan = toReadOnly(toObject({
   ...dockerCharacteristics
 }));
 var toPlanCharacteristic = toReadOnly(toObject({
-  id: toPositiveInteger,
+  id: toNonNegativeInteger,
   CPU: toNumber,
   GPU: toNumber,
   RAM: Bytes.fromUnknown,
@@ -56507,7 +56670,7 @@ var ProductsStub = class extends productsStub {
 };
 
 // packages/auth-service/common/lib/api/auth.js
-var import_inversify5 = __toESM(require_inversify(), 1);
+var import_inversify6 = __toESM(require_inversify(), 1);
 
 // packages/auth-service/common/lib/EmailContainer.js
 var emailContainer = {
@@ -56599,37 +56762,36 @@ var toUploadFileArgs = toObject({
   file: readOnly(toString)
 });
 
-// packages/auth-service/common/lib/AuthenticationMethod.js
+// packages/auth/common/lib/user.js
+var ServiceId;
+(function(ServiceId2) {
+  ServiceId2["AuthService"] = "auth-service";
+  ServiceId2["DeploymentService"] = "deployment-service";
+  ServiceId2["PublicApiService"] = "public-api-service";
+  ServiceId2["ErrorPageServer"] = "error-page-server";
+  ServiceId2["MarketplaceService"] = "marketplace-service";
+  ServiceId2["PaymentService"] = "payment-service";
+})(ServiceId || (ServiceId = {}));
 var toAuthenticationMethod = toLiteralUnion("AuthenticationMethod", [
   ...ALL_OAUTH_PROVIDER_IDS,
   "password",
   "service",
   "unknown"
 ]);
-
-// packages/auth-service/common/lib/User.js
-var ServiceId;
-(function(ServiceId2) {
-  ServiceId2["AuthService"] = "auth-service";
-  ServiceId2["DeploymentService"] = "deployment-service";
-  ServiceId2["ErrorPageServer"] = "error-page-server";
-  ServiceId2["MarketplaceService"] = "marketplace-service";
-  ServiceId2["PaymentService"] = "payment-service";
-})(ServiceId || (ServiceId = {}));
 var user = {
-  ...emailContainer,
-  userId: readOnly(toNumber),
-  authenticationMethod: readOnly(toAuthenticationMethod),
-  serviceId: toUndefOr(readOnly(toStringEnum("ServiceId", ServiceId))),
-  firstName: toUndefOr(toNullOr(readOnly(toString))),
-  lastName: toUndefOr(toNullOr(readOnly(toString))),
-  avatarId: toUndefOr(toNullOr(readOnly(toString))),
+  email: toString,
+  userId: toNumber,
+  authenticationMethod: toUndefOr(toAuthenticationMethod),
+  serviceId: toUndefOr(toStringEnum("ServiceId", ServiceId)),
+  firstName: toUndefOr(toNullOr(toString)),
+  lastName: toUndefOr(toNullOr(toString)),
+  avatarId: toUndefOr(toNullOr(toString)),
   deletedAt: toUndefOr(toDate)
 };
 var toUser = toObject(user);
 var toUserWithSignedUp = toObject({
   ...user,
-  signedUp: readOnly(toBoolean)
+  signedUp: toBoolean
 });
 
 // packages/auth-service/common/lib/api/user.js
@@ -56660,7 +56822,7 @@ var userService = {
 var userStub = createAuthnStubClass("User", userService);
 
 // packages/auth-service/common/lib/api/auth.js
-var __decorate6 = function(decorators, target, key, desc) {
+var __decorate7 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -56675,7 +56837,7 @@ var InvalidCredentials = class InvalidCredentials2 extends SimpleSerializableExc
     super("Invalid credentials", opts);
   }
 };
-InvalidCredentials = __decorate6([
+InvalidCredentials = __decorate7([
   registerError(),
   __metadata2("design:paramtypes", [Object])
 ], InvalidCredentials);
@@ -56684,7 +56846,7 @@ var UserDeleted = class UserDeleted2 extends SimpleSerializableException {
     super("User is deleted", opts);
   }
 };
-UserDeleted = __decorate6([
+UserDeleted = __decorate7([
   registerError(),
   __metadata2("design:paramtypes", [Object])
 ], UserDeleted);
@@ -56693,7 +56855,7 @@ var RecaptchaCheckFailed = class RecaptchaCheckFailed2 extends SimpleSerializabl
     super(msg, opts);
   }
 };
-RecaptchaCheckFailed = __decorate6([
+RecaptchaCheckFailed = __decorate7([
   registerError(),
   __metadata2("design:paramtypes", [String, Object])
 ], RecaptchaCheckFailed);
@@ -56702,7 +56864,7 @@ var UserCreationFailed = class UserCreationFailed2 extends SimpleSerializableExc
     super(msg, opts);
   }
 };
-UserCreationFailed = __decorate6([
+UserCreationFailed = __decorate7([
   registerError(),
   __metadata2("design:paramtypes", [String, Object])
 ], UserCreationFailed);
@@ -56730,7 +56892,7 @@ var DeactivateUserFailed = DeactivateUserFailed_1 = class DeactivateUserFailed2 
     return new DeactivateUserFailed_1("Failed to delete the user preliminarily. You still have teams which are not ready to be shut down.", opts);
   }
 };
-DeactivateUserFailed = DeactivateUserFailed_1 = __decorate6([
+DeactivateUserFailed = DeactivateUserFailed_1 = __decorate7([
   registerError()
 ], DeactivateUserFailed);
 var authService = {
@@ -56836,22 +56998,22 @@ var legacyAuthService = {
 };
 var AuthStub = class AuthStub2 extends createAuthnStubClass("AuthStub", authService) {
 };
-AuthStub = __decorate6([
-  (0, import_inversify5.injectable)()
+AuthStub = __decorate7([
+  (0, import_inversify6.injectable)()
 ], AuthStub);
 var LegacyAuthStub = class LegacyAuthStub2 extends createAuthnStubClass("LegacyAuthStub", legacyAuthService) {
 };
-LegacyAuthStub = __decorate6([
-  (0, import_inversify5.injectable)()
+LegacyAuthStub = __decorate7([
+  (0, import_inversify6.injectable)()
 ], LegacyAuthStub);
 var AuthReplyStub = class AuthReplyStub2 extends createAuthnReplyStubClass("AuthReplyStub", legacyAuthService) {
 };
-AuthReplyStub = __decorate6([
-  (0, import_inversify5.injectable)()
+AuthReplyStub = __decorate7([
+  (0, import_inversify6.injectable)()
 ], AuthReplyStub);
 
 // packages/auth-service/common/lib/session/api.js
-var import_inversify6 = __toESM(require_inversify(), 1);
+var import_inversify7 = __toESM(require_inversify(), 1);
 
 // packages/rpc/common/lib/http/HttpRequestReplyStub.js
 var import_cross_fetch3 = __toESM(require_node_ponyfill(), 1);
@@ -56920,19 +57082,13 @@ var HttpEndpoint = class {
   }
   close() {
   }
-  newBidiStreamStub(method) {
-    throw new NotImplemented();
-  }
-  newServerStreamStub(method) {
-    throw new NotImplemented();
-  }
   setClientContext(context2) {
     return this.requestReplyStub.setClientContext(context2);
   }
 };
 
 // packages/auth-service/common/lib/session/api.js
-var __decorate7 = function(decorators, target, key, desc) {
+var __decorate8 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -56944,7 +57100,7 @@ var __metadata3 = function(k, v) {
 var SessionStub_1;
 var InvalidSessionId = class extends NotFound {
   constructor(sessionId) {
-    super(`The sessionId: ${sessionId} is not valid, please sign in.`);
+    super(!sessionId ? "Invalid SessionId, please sign in" : `The sessionId: ${sessionId} is not valid, please sign in.`);
     this.sessionId = sessionId;
   }
 };
@@ -56996,8 +57152,8 @@ var SessionStub = SessionStub_1 = class SessionStub2 {
   }
 };
 SessionStub.ID = serviceId("SessionStub");
-SessionStub = SessionStub_1 = __decorate7([
-  (0, import_inversify6.injectable)(),
+SessionStub = SessionStub_1 = __decorate8([
+  (0, import_inversify7.injectable)(),
   __metadata3("design:paramtypes", [HttpEndpoint])
 ], SessionStub);
 
@@ -57114,7 +57270,7 @@ var { withAuthnStub, withStubForAddress } = createStubUtils({
 });
 
 // packages/workspace-agent/common/lib/api/pipeline.js
-var import_inversify7 = __toESM(require_inversify(), 1);
+var import_inversify8 = __toESM(require_inversify(), 1);
 
 // packages/workspace-agent/common/lib/pipeline/config.js
 var toPipelineMetaConfig = toObject({
@@ -57123,7 +57279,9 @@ var toPipelineMetaConfig = toObject({
   maxLogsPerStep: toNumber,
   envVars: toRecord(toString),
   replicaId: toString,
-  serverName: toString
+  serverName: toString,
+  workspaceId: toNonNegativeInteger,
+  otelLogCollectorHostname: toUndefOr(toString)
 });
 
 // packages/workspace-agent/common/lib/pipeline/logging.js
@@ -57170,17 +57328,17 @@ var GitProvider;
 })(GitProvider || (GitProvider = {}));
 var toGitProvider2 = toStringEnum("GitProvider", GitProvider);
 var workspace = {
-  id: readOnly(toPositiveInteger),
+  id: readOnly(toNonNegativeInteger),
   dataCenterId: readOnly(toNumber),
-  userId: readOnly(toPositiveInteger),
-  teamId: readOnly(toPositiveInteger),
+  userId: readOnly(toNonNegativeInteger),
+  teamId: readOnly(toNonNegativeInteger),
   name: toString,
   gitUrl: readOnly(toNullOr(toString)),
   isPrivateRepo: readOnly(toBoolean),
   welcomeMessage: readOnly(toNullOr(toString)),
   initialBranch: readOnly(toNullOr(toString)),
   cloneDepth: toUndefOr(toPositiveInteger),
-  sourceWorkspaceId: readOnly(toNullOr(toPositiveInteger)),
+  sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
   planId: toPlanId,
   replicas: toPositiveInteger,
   vpnConfig: toNullOr(toString),
@@ -57336,7 +57494,7 @@ var configToLandscape = (config) => {
 };
 
 // packages/workspace-agent/common/lib/api/pipeline.js
-var __decorate8 = function(decorators, target, key, desc) {
+var __decorate9 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -57368,6 +57526,9 @@ var toRenamePipelineConfigParams = toObject({
 });
 var toDeletePipelineConfigParams = toObject({
   profile: toString
+});
+var toConfigurePersistentLogsParams = toObject({
+  enable: toBoolean
 });
 var pipelineService = {
   name: "Pipeline",
@@ -57457,17 +57618,22 @@ var pipelineService = {
       access: "internal",
       response: toVoid,
       request: toDeletePipelineConfigParams
+    }),
+    configurePersistentLogs: rpc({
+      access: "internal",
+      response: toVoid,
+      request: toConfigurePersistentLogsParams
     })
   }
 };
 var PipelineStub = class PipelineStub2 extends createAuthnStubClass("PipelineStub", pipelineService) {
 };
-PipelineStub = __decorate8([
-  (0, import_inversify7.injectable)()
+PipelineStub = __decorate9([
+  (0, import_inversify8.injectable)()
 ], PipelineStub);
 
 // packages/workspace-service/common/lib/errors.js
-var __decorate9 = function(decorators, target, key, desc) {
+var __decorate10 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -57494,17 +57660,17 @@ var FreeWorkspaceLimitReached = class FreeWorkspaceLimitReached2 extends SimpleS
     super(msg);
   }
 };
-FreeWorkspaceLimitReached = __decorate9([
+FreeWorkspaceLimitReached = __decorate10([
   registerError(),
   __metadata4("design:paramtypes", [String])
 ], FreeWorkspaceLimitReached);
 
 // packages/workspace-service/node/lib/data-access/WorkspacesDAO.js
-var import_inversify10 = __toESM(require_inversify(), 1);
+var import_inversify11 = __toESM(require_inversify(), 1);
 var import_node_cache = __toESM(require_node_cache2(), 1);
 
 // packages/payment-service/node/lib/data-access/Products.js
-var import_inversify8 = __toESM(require_inversify(), 1);
+var import_inversify9 = __toESM(require_inversify(), 1);
 
 // packages/stubs/node/lib/storage/database/squily/database.js
 var import_pg = __toESM(require_lib8(), 1);
@@ -58099,7 +58265,7 @@ var DbUniquenessViolation = class extends DbQueryFailed {
 };
 var DbTransactionSerializationFailure = class extends DbQueryFailed {
 };
-var toPgConfig = toObject({
+var toPgConfig = toOr(toObject({
   user: toString,
   password: toString,
   host: toString,
@@ -58110,7 +58276,7 @@ var toPgConfig = toObject({
     servername: toUndefOr(toString),
     ca: toUndefOr(toString)
   }))
-});
+}), toObject({ connectionString: toString }));
 
 // packages/stubs/node/lib/storage/database/squily/queries/utils.js
 var queryRaw = async (db, queries) => {
@@ -58259,7 +58425,7 @@ var cached = (f, timeoutMs) => {
 };
 
 // packages/payment-service/node/lib/data-access/Products.js
-var __decorate10 = function(decorators, target, key, desc) {
+var __decorate11 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -58307,7 +58473,7 @@ var toWorkspacePlanDao = toObject({
   maxReplicas: toPositiveInteger
 });
 var toProductIdAndReplicas = toArray(toObject({
-  productId: toPositiveInteger,
+  productId: toNonNegativeInteger,
   replicas: toPositiveInteger
 }));
 var Products = class {
@@ -58389,9 +58555,9 @@ var ProductsDb = ProductsDb_1 = class ProductsDb2 extends Products {
     return await this.listWorkspacePlansCached();
   }
 };
-ProductsDb = ProductsDb_1 = __decorate10([
-  (0, import_inversify8.injectable)(),
-  __param(0, (0, import_inversify8.inject)(Database.ID)),
+ProductsDb = ProductsDb_1 = __decorate11([
+  (0, import_inversify9.injectable)(),
+  __param(0, (0, import_inversify9.inject)(Database.ID)),
   __metadata5("design:paramtypes", [Database])
 ], ProductsDb);
 var dbPlanSmall = {
@@ -58526,11 +58692,11 @@ var getTotalIdeReplicasOfPlan = async (db, teamId, idePlanId) => getTotalReplica
 `);
 
 // packages/workspace-service/common/lib/api/workspaces.js
-var import_inversify9 = __toESM(require_inversify(), 1);
+var import_inversify10 = __toESM(require_inversify(), 1);
 
 // packages/team-service/common/lib/model/TeamServiceArgs.js
 var teamServiceArgs = {
-  teamId: readOnly(toPositiveInteger)
+  teamId: readOnly(toNonNegativeInteger)
 };
 var toTeamServiceArgs = toObject(teamServiceArgs);
 var toCreateTeamArgs = toObject({
@@ -58576,7 +58742,7 @@ var toUploadFileArgs2 = toObject({
 });
 
 // packages/workspace-service/common/lib/api/workspaces.js
-var __decorate11 = function(decorators, target, key, desc) {
+var __decorate12 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -58584,7 +58750,7 @@ var __decorate11 = function(decorators, target, key, desc) {
 };
 var VpnConfigNotFound = class VpnConfigNotFound2 extends SimpleSerializableException {
 };
-VpnConfigNotFound = __decorate11([
+VpnConfigNotFound = __decorate12([
   registerError()
 ], VpnConfigNotFound);
 var workspacesService = {
@@ -58599,7 +58765,7 @@ var workspacesService = {
     }),
     deleteWorkspace: rpc({
       access: "public",
-      request: toWorkspaceServiceArgs,
+      request: toWorkspaceServiceArgs2,
       response: toVoid,
       defaultOptions: { timeout: duration({ seconds: 60 }) }
     }),
@@ -58615,7 +58781,7 @@ var workspacesService = {
     }),
     isSameDataCenter: rpc({
       access: "public",
-      request: toWorkspaceServiceArgs,
+      request: toWorkspaceServiceArgs2,
       response: toBoolean
     }),
     listWorkspaces: rpc({
@@ -58639,12 +58805,12 @@ var workspacesService = {
 var workspacesStub = createAuthnStubClass("WorkspacesStub", workspacesService);
 var WorkspacesStub = class WorkspacesStub2 extends workspacesStub {
 };
-WorkspacesStub = __decorate11([
-  (0, import_inversify9.injectable)()
+WorkspacesStub = __decorate12([
+  (0, import_inversify10.injectable)()
 ], WorkspacesStub);
 
 // packages/workspace-service/node/lib/data-access/WorkspacesDAO.js
-var __decorate12 = function(decorators, target, key, desc) {
+var __decorate13 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -58671,16 +58837,16 @@ var toIdeServer = toObject({
 var toWorkspaceDbEntry = toObject({
   dataCenterId: readOnly(toNumber),
   gitUrl: readOnly(toNullOr(toString)),
-  id: readOnly(toPositiveInteger),
-  planId: readOnly(toPositiveInteger),
+  id: readOnly(toNonNegativeInteger),
+  planId: readOnly(toNonNegativeInteger),
   initialBranch: readOnly(toNullOr(toString)),
   isPrivateRepo: readOnly(toBoolean),
   cloneDepth: toUndefOr(toPositiveInteger),
   name: toString,
   replicas: readOnly(toPositiveInteger),
-  sourceWorkspaceId: readOnly(toNullOr(toPositiveInteger)),
-  teamId: readOnly(toPositiveInteger),
-  userId: readOnly(toPositiveInteger),
+  sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
+  teamId: readOnly(toNonNegativeInteger),
+  userId: readOnly(toNonNegativeInteger),
   welcomeMessage: readOnly(toNullOr(toString)),
   vpnConfig: toNullOr(toString),
   restricted: toBoolean,
@@ -58742,7 +58908,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
   async publish(teamId, workspace2) {
     await this.pubSub.publish(`${teamId}`, workspace2);
   }
-  async create({ ownerUserId, ownerUserEmail, teamId, name, isPrivateRepo, replicas, dataCenterId, planId, gitUrl, welcomeMessage, initialBranch, cloneDepth, sourceWorkspaceId, vpnConfig, initiatorUserId, initiatorUserEmail, restricted, baseImage: baseImage2 }) {
+  async create({ ownerUserId, ownerUserEmail, teamId, name, isPrivateRepo, replicas, dataCenterId, planId, gitUrl, welcomeMessage, initialBranch, cloneDepth, sourceWorkspaceId, vpnConfig, initiatorUserId, initiatorUserEmail, restricted, baseImage: baseImage2, env }) {
     return await this.db.transaction(async (tx) => {
       const ws = unsafeDbRecordToWorkspaceDbEntry(await rethrowAsync(() => tx.insert("workspaceService.workspaces", {
         userId: ownerUserId,
@@ -58800,6 +58966,13 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
           ownerUserEmail,
           workspaceName: ws.name
         }, tx);
+      }
+      if (env && Object.keys(env).length) {
+        await tx.insert("workspaceService.environmentVariables", Object.entries(env).map(([k, v]) => ({
+          workspaceId: ws.id,
+          name: k,
+          value: v
+        })));
       }
       return ws;
     });
@@ -59205,11 +59378,11 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
     });
   }
 };
-WorkspacesDAODatabase = __decorate12([
-  (0, import_inversify10.injectable)(),
-  __param2(0, (0, import_inversify10.inject)(serviceId("Workspace"))),
-  __param2(1, (0, import_inversify10.inject)(Database.ID)),
-  __param2(2, (0, import_inversify10.inject)(getWorkspacePlanId)),
+WorkspacesDAODatabase = __decorate13([
+  (0, import_inversify11.injectable)(),
+  __param2(0, (0, import_inversify11.inject)(serviceId("Workspace"))),
+  __param2(1, (0, import_inversify11.inject)(Database.ID)),
+  __param2(2, (0, import_inversify11.inject)(getWorkspacePlanId)),
   __metadata6("design:paramtypes", [Object, Database, Function])
 ], WorkspacesDAODatabase);
 
@@ -59271,13 +59444,7 @@ var deleteWorkspace = async (workspaces, teamId, wsName) => {
     throw e;
   }
 };
-var setEnvVars = async (envVarsStub2, workspaceId, envVars) => {
-  await envVarsStub2.updateEnvironmentVariables({
-    workspaceId,
-    envVars
-  });
-};
-var createWorkspaceIfNotExist = async (workspaces, { teamId, planId, workspaceName: workspaceName2, gitUrl, isPrivateRepo, initialBranch, cloneDepth, vpnConfig, restricted, baseImage: baseImage2 }) => {
+var createWorkspaceIfNotExist = async (workspaces, { teamId, planId, workspaceName: workspaceName2, gitUrl, isPrivateRepo, initialBranch, cloneDepth, vpnConfig, restricted, baseImage: baseImage2, envVars }) => {
   try {
     return {
       ws: await workspaces.createWorkspace({
@@ -59293,7 +59460,8 @@ var createWorkspaceIfNotExist = async (workspaces, { teamId, planId, workspaceNa
         sourceWorkspaceId: null,
         vpnConfig: vpnConfig !== null && vpnConfig !== void 0 ? vpnConfig : null,
         restricted,
-        baseImage: baseImage2
+        baseImage: baseImage2,
+        env: envVars
       }),
       created: true
     };
@@ -59308,7 +59476,7 @@ var createWorkspaceIfNotExist = async (workspaces, { teamId, planId, workspaceNa
 };
 var findWorkspace = async (workspaces, teamId, name) => getFirst((await workspaces.listWorkspaces({ teamId })).filter((w) => w.name === name));
 var isWorkspaceAlreadyExists = (e, workspaceName2) => [workspaceAlreadyExists(workspaceName2), ALREADY_EXISTS_ERROR].some((m) => e.message === m);
-var deployWorkspace = async (workspaces, deployment, envVars, pipeline, replica, args) => {
+var deployWorkspace = async (workspaces, deployment, pipeline, replica, args) => {
   logI("Starting deployment to Codesphere");
   const { ws, created } = await createWorkspaceIfNotExist(workspaces, args);
   try {
@@ -59319,7 +59487,6 @@ var deployWorkspace = async (workspaces, deployment, envVars, pipeline, replica,
     }
   }
   await waitForWorkspaceStatus(replica, ws.id, WorkspaceStatus.Running);
-  await setEnvVars(envVars, ws.id, args.envVars);
   if (created && args.runPrepareOnCreation) {
     await runPipelineStage("prepare", "success", pipeline, ws.id, {
       processCleanupWaitTime: args.processCleanupWaitTime
@@ -59695,8 +59862,8 @@ var connectJsonClient = async (address) => {
 };
 
 // packages/team-service/common/lib/api/team.js
-var import_inversify11 = __toESM(require_inversify(), 1);
-var __decorate13 = function(decorators, target, key, desc) {
+var import_inversify12 = __toESM(require_inversify(), 1);
+var __decorate14 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -59722,7 +59889,7 @@ var FetchMembersFailed = FetchMembersFailed_1 = class FetchMembersFailed2 extend
     return new FetchMembersFailed_1("Failed to fetch your team members please try again later", opts);
   }
 };
-FetchMembersFailed = FetchMembersFailed_1 = __decorate13([
+FetchMembersFailed = FetchMembersFailed_1 = __decorate14([
   registerError()
 ], FetchMembersFailed);
 var IsLastAdmin = IsLastAdmin_1 = class IsLastAdmin2 extends SimpleSerializableException {
@@ -59730,7 +59897,7 @@ var IsLastAdmin = IsLastAdmin_1 = class IsLastAdmin2 extends SimpleSerializableE
     return new IsLastAdmin_1("The team must have another admin", opts);
   }
 };
-IsLastAdmin = IsLastAdmin_1 = __decorate13([
+IsLastAdmin = IsLastAdmin_1 = __decorate14([
   registerError()
 ], IsLastAdmin);
 var LeaveTeamFailed = LeaveTeamFailed_1 = class LeaveTeamFailed2 extends SimpleSerializableException {
@@ -59738,7 +59905,7 @@ var LeaveTeamFailed = LeaveTeamFailed_1 = class LeaveTeamFailed2 extends SimpleS
     return new LeaveTeamFailed_1("Failed to leave team try again later", opts);
   }
 };
-LeaveTeamFailed = LeaveTeamFailed_1 = __decorate13([
+LeaveTeamFailed = LeaveTeamFailed_1 = __decorate14([
   registerError()
 ], LeaveTeamFailed);
 var ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = class ChangeMemberRoleFailed2 extends SimpleSerializableException {
@@ -59746,7 +59913,7 @@ var ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = class ChangeMemberRoleFa
     return new ChangeMemberRoleFailed_1("Failed to change member role please try again later", opts);
   }
 };
-ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = __decorate13([
+ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = __decorate14([
   registerError()
 ], ChangeMemberRoleFailed);
 var NotEnoughSeats = NotEnoughSeats_1 = class NotEnoughSeats2 extends SimpleSerializableException {
@@ -59754,7 +59921,7 @@ var NotEnoughSeats = NotEnoughSeats_1 = class NotEnoughSeats2 extends SimpleSeri
     return new NotEnoughSeats_1("Not enough seats to add more team members", opts);
   }
 };
-NotEnoughSeats = NotEnoughSeats_1 = __decorate13([
+NotEnoughSeats = NotEnoughSeats_1 = __decorate14([
   registerError()
 ], NotEnoughSeats);
 var SendInviteFailed = SendInviteFailed_1 = class SendInviteFailed2 extends SimpleSerializableException {
@@ -59762,7 +59929,7 @@ var SendInviteFailed = SendInviteFailed_1 = class SendInviteFailed2 extends Simp
     return new SendInviteFailed_1("Failed to send invitation try again later", opts);
   }
 };
-SendInviteFailed = SendInviteFailed_1 = __decorate13([
+SendInviteFailed = SendInviteFailed_1 = __decorate14([
   registerError()
 ], SendInviteFailed);
 var InvalidInvitation = InvalidInvitation_1 = class InvalidInvitation2 extends SimpleSerializableException {
@@ -59770,7 +59937,7 @@ var InvalidInvitation = InvalidInvitation_1 = class InvalidInvitation2 extends S
     return new InvalidInvitation_1("Failed to accept invitation.", opts);
   }
 };
-InvalidInvitation = InvalidInvitation_1 = __decorate13([
+InvalidInvitation = InvalidInvitation_1 = __decorate14([
   registerError()
 ], InvalidInvitation);
 var TeamUpdateFailed = TeamUpdateFailed_1 = class TeamUpdateFailed2 extends SimpleSerializableException {
@@ -59778,7 +59945,7 @@ var TeamUpdateFailed = TeamUpdateFailed_1 = class TeamUpdateFailed2 extends Simp
     return new TeamUpdateFailed_1("Team update failed please try again later", opts);
   }
 };
-TeamUpdateFailed = TeamUpdateFailed_1 = __decorate13([
+TeamUpdateFailed = TeamUpdateFailed_1 = __decorate14([
   registerError()
 ], TeamUpdateFailed);
 var FileTooLarge = FileTooLarge_1 = class FileTooLarge2 extends SimpleSerializableException {
@@ -59786,7 +59953,7 @@ var FileTooLarge = FileTooLarge_1 = class FileTooLarge2 extends SimpleSerializab
     return new FileTooLarge_1(msg, opts);
   }
 };
-FileTooLarge = FileTooLarge_1 = __decorate13([
+FileTooLarge = FileTooLarge_1 = __decorate14([
   registerError()
 ], FileTooLarge);
 var IncorrectType = IncorrectType_1 = class IncorrectType2 extends SimpleSerializableException {
@@ -59794,12 +59961,12 @@ var IncorrectType = IncorrectType_1 = class IncorrectType2 extends SimpleSeriali
     return new IncorrectType_1(msg, opts);
   }
 };
-IncorrectType = IncorrectType_1 = __decorate13([
+IncorrectType = IncorrectType_1 = __decorate14([
   registerError()
 ], IncorrectType);
 var RemoveMemberFailed = class RemoveMemberFailed2 extends SimpleSerializableException {
 };
-RemoveMemberFailed = __decorate13([
+RemoveMemberFailed = __decorate14([
   registerError()
 ], RemoveMemberFailed);
 var AvatarNotFound = AvatarNotFound_1 = class AvatarNotFound2 extends NotFound {
@@ -59807,7 +59974,7 @@ var AvatarNotFound = AvatarNotFound_1 = class AvatarNotFound2 extends NotFound {
     return new AvatarNotFound_1("Team has no Avatar", opts);
   }
 };
-AvatarNotFound = AvatarNotFound_1 = __decorate13([
+AvatarNotFound = AvatarNotFound_1 = __decorate14([
   registerError()
 ], AvatarNotFound);
 var FetchTeamsFailed = FetchTeamsFailed_1 = class FetchTeamsFailed2 extends SimpleSerializableException {
@@ -59815,7 +59982,7 @@ var FetchTeamsFailed = FetchTeamsFailed_1 = class FetchTeamsFailed2 extends Simp
     return new FetchTeamsFailed_1("Failed to fetch your teams. Please try again later", opts);
   }
 };
-FetchTeamsFailed = FetchTeamsFailed_1 = __decorate13([
+FetchTeamsFailed = FetchTeamsFailed_1 = __decorate14([
   registerError()
 ], FetchTeamsFailed);
 var SetDeletionPendingFailed = SetDeletionPendingFailed_1 = class SetDeletionPendingFailed2 extends SimpleSerializableException {
@@ -59823,7 +59990,7 @@ var SetDeletionPendingFailed = SetDeletionPendingFailed_1 = class SetDeletionPen
     return new SetDeletionPendingFailed_1(msg, opts);
   }
 };
-SetDeletionPendingFailed = SetDeletionPendingFailed_1 = __decorate13([
+SetDeletionPendingFailed = SetDeletionPendingFailed_1 = __decorate14([
   registerError()
 ], SetDeletionPendingFailed);
 var ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = class ReactivateDeletedUserTeamsFailed2 extends SimpleSerializableException {
@@ -59831,7 +59998,7 @@ var ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = clas
     return new ReactivateDeletedUserTeamsFailed_1("Reactivating the teams of the deleted user failed.", opts);
   }
 };
-ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = __decorate13([
+ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = __decorate14([
   registerError()
 ], ReactivateDeletedUserTeamsFailed);
 var FetchInvitationsFailed = FetchInvitationsFailed_1 = class FetchInvitationsFailed2 extends SimpleSerializableException {
@@ -59839,24 +60006,29 @@ var FetchInvitationsFailed = FetchInvitationsFailed_1 = class FetchInvitationsFa
     return new FetchInvitationsFailed_1("Failed to fetch your invitations. Please try again later", opts);
   }
 };
-FetchInvitationsFailed = FetchInvitationsFailed_1 = __decorate13([
+FetchInvitationsFailed = FetchInvitationsFailed_1 = __decorate14([
   registerError()
 ], FetchInvitationsFailed);
 var DeleteTeamFailed = class DeleteTeamFailed2 extends SimpleSerializableException {
 };
-DeleteTeamFailed = __decorate13([
+DeleteTeamFailed = __decorate14([
   registerError()
 ], DeleteTeamFailed);
 var DomainDeletionFailed = class DomainDeletionFailed2 extends DeleteTeamFailed {
 };
-DomainDeletionFailed = __decorate13([
+DomainDeletionFailed = __decorate14([
   registerError()
 ], DomainDeletionFailed);
 var WorkspaceDeletionFailed = class WorkspaceDeletionFailed2 extends DeleteTeamFailed {
 };
-WorkspaceDeletionFailed = __decorate13([
+WorkspaceDeletionFailed = __decorate14([
   registerError()
 ], WorkspaceDeletionFailed);
+var VpnDeletionFailed = class VpnDeletionFailed2 extends DeleteTeamFailed {
+};
+VpnDeletionFailed = __decorate14([
+  registerError()
+], VpnDeletionFailed);
 var teamServiceImpl = {
   name: "team",
   context: toHttpContext,
@@ -59985,13 +60157,13 @@ var teamService = {
 var teamStub = createAuthnStubClass("TeamStub", teamService);
 var TeamStub = class TeamStub2 extends teamStub {
 };
-TeamStub = __decorate13([
-  (0, import_inversify11.injectable)()
+TeamStub = __decorate14([
+  (0, import_inversify12.injectable)()
 ], TeamStub);
 var TeamReplyStub = class TeamReplyStub2 extends createAuthnReplyStubClass("TeamReplyStub", teamService) {
 };
-TeamReplyStub = __decorate13([
-  (0, import_inversify11.injectable)()
+TeamReplyStub = __decorate14([
+  (0, import_inversify12.injectable)()
 ], TeamReplyStub);
 
 // packages/utils/common/lib/url.js
@@ -60012,8 +60184,8 @@ var createServiceUrl = (protocol, host, servicePath, dc) => {
 };
 
 // packages/workspace-proxy/common/lib/api/pipeline.js
-var import_inversify12 = __toESM(require_inversify(), 1);
-var __decorate14 = function(decorators, target, key, desc) {
+var import_inversify13 = __toESM(require_inversify(), 1);
+var __decorate15 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -60055,7 +60227,7 @@ var toExecInfoArgs = toObject({
   server: toUndefOr(toString)
 });
 var toPipelineStreamArgs = toObject({
-  workspaceId: toPositiveInteger,
+  workspaceId: toNonNegativeInteger,
   profile: toUndefOr(toString)
 });
 var toRenameProfileConfigArgs = toObject({
@@ -60121,7 +60293,7 @@ var pipelineProxyService = {
     pipelineProfiles: stream({
       access: "public",
       response: toArray(toString),
-      request: toWorkspaceServiceArgs
+      request: toWorkspaceServiceArgs2
     }),
     renamePipelineConfig: rpc({
       access: "public",
@@ -60137,16 +60309,16 @@ var pipelineProxyService = {
 };
 var PipelineProxyStub = class PipelineProxyStub2 extends createAuthnStubClass("PipelineProxyStub", pipelineProxyService) {
 };
-PipelineProxyStub = __decorate14([
-  (0, import_inversify12.injectable)()
+PipelineProxyStub = __decorate15([
+  (0, import_inversify13.injectable)()
 ], PipelineProxyStub);
 
 // packages/workspace-proxy/common/lib/api/process.js
-var import_inversify14 = __toESM(require_inversify(), 1);
+var import_inversify15 = __toESM(require_inversify(), 1);
 
 // packages/workspace-agent/common/lib/api/process.js
-var import_inversify13 = __toESM(require_inversify(), 1);
-var __decorate15 = function(decorators, target, key, desc) {
+var import_inversify14 = __toESM(require_inversify(), 1);
+var __decorate16 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -60187,7 +60359,7 @@ var ProcessExecutionFailed = ProcessExecutionFailed_1 = class ProcessExecutionFa
     super(message);
   }
 };
-ProcessExecutionFailed = ProcessExecutionFailed_1 = __decorate15([
+ProcessExecutionFailed = ProcessExecutionFailed_1 = __decorate16([
   registerError(),
   __metadata7("design:paramtypes", [String])
 ], ProcessExecutionFailed);
@@ -60196,7 +60368,7 @@ var ProcessTimedOut = class ProcessTimedOut2 extends SimpleSerializableException
     super(message);
   }
 };
-ProcessTimedOut = __decorate15([
+ProcessTimedOut = __decorate16([
   registerError(),
   __metadata7("design:paramtypes", [String])
 ], ProcessTimedOut);
@@ -60217,12 +60389,12 @@ var processService = {
 var processStub = createAuthnStubClass("ProcessStub", processService);
 var ProcessStub = class ProcessStub2 extends processStub {
 };
-ProcessStub = __decorate15([
-  (0, import_inversify13.injectable)()
+ProcessStub = __decorate16([
+  (0, import_inversify14.injectable)()
 ], ProcessStub);
 
 // packages/workspace-proxy/common/lib/api/process.js
-var __decorate16 = function(decorators, target, key, desc) {
+var __decorate17 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -60246,97 +60418,9 @@ var processProxyService = {
 var processProxyStub = createAuthnStubClass("ProcessProxyStub", processProxyService);
 var ProcessProxyStub = class ProcessProxyStub2 extends processProxyStub {
 };
-ProcessProxyStub = __decorate16([
-  (0, import_inversify14.injectable)()
-], ProcessProxyStub);
-
-// packages/workspace-service/common/lib/api/envVars.js
-var import_inversify15 = __toESM(require_inversify(), 1);
-
-// packages/utils/common/lib/inputCheck.js
-var isEnvVarName = (value) => envVarNamePattern.test(value);
-var envVarNamePattern = /^[A-Za-z_][A-Za-z0-9_.-]*$/;
-var INVALID_CI_PROFILE_NAME = [
-  "The profile name must only consist of",
-  " letters, numbers, underscores (`_`)",
-  " and hyphens (`-`)."
-].join("");
-var ipv4Regex = "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])";
-var ipv6Regex = "([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}";
-var ipv4 = new RegExp(`^${ipv4Regex}$`);
-var ipv6 = new RegExp(`^${ipv6Regex}$`);
-var ipv4Subnet = "/(?:[1-9]|[1-2][0-9]|3[0-2])";
-var ipv6Subnet = "/(?:[1-9]|[1-5][0-9]|6[0-4])";
-var ipv4WithSubnets = new RegExp(`^${ipv4Regex}${ipv4Subnet}(?:,\\s*${ipv4Regex}${ipv4Subnet})*$`);
-var ipv6WithSubnets = new RegExp(`^${ipv6Regex}${ipv6Subnet}(?:,\\s*${ipv6Regex}${ipv6Subnet})*$`);
-
-// packages/workspace-service/common/lib/api/envVars.js
-var __decorate17 = function(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var toWorkspaceServiceArgs2 = toObject({
-  workspaceId: toNumber
-});
-var toEnvVarName = (x) => {
-  const s = toString(x);
-  if (isEnvVarName(s)) {
-    return s;
-  }
-  throw new TypeConversionFailure("EnvVarName", x);
-};
-var toEnvVars = (x) => {
-  if (!isObject(x)) {
-    throw new TypeConversionFailure("record", x);
-  }
-  return Object.fromEntries(Object.entries(x).map(([k, v]) => [toEnvVarName(k), toString(v)]));
-};
-var toEnvironmentVariable = toObject({
-  name: toEnvVarName,
-  value: toString
-});
-var toUpdateEnvVarsArgs = toObject({
-  workspaceId: toPositiveInteger,
-  envVars: toEnvVars
-});
-var toCopyEnvVarArgs = toObject({
-  sourceWorkspaceId: toPositiveInteger,
-  targetWorkspaceId: toPositiveInteger
-});
-var envVarsService = {
-  name: "EnvVars",
-  context: toHttpContext,
-  methods: {
-    listEnvironmentVariables: rpc({
-      access: "public",
-      request: toWorkspaceServiceArgs2,
-      response: toArray(toEnvironmentVariable)
-    }),
-    updateEnvironmentVariables: rpc({
-      access: "public",
-      request: toUpdateEnvVarsArgs,
-      response: toVoid
-    }),
-    copyEnvVars: rpc({
-      access: "public",
-      request: toCopyEnvVarArgs,
-      response: toVoid
-    }),
-    envVarsStream: stream({
-      access: "public",
-      response: toArray(toEnvironmentVariable),
-      request: toWorkspaceServiceArgs2
-    })
-  }
-};
-var envVarsStub = createAuthnStubClass("EnvVarsStub", envVarsService);
-var EnvVarsStub = class EnvVarsStub2 extends envVarsStub {
-};
-EnvVarsStub = __decorate17([
+ProcessProxyStub = __decorate17([
   (0, import_inversify15.injectable)()
-], EnvVarsStub);
+], ProcessProxyStub);
 
 // packages/workspace-service/common/lib/api/landscape.js
 var import_inversify16 = __toESM(require_inversify(), 1);
@@ -60347,7 +60431,7 @@ var __decorate18 = function(decorators, target, key, desc) {
   return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var toUpdateLandscapeArgs = toObject({
-  workspaceId: toPositiveInteger,
+  workspaceId: toNonNegativeInteger,
   servers: toArray(toServer)
 });
 var landscapeService = {
@@ -60357,17 +60441,17 @@ var landscapeService = {
   methods: {
     landscapeStream: stream({
       access: "public",
-      request: toObject({ workspaceId: toPositiveInteger }),
+      request: toObject({ workspaceId: toNonNegativeInteger }),
       response: toArray(toServer)
     }),
     getLandscape: rpc({
       access: "public",
-      request: toObject({ workspaceId: toPositiveInteger }),
+      request: toObject({ workspaceId: toNonNegativeInteger }),
       response: toArray(toServer)
     }),
     tearDownLandscape: rpc({
       access: "public",
-      request: toObject({ workspaceId: toPositiveInteger }),
+      request: toObject({ workspaceId: toNonNegativeInteger }),
       response: toVoid,
       defaultOptions: { timeout: { seconds: 25 } }
     }),
@@ -60453,7 +60537,6 @@ var withStubs = async (dataCenterId, creds, serviceUrlDc, fn) => {
       deployment: await createStub("deployment-service", WorkspaceDeploymentStub),
       landscape: await createStub("workspace-service", LandscapeStub),
       replica: await createStub("deployment-service", ReplicaStub),
-      envVars: await createStub("workspace-service", EnvVarsStub),
       pipeline: await createStub("workspace-proxy", PipelineProxyStub),
       workspaces: await createStub("workspace-service", WorkspacesStub),
       products: await createStub("payment-service", ProductsStub),
@@ -60548,13 +60631,13 @@ var createDeployment = async (creds, team2, c, status, serviceUrlDc) => {
   await status.setPending();
   try {
     await status.setStarted();
-    await withStubs(team2.defaultDataCenterId, creds, serviceUrlDc, async ({ deployment, landscape, replica, envVars, pipeline, workspaces, products, process: process2, config, git }) => {
+    await withStubs(team2.defaultDataCenterId, creds, serviceUrlDc, async ({ deployment, landscape, replica, pipeline, workspaces, products, process: process2, config, git }) => {
       var _a;
       const useBootstrapRepo = !await isProviderSupported(c.repository, git);
       if (useBootstrapRepo) {
         logI("Using Bootstrap repository");
       }
-      const w = await deployWorkspace(workspaces, deployment, envVars, pipeline, replica, {
+      const w = await deployWorkspace(workspaces, deployment, pipeline, replica, {
         envVars: useBootstrapRepo ? { ...bootstrapRepoEnvVars(c), ...c.envVars } : c.envVars,
         teamId: team2.id,
         baseImage: c.baseImage,
