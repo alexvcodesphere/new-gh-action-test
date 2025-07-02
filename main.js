@@ -55201,7 +55201,7 @@ var envVarsService = {
       access: "public",
       request: toUpdateEnvVarsArgs,
       response: toVoid,
-      defaultOptions: { timeout: { seconds: 10 } }
+      defaultOptions: { timeout: { seconds: 30 } }
     }),
     copyEnvVars: rpc({
       access: "public",
@@ -55227,13 +55227,10 @@ var workspaceServiceArgs = {
   workspaceId: toNonNegativeInteger
 };
 var toWorkspaceServiceArgs2 = toObject(workspaceServiceArgs);
-var toStartWorkspaceServiceParams = toOr(toObject({
-  workspaceId: toNonNegativeInteger,
-  update: toUndefOr(toBoolean)
-}), toObject({
+var toStartWorkspaceServiceParams = toObject({
   workspaceId: toNonNegativeInteger,
   updateIfOutdated: toUndefOr(toBoolean)
-}));
+});
 var toGetWorkspaceServiceArgs = toObject({
   id: toNonNegativeInteger
 });
@@ -55849,33 +55846,19 @@ var workspaceDeploymentService = {
       response: toVoid,
       request: toWorkspaceServiceArgs2,
       defaultOptions: { timeout: duration({ seconds: 25 }) }
-    })
-  }
-};
-var workspaceDeploymentServiceNotImplemented = {
-  name: "Workspace",
-  context: toHttpContext,
-  methods: {
+    }),
     startWorkspace: rpc({
       access: "public",
       response: toStartWorkspaceStatus,
       request: toStartWorkspaceServiceParams,
       defaultOptions: { timeout: duration({ seconds: 20 }) }
-    }),
-    getStorageMountPath: rpc({
-      access: "internal",
-      response: toString,
-      request: toWorkspaceServiceArgs2
     })
   }
 };
 var workspaceDeploymentStub = createAuthnStubClass("WorkspaceDeploymentStub", {
   name: "Workspace",
   context: toHttpWithTrackingContext,
-  methods: {
-    ...workspaceDeploymentService.methods,
-    ...workspaceDeploymentServiceNotImplemented.methods
-  }
+  methods: workspaceDeploymentService.methods
 });
 var WorkspaceDeploymentStub = class WorkspaceDeploymentStub2 extends workspaceDeploymentStub {
 };
@@ -56293,6 +56276,7 @@ var AVAILABLE_EXPERIMENTS = [
   MAINTENANCE_MODE_EXP_NAME,
   "msd",
   "o11y",
+  "package-mount-external",
   "persistent-logs",
   "persistent-nix",
   "privileged-ports",
@@ -56527,6 +56511,11 @@ var gitAuthService = {
       access: "public",
       response: toVoid,
       request: toSetUpProviderViaTokenParams
+    }),
+    deleteAllTokensInternal: rpc({
+      access: "internal",
+      response: toVoid,
+      request: toObject({ userId: toNumber })
     }),
     deleteTokens: rpc({
       access: "public",
@@ -56771,6 +56760,7 @@ var ServiceId;
   ServiceId2["ErrorPageServer"] = "error-page-server";
   ServiceId2["MarketplaceService"] = "marketplace-service";
   ServiceId2["PaymentService"] = "payment-service";
+  ServiceId2["UserDeletionCronJob"] = "userdeletion-cronjob";
 })(ServiceId || (ServiceId = {}));
 var toAuthenticationMethod = toLiteralUnion("AuthenticationMethod", [
   ...ALL_OAUTH_PROVIDER_IDS,
@@ -57394,6 +57384,7 @@ var stageKinds = [
   ...singleRunningStageKinds,
   ...multiRunningStageKinds
 ];
+var toStageKind = toLiteralUnion("stageKind", stageKinds);
 var toStep = toObject({
   name: toUndefOr(toString),
   command: toString
@@ -57564,12 +57555,14 @@ var pipelineService = {
     setEnvironmentVariables: rpc({
       access: "internal",
       response: toVoid,
-      request: toRecord(toString)
+      request: toRecord(toString),
+      defaultOptions: { timeout: duration({ seconds: 15 }) }
     }),
     removeEnvironmentVariables: rpc({
       access: "internal",
       response: toVoid,
-      request: toArray(toString)
+      request: toArray(toString),
+      defaultOptions: { timeout: duration({ seconds: 15 }) }
     }),
     start: rpc({
       access: "internal",
@@ -57674,6 +57667,30 @@ var import_inversify9 = __toESM(require_inversify(), 1);
 
 // packages/stubs/node/lib/storage/database/squily/database.js
 var import_pg = __toESM(require_lib8(), 1);
+
+// packages/utils/common/lib/timing.js
+var TimeTracker = class {
+  constructor() {
+    this.times = [];
+  }
+  async timed(label, func) {
+    if (this.times.find((t) => t.label === label)) {
+      throw new Error(`already ran: ${label}`);
+    }
+    const start = (/* @__PURE__ */ new Date()).getTime();
+    try {
+      return await func();
+    } catch (e) {
+      label = `FAILED ${label}`;
+      throw e;
+    } finally {
+      const durationS = ((/* @__PURE__ */ new Date()).getTime() - start) / 1e3;
+      this.times.push({ label, durationS });
+      console.log(`RAN in ${durationS}s: ${label}`);
+    }
+  }
+};
+TimeTracker.instance = new TimeTracker();
 
 // packages/stubs/node/lib/storage/database/squily/nameTransformer.js
 var IdentityTransformer = class {
@@ -60256,12 +60273,14 @@ var pipelineProxyService = {
     setEnvironmentVariables: rpc({
       access: "internal",
       response: toVoid,
-      request: toSetEnvironmentVariablesArgs
+      request: toSetEnvironmentVariablesArgs,
+      defaultOptions: { timeout: duration({ seconds: 15 }) }
     }),
     removeEnvironmentVariables: rpc({
       access: "internal",
       response: toVoid,
-      request: toRemoveEnvironmentVariablesArgs
+      request: toRemoveEnvironmentVariablesArgs,
+      defaultOptions: { timeout: duration({ seconds: 15 }) }
     }),
     startPipeline: rpc({
       access: "public",
