@@ -55454,7 +55454,7 @@ var CountryCode;
   CountryCode2["CoteDIvoire"] = "CI";
   CountryCode2["Croatia"] = "HR";
   CountryCode2["Cuba"] = "CU";
-  CountryCode2["Cura\xE7ao"] = "CW";
+  CountryCode2["Curacao"] = "CW";
   CountryCode2["Cyprus"] = "CY";
   CountryCode2["CzechRepublic"] = "CZ";
   CountryCode2["Denmark"] = "DK";
@@ -56276,6 +56276,7 @@ var AVAILABLE_EXPERIMENTS = [
   MAINTENANCE_MODE_EXP_NAME,
   "msd",
   "o11y",
+  "overview-react",
   "package-mount-external",
   "persistent-logs",
   "persistent-nix",
@@ -58586,7 +58587,7 @@ var dbPlanSmall = {
   memory: GiB(1),
   disk: GiB(10),
   allowsStandbyNodes: false,
-  engines: ["mysql", "redis", "postgresql"]
+  engines: ["mysql", "postgresql"]
 };
 var dbPlanMedium = {
   id: 12,
@@ -58597,7 +58598,7 @@ var dbPlanMedium = {
   memory: GiB(2),
   disk: GiB(25),
   allowsStandbyNodes: true,
-  engines: ["mysql", "redis", "postgresql"]
+  engines: ["mysql", "postgresql"]
 };
 var dbPlanLarge = {
   id: 13,
@@ -58608,7 +58609,7 @@ var dbPlanLarge = {
   memory: GiB(3),
   disk: GiB(50),
   allowsStandbyNodes: true,
-  engines: ["mysql", "redis", "postgresql"]
+  engines: ["mysql", "postgresql"]
 };
 var dockerPlanSmall = {
   id: 23,
@@ -60046,7 +60047,7 @@ var VpnDeletionFailed = class VpnDeletionFailed2 extends DeleteTeamFailed {
 VpnDeletionFailed = __decorate14([
   registerError()
 ], VpnDeletionFailed);
-var teamServiceImpl = {
+var teamService = {
   name: "team",
   context: toHttpContext,
   methods: {
@@ -60159,29 +60160,12 @@ var teamServiceImpl = {
     })
   }
 };
-var teamService = {
-  name: "team",
-  context: toHttpContext,
-  methods: {
-    ...teamServiceImpl.methods,
-    removeMember: rpc({
-      access: "public",
-      request: toRemoveMemberArgs,
-      response: toVoid
-    })
-  }
-};
 var teamStub = createAuthnStubClass("TeamStub", teamService);
 var TeamStub = class TeamStub2 extends teamStub {
 };
 TeamStub = __decorate14([
   (0, import_inversify12.injectable)()
 ], TeamStub);
-var TeamReplyStub = class TeamReplyStub2 extends createAuthnReplyStubClass("TeamReplyStub", teamService) {
-};
-TeamReplyStub = __decorate14([
-  (0, import_inversify12.injectable)()
-], TeamReplyStub);
 
 // packages/utils/common/lib/url.js
 var isLocalHost = (host) => host.split(":")[0] === "localhost";
