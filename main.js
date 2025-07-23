@@ -1118,6 +1118,102 @@ var require_Reflect = __commonJS({
   }
 });
 
+// node_modules/fast-content-type-parse/index.js
+var require_fast_content_type_parse = __commonJS({
+  "node_modules/fast-content-type-parse/index.js"(exports2, module2) {
+    "use strict";
+    var NullObject = function NullObject2() {
+    };
+    NullObject.prototype = /* @__PURE__ */ Object.create(null);
+    var paramRE = /; *([!#$%&'*+.^\w`|~-]+)=("(?:[\v\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\v\u0020-\u00ff])*"|[!#$%&'*+.^\w`|~-]+) */gu;
+    var quotedPairRE = /\\([\v\u0020-\u00ff])/gu;
+    var mediaTypeRE = /^[!#$%&'*+.^\w|~-]+\/[!#$%&'*+.^\w|~-]+$/u;
+    var defaultContentType = { type: "", parameters: new NullObject() };
+    Object.freeze(defaultContentType.parameters);
+    Object.freeze(defaultContentType);
+    function parse3(header) {
+      if (typeof header !== "string") {
+        throw new TypeError("argument header is required and must be a string");
+      }
+      let index = header.indexOf(";");
+      const type = index !== -1 ? header.slice(0, index).trim() : header.trim();
+      if (mediaTypeRE.test(type) === false) {
+        throw new TypeError("invalid media type");
+      }
+      const result = {
+        type: type.toLowerCase(),
+        parameters: new NullObject()
+      };
+      if (index === -1) {
+        return result;
+      }
+      let key;
+      let match;
+      let value;
+      paramRE.lastIndex = index;
+      while (match = paramRE.exec(header)) {
+        if (match.index !== index) {
+          throw new TypeError("invalid parameter format");
+        }
+        index += match[0].length;
+        key = match[1].toLowerCase();
+        value = match[2];
+        if (value[0] === '"') {
+          value = value.slice(1, value.length - 1);
+          quotedPairRE.test(value) && (value = value.replace(quotedPairRE, "$1"));
+        }
+        result.parameters[key] = value;
+      }
+      if (index !== header.length) {
+        throw new TypeError("invalid parameter format");
+      }
+      return result;
+    }
+    function safeParse3(header) {
+      if (typeof header !== "string") {
+        return defaultContentType;
+      }
+      let index = header.indexOf(";");
+      const type = index !== -1 ? header.slice(0, index).trim() : header.trim();
+      if (mediaTypeRE.test(type) === false) {
+        return defaultContentType;
+      }
+      const result = {
+        type: type.toLowerCase(),
+        parameters: new NullObject()
+      };
+      if (index === -1) {
+        return result;
+      }
+      let key;
+      let match;
+      let value;
+      paramRE.lastIndex = index;
+      while (match = paramRE.exec(header)) {
+        if (match.index !== index) {
+          return defaultContentType;
+        }
+        index += match[0].length;
+        key = match[1].toLowerCase();
+        value = match[2];
+        if (value[0] === '"') {
+          value = value.slice(1, value.length - 1);
+          quotedPairRE.test(value) && (value = value.replace(quotedPairRE, "$1"));
+        }
+        result.parameters[key] = value;
+      }
+      if (index !== header.length) {
+        return defaultContentType;
+      }
+      return result;
+    }
+    module2.exports.default = { parse: parse3, safeParse: safeParse3 };
+    module2.exports.parse = parse3;
+    module2.exports.safeParse = safeParse3;
+    module2.exports.defaultContentType = defaultContentType;
+  }
+});
+
 // node_modules/dotenv/package.json
 var require_package = __commonJS({
   "node_modules/dotenv/package.json"(exports2, module2) {
@@ -3457,102 +3553,6 @@ var require_source = __commonJS({
     chalk2.stderr = Chalk({ level: stderrColor ? stderrColor.level : 0 });
     chalk2.stderr.supportsColor = stderrColor;
     module2.exports = chalk2;
-  }
-});
-
-// node_modules/fast-content-type-parse/index.js
-var require_fast_content_type_parse = __commonJS({
-  "node_modules/fast-content-type-parse/index.js"(exports2, module2) {
-    "use strict";
-    var NullObject = function NullObject2() {
-    };
-    NullObject.prototype = /* @__PURE__ */ Object.create(null);
-    var paramRE = /; *([!#$%&'*+.^\w`|~-]+)=("(?:[\v\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\v\u0020-\u00ff])*"|[!#$%&'*+.^\w`|~-]+) */gu;
-    var quotedPairRE = /\\([\v\u0020-\u00ff])/gu;
-    var mediaTypeRE = /^[!#$%&'*+.^\w|~-]+\/[!#$%&'*+.^\w|~-]+$/u;
-    var defaultContentType = { type: "", parameters: new NullObject() };
-    Object.freeze(defaultContentType.parameters);
-    Object.freeze(defaultContentType);
-    function parse3(header) {
-      if (typeof header !== "string") {
-        throw new TypeError("argument header is required and must be a string");
-      }
-      let index = header.indexOf(";");
-      const type = index !== -1 ? header.slice(0, index).trim() : header.trim();
-      if (mediaTypeRE.test(type) === false) {
-        throw new TypeError("invalid media type");
-      }
-      const result = {
-        type: type.toLowerCase(),
-        parameters: new NullObject()
-      };
-      if (index === -1) {
-        return result;
-      }
-      let key;
-      let match;
-      let value;
-      paramRE.lastIndex = index;
-      while (match = paramRE.exec(header)) {
-        if (match.index !== index) {
-          throw new TypeError("invalid parameter format");
-        }
-        index += match[0].length;
-        key = match[1].toLowerCase();
-        value = match[2];
-        if (value[0] === '"') {
-          value = value.slice(1, value.length - 1);
-          quotedPairRE.test(value) && (value = value.replace(quotedPairRE, "$1"));
-        }
-        result.parameters[key] = value;
-      }
-      if (index !== header.length) {
-        throw new TypeError("invalid parameter format");
-      }
-      return result;
-    }
-    function safeParse3(header) {
-      if (typeof header !== "string") {
-        return defaultContentType;
-      }
-      let index = header.indexOf(";");
-      const type = index !== -1 ? header.slice(0, index).trim() : header.trim();
-      if (mediaTypeRE.test(type) === false) {
-        return defaultContentType;
-      }
-      const result = {
-        type: type.toLowerCase(),
-        parameters: new NullObject()
-      };
-      if (index === -1) {
-        return result;
-      }
-      let key;
-      let match;
-      let value;
-      paramRE.lastIndex = index;
-      while (match = paramRE.exec(header)) {
-        if (match.index !== index) {
-          return defaultContentType;
-        }
-        index += match[0].length;
-        key = match[1].toLowerCase();
-        value = match[2];
-        if (value[0] === '"') {
-          value = value.slice(1, value.length - 1);
-          quotedPairRE.test(value) && (value = value.replace(quotedPairRE, "$1"));
-        }
-        result.parameters[key] = value;
-      }
-      if (index !== header.length) {
-        return defaultContentType;
-      }
-      return result;
-    }
-    module2.exports.default = { parse: parse3, safeParse: safeParse3 };
-    module2.exports.parse = parse3;
-    module2.exports.safeParse = safeParse3;
-    module2.exports.defaultContentType = defaultContentType;
   }
 });
 
@@ -48327,608 +48327,6 @@ __export(github_action_deploy_workspace_exports, {
 });
 module.exports = __toCommonJS(github_action_deploy_workspace_exports);
 var import_reflect_metadata = __toESM(require_Reflect(), 1);
-var import_dotenv = __toESM(require_main(), 1);
-
-// packages/utils/common/lib/datetime.js
-var import_dayjs = __toESM(require_dayjs_min(), 1);
-var dayjsDuration = __toESM(require_duration(), 1);
-var relativeTime = __toESM(require_relativeTime(), 1);
-
-// packages/utils/common/lib/types.js
-var isBoolean = (x) => "boolean" === typeof x;
-var isNumber = (x) => "number" === typeof x;
-var isObject = (x) => "object" === typeof x;
-var isString = (x) => "string" === typeof x;
-
-// packages/utils/common/lib/datetime.js
-import_dayjs.default.extend(dayjsDuration.default);
-import_dayjs.default.extend(relativeTime.default);
-var duration = import_dayjs.default.duration;
-var isDuration = import_dayjs.default.isDuration;
-var toDuration = (tMs) => {
-  return isNumber(tMs) ? duration({ milliseconds: tMs }) : isDuration(tMs) ? tMs : duration(tMs);
-};
-
-// packages/utils/common/lib/errors/registry.js
-var MUTABLE_REGISTRY = /* @__PURE__ */ new Map();
-var REGISTRY = MUTABLE_REGISTRY;
-var doRegisterError = (name, target) => {
-  name = name !== null && name !== void 0 ? name : target.name;
-  if (!name) {
-    throw new Error(`no name given, got: <${name}>`);
-  }
-  if ("Error" === name) {
-    throw new Error("registering under the name 'Error' is forbidden");
-  }
-  const regged = target;
-  if (regged.hasOwnProperty("__registeredName")) {
-    throw new Error(`target already has __registeredName set to '${regged.__registeredName}' (already registered?). Trying to (re)register under '${name}': ${target}`);
-  }
-  regged.__registeredName = name;
-  const have = MUTABLE_REGISTRY.get(name);
-  if (have) {
-    throw new Error(`Duplicate error registration for '${name}' (already registered: ${have}), got: ${target}`);
-  }
-  MUTABLE_REGISTRY.set(name, target);
-};
-var registerError = (name) => doRegisterError.bind(null, name);
-
-// packages/utils/common/lib/string.js
-var stringifyPretty = (x) => JSON.stringify(x, void 0, 2);
-var pp = (ss, ...vals) => ss[0] + vals.map((v, i) => `${v instanceof RawString ? v.s : stringifyPretty(v)}${ss[i + 1]}`);
-var RawString = class {
-  constructor(s) {
-    this.s = s;
-  }
-};
-
-// packages/utils/common/lib/errors.js
-var RuntimeError = class extends Error {
-  constructor(message) {
-    super(message);
-    new.target.prototype.name = this.constructor.name;
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
-};
-var NotImplemented = class extends RuntimeError {
-  constructor(message = "Not Implemented") {
-    super(message);
-  }
-};
-var InvalidArgument = class extends RuntimeError {
-  constructor(message) {
-    super(message);
-  }
-};
-var InvalidError = class extends RuntimeError {
-  constructor(value) {
-    super(`${value}`);
-    this.value = value;
-  }
-};
-var InvalidOperation = class extends RuntimeError {
-  constructor(message) {
-    super(message);
-  }
-};
-var concatMessages = (es) => {
-  return es.map((e, i) => `Error ${i + 1} of ${es.length}: ${e.name}: ${e.message}`).join("\n---\n");
-};
-var concatStacks = (errs) => errs.map((e, i) => `(${i}/${errs.length}) ${e.stack}`).join("\n---\n");
-var throwIfNotOneOf = (e, kinds) => {
-  if (kinds && !kinds.some((k) => e instanceof k)) {
-    throw e;
-  }
-};
-var ignoreError = (func, kinds) => {
-  try {
-    return func();
-  } catch (e) {
-    throwIfNotOneOf(e, kinds);
-    return void 0;
-  }
-};
-var ignoreErrorAsync = async (func, kinds) => {
-  try {
-    return await func();
-  } catch (e) {
-    throwIfNotOneOf(e, kinds);
-    return void 0;
-  }
-};
-var logError = (func) => {
-  try {
-    return func();
-  } catch (e) {
-    logW(e);
-    return void 0;
-  }
-};
-var logErrorAsync = async (func) => {
-  try {
-    return await func();
-  } catch (e) {
-    logW(e);
-    return void 0;
-  }
-};
-var toError = (e) => {
-  if (e instanceof Error) {
-    return e;
-  }
-  return new InvalidError(isString(e) ? e : pp`${e}`);
-};
-var catchErrorAsync = async (func, kind = Error) => {
-  try {
-    return await func();
-  } catch (err) {
-    const e = toError(err);
-    if (e instanceof kind) {
-      return e;
-    }
-    throw e;
-  }
-};
-var replaceException = (e, ...filter) => {
-  filter.forEach(([trigger, replacement]) => {
-    if (e instanceof trigger) {
-      throw replacement(e.message);
-    }
-  });
-  throw e;
-};
-var rethrow = (f, ...filter) => {
-  try {
-    return f();
-  } catch (e) {
-    return replaceException(e, ...filter);
-  }
-};
-var rethrowAsync = async (f, ...filter) => {
-  try {
-    return await f();
-  } catch (e) {
-    return replaceException(e, ...filter);
-  }
-};
-var threw = (func) => {
-  try {
-    func();
-    return false;
-  } catch (e) {
-    return true;
-  }
-};
-var withCurrentStack = (error) => {
-  var _a, _b;
-  const e = toError(error);
-  const currentStack = (_b = (_a = Error().stack) === null || _a === void 0 ? void 0 : _a.split("\n").slice(1)) !== null && _b !== void 0 ? _b : [];
-  e.stack = [e.stack, "Rethrown at: ", ...currentStack].join("\n");
-  return e;
-};
-
-// packages/utils/common/lib/format.js
-var trimPrefix = (s, prefix) => s.startsWith(prefix) ? s.replace(prefix, "") : s;
-
-// packages/utils/common/lib/has.js
-var has = (obj) => obj !== null && obj !== void 0;
-
-// packages/utils/common/lib/randomString.js
-var CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-var randomString = (length = 7) => {
-  let str = "";
-  for (let i = 0; i < length; i++) {
-    str += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
-  }
-  return str;
-};
-var matchesRandomString = (s, length) => isString(s) && (void 0 === length || s.length === length) && !new RegExp(`[^${CHARACTERS}]`).test(s);
-
-// packages/utils/common/lib/exceptions.js
-var __decorate = function(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = function(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var WeakPassword_1;
-var InternalException_1;
-var Exception = class extends Error {
-  constructor(message, { scope = "internal", cause } = {}) {
-    super(message, { cause });
-    new.target.prototype.name = this.constructor.name;
-    Object.setPrototypeOf(this, new.target.prototype);
-    this.scope = scope;
-  }
-};
-var isPublicException = (e) => {
-  return e instanceof Exception && e.scope === "public";
-};
-var SimpleSerializableException = class extends Exception {
-  constructor(message, opts) {
-    super(isPublicException(opts === null || opts === void 0 ? void 0 : opts.cause) ? `${message} (Cause: ${opts === null || opts === void 0 ? void 0 : opts.cause})` : message, opts);
-  }
-  static fromJson(x) {
-    if (!isString(x)) {
-      throw new TypeError(`${x} not of type string`);
-    }
-    return new this(x, { scope: "public" });
-  }
-  toJSON() {
-    return this.message;
-  }
-};
-var AlreadyExists = class AlreadyExists2 extends SimpleSerializableException {
-};
-AlreadyExists = __decorate([
-  registerError()
-], AlreadyExists);
-var AlreadyInitialized = class extends Exception {
-};
-var AmbiguousArgument = class AmbiguousArgument2 extends SimpleSerializableException {
-};
-AmbiguousArgument = __decorate([
-  registerError()
-], AmbiguousArgument);
-var HttpException = class extends Exception {
-  constructor(code, message, opts) {
-    super(message, opts);
-    this.code = code;
-  }
-};
-var NotFound = class NotFound2 extends SimpleSerializableException {
-};
-NotFound = __decorate([
-  registerError()
-], NotFound);
-var NotReady = class NotReady2 extends SimpleSerializableException {
-};
-NotReady = __decorate([
-  registerError()
-], NotReady);
-var NotAuthorized = class NotAuthorized2 extends SimpleSerializableException {
-};
-NotAuthorized = __decorate([
-  registerError()
-], NotAuthorized);
-var TokenExpired = class TokenExpired2 extends SimpleSerializableException {
-  constructor(opts) {
-    super("Your Token expired, please create a new one.", opts);
-  }
-};
-TokenExpired = __decorate([
-  registerError(),
-  __metadata("design:paramtypes", [Object])
-], TokenExpired);
-var InvalidArgument2 = class InvalidArgument3 extends SimpleSerializableException {
-};
-InvalidArgument2 = __decorate([
-  registerError()
-], InvalidArgument2);
-var InvalidOperation2 = class extends Exception {
-};
-var InvalidRequest = class InvalidRequest2 extends SimpleSerializableException {
-};
-InvalidRequest = __decorate([
-  registerError()
-], InvalidRequest);
-var InvalidState = class InvalidState2 extends SimpleSerializableException {
-};
-InvalidState = __decorate([
-  registerError()
-], InvalidState);
-var TimedOut = class extends Exception {
-  constructor(label, timeoutS, opts) {
-    const t = isNumber(timeoutS) ? duration({ seconds: timeoutS }) : timeoutS;
-    super(`'${label}' timed out after ${toDuration(t).asSeconds()}s.`, opts);
-  }
-};
-var Uninitialized = class extends Exception {
-};
-var Unsupported = class Unsupported2 extends SimpleSerializableException {
-};
-Unsupported = __decorate([
-  registerError()
-], Unsupported);
-var WeakPassword = WeakPassword_1 = class WeakPassword2 extends SimpleSerializableException {
-  static create(opts) {
-    return new WeakPassword_1([
-      "Password needs to be between 8 and 255 characters long",
-      " and contain at least one lowercase character",
-      ", one uppercase character, one number, and one special character."
-    ].join(""), opts);
-  }
-};
-WeakPassword = WeakPassword_1 = __decorate([
-  registerError()
-], WeakPassword);
-var MultiException = class extends Exception {
-  constructor(errors, summary) {
-    super([has(summary) ? `${summary}:
-` : "", concatMessages(errors)].join(""));
-    this.errors = errors;
-    this.stack = [this.stack, concatStacks(errors)].join("\n---\n");
-  }
-};
-var INTERNAL_EXCEPTION_MSG = "Internal server error";
-var InternalException = InternalException_1 = class InternalException2 extends Exception {
-  constructor({ traceId, opts } = {}) {
-    const id = traceId !== null && traceId !== void 0 ? traceId : randomString(InternalException_1.ID_LENGTH);
-    super(`${INTERNAL_EXCEPTION_MSG} ${id}`, opts);
-    this.traceId = id;
-  }
-  static fromJson(x) {
-    var _a;
-    const id = trimPrefix((_a = ignoreError(() => JSON.parse(x))) !== null && _a !== void 0 ? _a : x, INTERNAL_EXCEPTION_MSG).trim();
-    if (!matchesRandomString(id, InternalException_1.ID_LENGTH)) {
-      throw new TypeError(`${id} not a serialized InternalException`);
-    }
-    return new this({ traceId: id });
-  }
-  toJSON() {
-    return this.traceId;
-  }
-};
-InternalException.ID_LENGTH = 8;
-InternalException = InternalException_1 = __decorate([
-  registerError(),
-  __metadata("design:paramtypes", [Object])
-], InternalException);
-function* errorCauseChain(err) {
-  let cur = err;
-  while (cur) {
-    yield cur;
-    cur = cur instanceof Error ? cur.cause : void 0;
-  }
-}
-
-// packages/utils/common/lib/logger.js
-var import_util = require("util");
-var import_chalk = __toESM(require_source(), 1);
-
-// packages/utils/common/lib/log.js
-var Status;
-(function(Status3) {
-  Status3["Ok"] = "Ok";
-  Status3["Error"] = "Error";
-})(Status || (Status = {}));
-var LogTag;
-(function(LogTag2) {
-  LogTag2["Default"] = "Default";
-  LogTag2["Notify"] = "Notify";
-})(LogTag || (LogTag = {}));
-var log = (message, logAsJson, code = Status.Ok, stack, ...tags) => {
-  if (logAsJson) {
-    return logJson(message, code, stack, ...tags);
-  }
-  return logPlain(message, code, stack, ...tags);
-};
-var logPlain = (message, code = Status.Ok, stack, ...tags) => {
-  const tagsString = tags.map((tag) => `, #${tag}`).join("");
-  const logString = `[${code}, ${(/* @__PURE__ */ new Date()).toISOString()}${tagsString}]: ${message}${has(stack) ? "\n" + stack : ""}`;
-  console.log(logString);
-  return logString;
-};
-var logJson = (message, code = Status.Ok, stack, ...tags) => {
-  const logJson2 = JSON.stringify({
-    date: (/* @__PURE__ */ new Date()).toISOString(),
-    stack,
-    message,
-    code,
-    tags
-  });
-  console.log(logJson2);
-  return logJson2;
-};
-
-// packages/utils/common/lib/logger.js
-var LogLevel;
-(function(LogLevel2) {
-  LogLevel2[LogLevel2["Debug"] = 10] = "Debug";
-  LogLevel2[LogLevel2["Info"] = 20] = "Info";
-  LogLevel2[LogLevel2["Warning"] = 30] = "Warning";
-  LogLevel2[LogLevel2["Error"] = 40] = "Error";
-})(LogLevel || (LogLevel = {}));
-var BaseLogger = class {
-  log(entry) {
-    this.doLog(entry);
-  }
-};
-var FormattingLogger = class extends BaseLogger {
-  constructor(format) {
-    super();
-    this.format = format;
-  }
-  doLog(entry) {
-    this.logFunction(entry.level)(this.format(entry));
-  }
-};
-var formatMessage = (msg) => {
-  return !has(msg) ? "" : isString(msg) ? `${msg} ` : `
-${(0, import_util.inspect)(msg, { depth: null })}
-`;
-};
-var formatError = (err) => {
-  if (!has(err)) {
-    return "";
-  }
-  return `(${err.name}) ${err.message}
-${err.stack}` + (has(err.cause) ? `
-[cause]: ${formatError(toError(err.cause))}` : "");
-};
-var formatSimply = (entry) => {
-  var _a;
-  const err = entry.cause;
-  const tag = ((_a = entry.tags) === null || _a === void 0 ? void 0 : _a.length) ? `(${entry.tags.map((t) => `#${t}`).join(", ")}) ` : "";
-  return `${tag}${formatMessage(entry.message)}${formatError(err)}`;
-};
-var formatWithDetails = (entry) => {
-  const level = LogLevel[entry.level].charAt(0);
-  return `[${entry.time}] ${level}: ${formatSimply(entry)}`;
-};
-var levelColors = {
-  [LogLevel.Debug]: import_chalk.default.gray,
-  [LogLevel.Info]: import_chalk.default.cyan,
-  [LogLevel.Warning]: import_chalk.default.yellow,
-  [LogLevel.Error]: import_chalk.default.red
-};
-var formatInColor = (format) => {
-  return (entry) => {
-    var _a;
-    return ((_a = levelColors[entry.level]) !== null && _a !== void 0 ? _a : import_chalk.default.black)(format(entry));
-  };
-};
-var formatAsJson = (entry) => {
-  const message = has(entry.message) ? (0, import_util.inspect)(entry.message, { depth: null }) : "";
-  const errs = [...errorCauseChain(entry.cause)];
-  return JSON.stringify({
-    date: (/* @__PURE__ */ new Date()).toISOString(),
-    stack: errs.filter((e) => e instanceof Error).map((e) => e.stack).join("\n[cause]: ") || void 0,
-    message: message + errs.map((e) => e instanceof Error ? `
- caused by ${e.name}: ${e.message}` : `
- caused by non-error: ${(0, import_util.inspect)(e, { depth: null })}`).join(""),
-    code: entry.level <= LogLevel.Info ? Status.Ok : Status.Error,
-    level: entry.level,
-    tags: entry.tags
-  });
-};
-var ConsoleLogger = class _ConsoleLogger extends FormattingLogger {
-  static simple() {
-    return new _ConsoleLogger(formatSimply);
-  }
-  static coloredSimple() {
-    return new _ConsoleLogger(formatInColor(formatSimply));
-  }
-  static coloredDetailed() {
-    return new _ConsoleLogger(formatInColor(formatWithDetails));
-  }
-  logFunction(level) {
-    switch (level) {
-      case LogLevel.Debug:
-        return console.debug;
-      case LogLevel.Info:
-        return console.info;
-      case LogLevel.Warning:
-        return console.warn;
-      case LogLevel.Error:
-        return console.error;
-      default:
-        throw new InvalidArgument2(`Invalid log level: ${level}`);
-    }
-  }
-};
-var ConsoleLogLogger = class _ConsoleLogLogger extends FormattingLogger {
-  static json() {
-    return new _ConsoleLogLogger(formatAsJson);
-  }
-  constructor(format) {
-    super(format);
-  }
-  logFunction(level) {
-    return console.log;
-  }
-};
-var ForwardingLogger = class extends BaseLogger {
-  constructor() {
-    super(...arguments);
-    this.loggers = [];
-  }
-  addLogger(logger) {
-    this.loggers.push(logger);
-    return this;
-  }
-  doLog(entry) {
-    if (this.loggers.length === 0) {
-      throw new Uninitialized("No loggers added. Forgot to call `initLogging`?");
-    }
-    for (const x of this.loggers) {
-      try {
-        x.log(entry);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }
-};
-var LogEntry = class {
-  constructor(message, level, tags, cause) {
-    this.message = message;
-    this.level = level;
-    this.tags = tags;
-    this.cause = cause;
-    this.time = (/* @__PURE__ */ new Date()).toISOString();
-  }
-};
-LogEntry.create = (level, message, options) => {
-  var _a;
-  const cause = options === null || options === void 0 ? void 0 : options.cause;
-  const t = (_a = options === null || options === void 0 ? void 0 : options.tag) !== null && _a !== void 0 ? _a : [];
-  const tags = Array.isArray(t) ? t : [t];
-  if (message instanceof Error) {
-    if (has(cause)) {
-      throw new InvalidArgument2("Called logger with two errors.");
-    }
-    return new LogEntry(void 0, level, tags, message);
-  }
-  const error = has(cause) ? toError(cause) : void 0;
-  return new LogEntry(message, level, tags, error);
-};
-
-// packages/utils/common/lib/logging.js
-var logD = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Debug, message, options));
-var logI = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Info, message, options));
-var logW = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Warning, message, options));
-var logE = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Error, message, options));
-var LogEnv;
-(function(LogEnv2) {
-  LogEnv2[LogEnv2["Test"] = 0] = "Test";
-  LogEnv2[LogEnv2["Local"] = 1] = "Local";
-  LogEnv2[LogEnv2["Dev"] = 2] = "Dev";
-  LogEnv2[LogEnv2["Prod"] = 3] = "Prod";
-  LogEnv2[LogEnv2["Script"] = 4] = "Script";
-})(LogEnv || (LogEnv = {}));
-var initializedAt = "";
-var uninitializedLogger = () => {
-  return {
-    log: () => {
-      throw new Uninitialized([
-        "Logging not initialized. Possible causes:",
-        " - Forgot to call one of the initLogging functions.",
-        " - initLogging is imported from lib, but the logX functions from src (or vv.).",
-        "   (tests: compare the imports in the `jestEnv.setup.ts` files with your logX imports.)",
-        " - Trying to log after tearDownLogging was called (e.g. after test tear down)."
-      ].join("\n"));
-    }
-  };
-};
-var LOGGER = uninitializedLogger();
-var loggerForEnv = (env) => {
-  switch (env) {
-    case LogEnv.Local:
-      return ConsoleLogger.coloredSimple();
-    case LogEnv.Test:
-      return ConsoleLogger.coloredDetailed();
-    case LogEnv.Dev:
-    case LogEnv.Prod:
-      return ConsoleLogLogger.json();
-    case LogEnv.Script:
-      return ConsoleLogger.coloredSimple();
-  }
-};
-var initLogging = (env) => {
-  var _a;
-  if (initializedAt) {
-    throw new AlreadyInitialized(`Logging already initialized here:
-${initializedAt}
-`);
-  }
-  initializedAt = ((_a = Error().stack) !== null && _a !== void 0 ? _a : "\nUnknown location").split("\n").slice(2).map((x) => x.replace(/^    at /, "      @ ")).join("\n");
-  LOGGER = new ForwardingLogger().addLogger(loggerForEnv(env));
-  return LOGGER;
-};
 
 // node_modules/@octokit/core/node_modules/universal-user-agent/index.js
 function getUserAgent() {
@@ -52786,74 +52184,609 @@ var Octokit2 = Octokit.plugin(requestLog, legacyRestEndpointMethods, paginateRes
   }
 );
 
-// packages/utils/common/lib/request.js
-var import_cross_fetch = __toESM(require_node_ponyfill(), 1);
+// packages/integrations/lib/github-action-deploy-workspace.js
+var import_dotenv = __toESM(require_main(), 1);
 
-// packages/http/common/lib/HttpStatusCode.js
-var HttpStatusCode;
-(function(HttpStatusCode2) {
-  HttpStatusCode2[HttpStatusCode2["Continue"] = 100] = "Continue";
-  HttpStatusCode2[HttpStatusCode2["SwitchingProtocols"] = 101] = "SwitchingProtocols";
-  HttpStatusCode2[HttpStatusCode2["Processing"] = 102] = "Processing";
-  HttpStatusCode2[HttpStatusCode2["Ok"] = 200] = "Ok";
-  HttpStatusCode2[HttpStatusCode2["Created"] = 201] = "Created";
-  HttpStatusCode2[HttpStatusCode2["Accepted"] = 202] = "Accepted";
-  HttpStatusCode2[HttpStatusCode2["NonAuthoritativeInformation"] = 203] = "NonAuthoritativeInformation";
-  HttpStatusCode2[HttpStatusCode2["NoContent"] = 204] = "NoContent";
-  HttpStatusCode2[HttpStatusCode2["ResetContent"] = 205] = "ResetContent";
-  HttpStatusCode2[HttpStatusCode2["PartialContent"] = 206] = "PartialContent";
-  HttpStatusCode2[HttpStatusCode2["MultiStatus"] = 207] = "MultiStatus";
-  HttpStatusCode2[HttpStatusCode2["AlreadyReported"] = 208] = "AlreadyReported";
-  HttpStatusCode2[HttpStatusCode2["ImUsed"] = 226] = "ImUsed";
-  HttpStatusCode2[HttpStatusCode2["MultipleChoices"] = 300] = "MultipleChoices";
-  HttpStatusCode2[HttpStatusCode2["MovedPermanently"] = 301] = "MovedPermanently";
-  HttpStatusCode2[HttpStatusCode2["Found"] = 302] = "Found";
-  HttpStatusCode2[HttpStatusCode2["SeeOther"] = 303] = "SeeOther";
-  HttpStatusCode2[HttpStatusCode2["NotModified"] = 304] = "NotModified";
-  HttpStatusCode2[HttpStatusCode2["UseProxy"] = 305] = "UseProxy";
-  HttpStatusCode2[HttpStatusCode2["SwitchProxy"] = 306] = "SwitchProxy";
-  HttpStatusCode2[HttpStatusCode2["TemporaryRedirect"] = 307] = "TemporaryRedirect";
-  HttpStatusCode2[HttpStatusCode2["PermanentRedirect"] = 308] = "PermanentRedirect";
-  HttpStatusCode2[HttpStatusCode2["BadRequest"] = 400] = "BadRequest";
-  HttpStatusCode2[HttpStatusCode2["Unauthorized"] = 401] = "Unauthorized";
-  HttpStatusCode2[HttpStatusCode2["PaymentRequired"] = 402] = "PaymentRequired";
-  HttpStatusCode2[HttpStatusCode2["Forbidden"] = 403] = "Forbidden";
-  HttpStatusCode2[HttpStatusCode2["NotFound"] = 404] = "NotFound";
-  HttpStatusCode2[HttpStatusCode2["MethodNotAllowed"] = 405] = "MethodNotAllowed";
-  HttpStatusCode2[HttpStatusCode2["NotAcceptable"] = 406] = "NotAcceptable";
-  HttpStatusCode2[HttpStatusCode2["ProxyAuthenticationRequired"] = 407] = "ProxyAuthenticationRequired";
-  HttpStatusCode2[HttpStatusCode2["RequestTimeout"] = 408] = "RequestTimeout";
-  HttpStatusCode2[HttpStatusCode2["Conflict"] = 409] = "Conflict";
-  HttpStatusCode2[HttpStatusCode2["Gone"] = 410] = "Gone";
-  HttpStatusCode2[HttpStatusCode2["LengthRequired"] = 411] = "LengthRequired";
-  HttpStatusCode2[HttpStatusCode2["PreconditionFailed"] = 412] = "PreconditionFailed";
-  HttpStatusCode2[HttpStatusCode2["PayloadTooLarge"] = 413] = "PayloadTooLarge";
-  HttpStatusCode2[HttpStatusCode2["UriTooLong"] = 414] = "UriTooLong";
-  HttpStatusCode2[HttpStatusCode2["UnsupportedMediaType"] = 415] = "UnsupportedMediaType";
-  HttpStatusCode2[HttpStatusCode2["RangeNotSatisfiable"] = 416] = "RangeNotSatisfiable";
-  HttpStatusCode2[HttpStatusCode2["ExpectationFailed"] = 417] = "ExpectationFailed";
-  HttpStatusCode2[HttpStatusCode2["IAmATeapot"] = 418] = "IAmATeapot";
-  HttpStatusCode2[HttpStatusCode2["MisdirectedRequest"] = 421] = "MisdirectedRequest";
-  HttpStatusCode2[HttpStatusCode2["UnprocessableEntity"] = 422] = "UnprocessableEntity";
-  HttpStatusCode2[HttpStatusCode2["Locked"] = 423] = "Locked";
-  HttpStatusCode2[HttpStatusCode2["FailedDependency"] = 424] = "FailedDependency";
-  HttpStatusCode2[HttpStatusCode2["UpgradeRequired"] = 426] = "UpgradeRequired";
-  HttpStatusCode2[HttpStatusCode2["PreconditionRequired"] = 428] = "PreconditionRequired";
-  HttpStatusCode2[HttpStatusCode2["TooManyRequests"] = 429] = "TooManyRequests";
-  HttpStatusCode2[HttpStatusCode2["RequestHeaderFieldsTooLarge"] = 431] = "RequestHeaderFieldsTooLarge";
-  HttpStatusCode2[HttpStatusCode2["UnavailableForLegalReasons"] = 451] = "UnavailableForLegalReasons";
-  HttpStatusCode2[HttpStatusCode2["InternalServerError"] = 500] = "InternalServerError";
-  HttpStatusCode2[HttpStatusCode2["NotImplemented"] = 501] = "NotImplemented";
-  HttpStatusCode2[HttpStatusCode2["BadGateway"] = 502] = "BadGateway";
-  HttpStatusCode2[HttpStatusCode2["ServiceUnavailable"] = 503] = "ServiceUnavailable";
-  HttpStatusCode2[HttpStatusCode2["GatewayTimeout"] = 504] = "GatewayTimeout";
-  HttpStatusCode2[HttpStatusCode2["HttpVersionNotSupported"] = 505] = "HttpVersionNotSupported";
-  HttpStatusCode2[HttpStatusCode2["VariantAlsoNegotiates"] = 506] = "VariantAlsoNegotiates";
-  HttpStatusCode2[HttpStatusCode2["InsufficientStorage"] = 507] = "InsufficientStorage";
-  HttpStatusCode2[HttpStatusCode2["LoopDetected"] = 508] = "LoopDetected";
-  HttpStatusCode2[HttpStatusCode2["NotExtended"] = 510] = "NotExtended";
-  HttpStatusCode2[HttpStatusCode2["NetworkAuthenticationRequired"] = 511] = "NetworkAuthenticationRequired";
-})(HttpStatusCode || (HttpStatusCode = {}));
+// packages/utils/common/lib/datetime.js
+var import_dayjs = __toESM(require_dayjs_min(), 1);
+var dayjsDuration = __toESM(require_duration(), 1);
+var relativeTime = __toESM(require_relativeTime(), 1);
+
+// packages/utils/common/lib/types.js
+var isBoolean = (x) => "boolean" === typeof x;
+var isNumber = (x) => "number" === typeof x;
+var isObject = (x) => "object" === typeof x;
+var isString = (x) => "string" === typeof x;
+
+// packages/utils/common/lib/datetime.js
+import_dayjs.default.extend(dayjsDuration.default);
+import_dayjs.default.extend(relativeTime.default);
+var duration = import_dayjs.default.duration;
+var isDuration = import_dayjs.default.isDuration;
+var toDuration = (tMs) => {
+  return isNumber(tMs) ? duration({ milliseconds: tMs }) : isDuration(tMs) ? tMs : duration(tMs);
+};
+
+// packages/utils/common/lib/errors/registry.js
+var MUTABLE_REGISTRY = /* @__PURE__ */ new Map();
+var REGISTRY = MUTABLE_REGISTRY;
+var doRegisterError = (name, target) => {
+  name = name !== null && name !== void 0 ? name : target.name;
+  if (!name) {
+    throw new Error(`no name given, got: <${name}>`);
+  }
+  if ("Error" === name) {
+    throw new Error("registering under the name 'Error' is forbidden");
+  }
+  const regged = target;
+  if (regged.hasOwnProperty("__registeredName")) {
+    throw new Error(`target already has __registeredName set to '${regged.__registeredName}' (already registered?). Trying to (re)register under '${name}': ${target}`);
+  }
+  regged.__registeredName = name;
+  const have = MUTABLE_REGISTRY.get(name);
+  if (have) {
+    throw new Error(`Duplicate error registration for '${name}' (already registered: ${have}), got: ${target}`);
+  }
+  MUTABLE_REGISTRY.set(name, target);
+};
+var registerError = (name) => doRegisterError.bind(null, name);
+
+// packages/utils/common/lib/format.js
+var trimPrefix = (s, prefix) => s.startsWith(prefix) ? s.replace(prefix, "") : s;
+
+// packages/utils/common/lib/has.js
+var has = (obj) => obj !== null && obj !== void 0;
+
+// packages/utils/common/lib/randomString.js
+var CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+var randomString = (length = 7) => {
+  let str = "";
+  for (let i = 0; i < length; i++) {
+    str += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
+  }
+  return str;
+};
+var matchesRandomString = (s, length) => isString(s) && (void 0 === length || s.length === length) && !new RegExp(`[^${CHARACTERS}]`).test(s);
+
+// packages/utils/common/lib/exceptions.js
+var __decorate = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = function(k, v) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var WeakPassword_1;
+var InternalException_1;
+var Exception = class extends Error {
+  constructor(message, { scope = "internal", cause } = {}) {
+    super(message, { cause });
+    new.target.prototype.name = this.constructor.name;
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.scope = scope;
+  }
+};
+var isPublicException = (e) => {
+  return e instanceof Exception && e.scope === "public";
+};
+var SimpleSerializableException = class extends Exception {
+  constructor(message, opts) {
+    super(isPublicException(opts === null || opts === void 0 ? void 0 : opts.cause) ? `${message} (Cause: ${opts === null || opts === void 0 ? void 0 : opts.cause})` : message, opts);
+  }
+  static fromJson(x) {
+    if (!isString(x)) {
+      throw new TypeError(`${x} not of type string`);
+    }
+    return new this(x, { scope: "public" });
+  }
+  toJSON() {
+    return this.message;
+  }
+};
+var AlreadyExists = class AlreadyExists2 extends SimpleSerializableException {
+};
+AlreadyExists = __decorate([
+  registerError()
+], AlreadyExists);
+var AlreadyInitialized = class extends Exception {
+};
+var AmbiguousArgument = class AmbiguousArgument2 extends SimpleSerializableException {
+};
+AmbiguousArgument = __decorate([
+  registerError()
+], AmbiguousArgument);
+var HttpException = class extends Exception {
+  constructor(code, message, opts) {
+    super(message, opts);
+    this.code = code;
+  }
+};
+var NotFound = class NotFound2 extends SimpleSerializableException {
+};
+NotFound = __decorate([
+  registerError()
+], NotFound);
+var NotReady = class NotReady2 extends SimpleSerializableException {
+};
+NotReady = __decorate([
+  registerError()
+], NotReady);
+var NotAuthorized = class NotAuthorized2 extends SimpleSerializableException {
+};
+NotAuthorized = __decorate([
+  registerError()
+], NotAuthorized);
+var TokenExpired = class TokenExpired2 extends SimpleSerializableException {
+  constructor(opts) {
+    super("Your Token expired, please create a new one.", opts);
+  }
+};
+TokenExpired = __decorate([
+  registerError(),
+  __metadata("design:paramtypes", [Object])
+], TokenExpired);
+var InvalidArgument = class InvalidArgument2 extends SimpleSerializableException {
+};
+InvalidArgument = __decorate([
+  registerError()
+], InvalidArgument);
+var InvalidOperation = class extends Exception {
+};
+var InvalidRequest = class InvalidRequest2 extends SimpleSerializableException {
+};
+InvalidRequest = __decorate([
+  registerError()
+], InvalidRequest);
+var InvalidState = class InvalidState2 extends SimpleSerializableException {
+};
+InvalidState = __decorate([
+  registerError()
+], InvalidState);
+var TimedOut = class extends Exception {
+  constructor(label, timeoutS, opts) {
+    const t = isNumber(timeoutS) ? duration({ seconds: timeoutS }) : timeoutS;
+    super(`'${label}' timed out after ${toDuration(t).asSeconds()}s.`, opts);
+  }
+};
+var Uninitialized = class extends Exception {
+};
+var Unsupported = class Unsupported2 extends SimpleSerializableException {
+};
+Unsupported = __decorate([
+  registerError()
+], Unsupported);
+var WeakPassword = WeakPassword_1 = class WeakPassword2 extends SimpleSerializableException {
+  static create(opts) {
+    return new WeakPassword_1([
+      "Password needs to be between 8 and 255 characters long",
+      " and contain at least one lowercase character",
+      ", one uppercase character, one number, and one special character."
+    ].join(""), opts);
+  }
+};
+WeakPassword = WeakPassword_1 = __decorate([
+  registerError()
+], WeakPassword);
+var MultiException = class extends Exception {
+  constructor(errors, summary) {
+    super([has(summary) ? `${summary}:
+` : "", concatMessages(errors)].join(""));
+    this.errors = errors;
+    this.stack = [this.stack, concatStacks(errors)].join("\n---\n");
+  }
+};
+var INTERNAL_EXCEPTION_MSG = "Internal server error";
+var InternalException = InternalException_1 = class InternalException2 extends Exception {
+  constructor({ traceId, opts } = {}) {
+    const id = traceId !== null && traceId !== void 0 ? traceId : randomString(InternalException_1.ID_LENGTH);
+    super(`${INTERNAL_EXCEPTION_MSG} ${id}`, opts);
+    this.traceId = id;
+  }
+  static fromJson(x) {
+    var _a;
+    const id = trimPrefix((_a = ignoreError(() => JSON.parse(x))) !== null && _a !== void 0 ? _a : x, INTERNAL_EXCEPTION_MSG).trim();
+    if (!matchesRandomString(id, InternalException_1.ID_LENGTH)) {
+      throw new TypeError(`${id} not a serialized InternalException`);
+    }
+    return new this({ traceId: id });
+  }
+  toJSON() {
+    return this.traceId;
+  }
+};
+InternalException.ID_LENGTH = 8;
+InternalException = InternalException_1 = __decorate([
+  registerError(),
+  __metadata("design:paramtypes", [Object])
+], InternalException);
+function* errorCauseChain(err) {
+  let cur = err;
+  while (cur) {
+    yield cur;
+    cur = cur instanceof Error ? cur.cause : void 0;
+  }
+}
+
+// packages/utils/common/lib/logger.js
+var import_chalk = __toESM(require_source(), 1);
+var import_util = require("util");
+
+// packages/utils/common/lib/log.js
+var Status;
+(function(Status3) {
+  Status3["Ok"] = "Ok";
+  Status3["Error"] = "Error";
+})(Status || (Status = {}));
+var LogTag;
+(function(LogTag2) {
+  LogTag2["Default"] = "Default";
+  LogTag2["Notify"] = "Notify";
+})(LogTag || (LogTag = {}));
+var log = (message, logAsJson, code = Status.Ok, stack, ...tags) => {
+  if (logAsJson) {
+    return logJson(message, code, stack, ...tags);
+  }
+  return logPlain(message, code, stack, ...tags);
+};
+var logPlain = (message, code = Status.Ok, stack, ...tags) => {
+  const tagsString = tags.map((tag) => `, #${tag}`).join("");
+  const logString = `[${code}, ${(/* @__PURE__ */ new Date()).toISOString()}${tagsString}]: ${message}${has(stack) ? "\n" + stack : ""}`;
+  console.log(logString);
+  return logString;
+};
+var logJson = (message, code = Status.Ok, stack, ...tags) => {
+  const logJson2 = JSON.stringify({
+    date: (/* @__PURE__ */ new Date()).toISOString(),
+    stack,
+    message,
+    code,
+    tags
+  });
+  console.log(logJson2);
+  return logJson2;
+};
+
+// packages/utils/common/lib/logger.js
+var LogLevel;
+(function(LogLevel2) {
+  LogLevel2[LogLevel2["Debug"] = 10] = "Debug";
+  LogLevel2[LogLevel2["Info"] = 20] = "Info";
+  LogLevel2[LogLevel2["Warning"] = 30] = "Warning";
+  LogLevel2[LogLevel2["Error"] = 40] = "Error";
+})(LogLevel || (LogLevel = {}));
+var BaseLogger = class {
+  log(entry) {
+    this.doLog(entry);
+  }
+};
+var FormattingLogger = class extends BaseLogger {
+  constructor(format) {
+    super();
+    this.format = format;
+  }
+  doLog(entry) {
+    this.logFunction(entry.level)(this.format(entry));
+  }
+};
+var formatMessage = (msg) => {
+  return !has(msg) ? "" : isString(msg) ? `${msg} ` : `
+${(0, import_util.inspect)(msg, { depth: null })}
+`;
+};
+var formatError = (err) => {
+  if (!has(err)) {
+    return "";
+  }
+  return `(${err.name}) ${err.message}
+${err.stack}` + (has(err.cause) ? `
+[cause]: ${formatError(toError(err.cause))}` : "");
+};
+var formatSimply = (entry) => {
+  var _a;
+  const err = entry.cause;
+  const tag = ((_a = entry.tags) === null || _a === void 0 ? void 0 : _a.length) ? `(${entry.tags.map((t) => `#${t}`).join(", ")}) ` : "";
+  return `${tag}${formatMessage(entry.message)}${formatError(err)}`;
+};
+var formatWithDetails = (entry) => {
+  const level = LogLevel[entry.level].charAt(0);
+  return `[${entry.time}] ${level}: ${formatSimply(entry)}`;
+};
+var levelColors = {
+  [LogLevel.Debug]: import_chalk.default.gray,
+  [LogLevel.Info]: import_chalk.default.cyan,
+  [LogLevel.Warning]: import_chalk.default.yellow,
+  [LogLevel.Error]: import_chalk.default.red
+};
+var formatInColor = (format) => {
+  return (entry) => {
+    var _a;
+    return ((_a = levelColors[entry.level]) !== null && _a !== void 0 ? _a : import_chalk.default.black)(format(entry));
+  };
+};
+var formatAsJson = (entry) => {
+  const message = has(entry.message) ? (0, import_util.inspect)(entry.message, { depth: null }) : "";
+  const errs = [...errorCauseChain(entry.cause)];
+  return JSON.stringify({
+    date: (/* @__PURE__ */ new Date()).toISOString(),
+    stack: errs.filter((e) => e instanceof Error).map((e) => e.stack).join("\n[cause]: ") || void 0,
+    message: message + errs.map((e) => e instanceof Error ? `
+ caused by ${e.name}: ${e.message}` : `
+ caused by non-error: ${(0, import_util.inspect)(e, { depth: null })}`).join(""),
+    code: entry.level <= LogLevel.Info ? Status.Ok : Status.Error,
+    level: entry.level,
+    tags: entry.tags
+  });
+};
+var ConsoleLogger = class _ConsoleLogger extends FormattingLogger {
+  static simple() {
+    return new _ConsoleLogger(formatSimply);
+  }
+  static coloredSimple() {
+    return new _ConsoleLogger(formatInColor(formatSimply));
+  }
+  static coloredDetailed() {
+    return new _ConsoleLogger(formatInColor(formatWithDetails));
+  }
+  logFunction(level) {
+    switch (level) {
+      case LogLevel.Debug:
+        return console.debug;
+      case LogLevel.Info:
+        return console.info;
+      case LogLevel.Warning:
+        return console.warn;
+      case LogLevel.Error:
+        return console.error;
+      default:
+        throw new InvalidArgument(`Invalid log level: ${level}`);
+    }
+  }
+};
+var ConsoleLogLogger = class _ConsoleLogLogger extends FormattingLogger {
+  static json() {
+    return new _ConsoleLogLogger(formatAsJson);
+  }
+  constructor(format) {
+    super(format);
+  }
+  logFunction(level) {
+    return console.log;
+  }
+};
+var ForwardingLogger = class extends BaseLogger {
+  constructor() {
+    super(...arguments);
+    this.loggers = [];
+  }
+  addLogger(logger) {
+    this.loggers.push(logger);
+    return this;
+  }
+  doLog(entry) {
+    if (this.loggers.length === 0) {
+      throw new Uninitialized("No loggers added. Forgot to call `initLogging`?");
+    }
+    for (const x of this.loggers) {
+      try {
+        x.log(entry);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+};
+var LogEntry = class {
+  constructor(message, level, tags, cause) {
+    this.message = message;
+    this.level = level;
+    this.tags = tags;
+    this.cause = cause;
+    this.time = (/* @__PURE__ */ new Date()).toISOString();
+  }
+};
+LogEntry.create = (level, message, options) => {
+  var _a;
+  const cause = options === null || options === void 0 ? void 0 : options.cause;
+  const t = (_a = options === null || options === void 0 ? void 0 : options.tag) !== null && _a !== void 0 ? _a : [];
+  const tags = Array.isArray(t) ? t : [t];
+  if (message instanceof Error) {
+    if (has(cause)) {
+      throw new InvalidArgument("Called logger with two errors.");
+    }
+    return new LogEntry(void 0, level, tags, message);
+  }
+  const error = has(cause) ? toError(cause) : void 0;
+  return new LogEntry(message, level, tags, error);
+};
+
+// packages/utils/common/lib/logging.js
+var logD = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Debug, message, options));
+var logI = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Info, message, options));
+var logW = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Warning, message, options));
+var logE = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Error, message, options));
+var LogEnv;
+(function(LogEnv2) {
+  LogEnv2[LogEnv2["Test"] = 0] = "Test";
+  LogEnv2[LogEnv2["Local"] = 1] = "Local";
+  LogEnv2[LogEnv2["Dev"] = 2] = "Dev";
+  LogEnv2[LogEnv2["Prod"] = 3] = "Prod";
+  LogEnv2[LogEnv2["Script"] = 4] = "Script";
+})(LogEnv || (LogEnv = {}));
+var initializedAt = "";
+var uninitializedLogger = () => {
+  return {
+    log: () => {
+      throw new Uninitialized([
+        "Logging not initialized. Possible causes:",
+        " - Forgot to call one of the initLogging functions.",
+        " - initLogging is imported from lib, but the logX functions from src (or vv.).",
+        "   (tests: compare the imports in the `jestEnv.setup.ts` files with your logX imports.)",
+        " - Trying to log after tearDownLogging was called (e.g. after test tear down)."
+      ].join("\n"));
+    }
+  };
+};
+var LOGGER = uninitializedLogger();
+var loggerForEnv = (env) => {
+  switch (env) {
+    case LogEnv.Local:
+      return ConsoleLogger.coloredSimple();
+    case LogEnv.Test:
+      return ConsoleLogger.coloredDetailed();
+    case LogEnv.Dev:
+    case LogEnv.Prod:
+      return ConsoleLogLogger.json();
+    case LogEnv.Script:
+      return ConsoleLogger.coloredSimple();
+  }
+};
+var initLogging = (env) => {
+  var _a;
+  if (initializedAt) {
+    throw new AlreadyInitialized(`Logging already initialized here:
+${initializedAt}
+`);
+  }
+  initializedAt = ((_a = Error().stack) !== null && _a !== void 0 ? _a : "\nUnknown location").split("\n").slice(2).map((x) => x.replace(/^    at /, "      @ ")).join("\n");
+  LOGGER = new ForwardingLogger().addLogger(loggerForEnv(env));
+  return LOGGER;
+};
+
+// packages/utils/common/lib/string.js
+var stringifyPretty = (x) => JSON.stringify(x, void 0, 2);
+var pp = (ss, ...vals) => ss[0] + vals.map((v, i) => `${v instanceof RawString ? v.s : stringifyPretty(v)}${ss[i + 1]}`);
+var RawString = class {
+  constructor(s) {
+    this.s = s;
+  }
+};
+
+// packages/utils/common/lib/errors.js
+var RuntimeError = class extends Error {
+  constructor(message) {
+    super(message);
+    new.target.prototype.name = this.constructor.name;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+};
+var NotImplemented = class extends RuntimeError {
+  constructor(message = "Not Implemented") {
+    super(message);
+  }
+};
+var InvalidArgument3 = class extends RuntimeError {
+  constructor(message) {
+    super(message);
+  }
+};
+var InvalidError = class extends RuntimeError {
+  constructor(value) {
+    super(`${value}`);
+    this.value = value;
+  }
+};
+var InvalidOperation2 = class extends RuntimeError {
+  constructor(message) {
+    super(message);
+  }
+};
+var concatMessages = (es) => {
+  return es.map((e, i) => `Error ${i + 1} of ${es.length}: ${e.name}: ${e.message}`).join("\n---\n");
+};
+var concatStacks = (errs) => errs.map((e, i) => `(${i}/${errs.length}) ${e.stack}`).join("\n---\n");
+var throwIfNotOneOf = (e, kinds) => {
+  if (kinds && !kinds.some((k) => e instanceof k)) {
+    throw e;
+  }
+};
+var ignoreError = (func, kinds) => {
+  try {
+    return func();
+  } catch (e) {
+    throwIfNotOneOf(e, kinds);
+    return void 0;
+  }
+};
+var ignoreErrorAsync = async (func, kinds) => {
+  try {
+    return await func();
+  } catch (e) {
+    throwIfNotOneOf(e, kinds);
+    return void 0;
+  }
+};
+var logError = (func) => {
+  try {
+    return func();
+  } catch (e) {
+    logW(e);
+    return void 0;
+  }
+};
+var logErrorAsync = async (func) => {
+  try {
+    return await func();
+  } catch (e) {
+    logW(e);
+    return void 0;
+  }
+};
+var toError = (e) => {
+  if (e instanceof Error) {
+    return e;
+  }
+  return new InvalidError(isString(e) ? e : pp`${e}`);
+};
+var catchErrorAsync = async (func, kind = Error) => {
+  try {
+    return await func();
+  } catch (err) {
+    const e = toError(err);
+    if (e instanceof kind) {
+      return e;
+    }
+    throw e;
+  }
+};
+var replaceException = (e, ...filter) => {
+  filter.forEach(([trigger, replacement]) => {
+    if (e instanceof trigger) {
+      throw replacement(e.message);
+    }
+  });
+  throw e;
+};
+var rethrow = (f, ...filter) => {
+  try {
+    return f();
+  } catch (e) {
+    return replaceException(e, ...filter);
+  }
+};
+var rethrowAsync = async (f, ...filter) => {
+  try {
+    return await f();
+  } catch (e) {
+    return replaceException(e, ...filter);
+  }
+};
+var threw = (func) => {
+  try {
+    func();
+    return false;
+  } catch (e) {
+    return true;
+  }
+};
+var withCurrentStack = (error) => {
+  var _a, _b;
+  const e = toError(error);
+  const currentStack = (_b = (_a = Error().stack) === null || _a === void 0 ? void 0 : _a.split("\n").slice(1)) !== null && _b !== void 0 ? _b : [];
+  e.stack = [e.stack, "Rethrown at: ", ...currentStack].join("\n");
+  return e;
+};
 
 // packages/utils/common/lib/wait.js
 var wait = (duration2) => {
@@ -52943,6 +52876,96 @@ var throwOnTimeout = async ({ label, timeoutMs, promise, interrupt }) => {
   }
 };
 
+// packages/utils/common/lib/array.js
+var flatten1 = (arr) => {
+  const flat = [];
+  for (const items of arr) {
+    flat.push(...items);
+  }
+  return flat;
+};
+var getFirst = (array) => {
+  if (array.length === 0) {
+    throw new NotFound("Tried to access the first element of an empty array");
+  }
+  return array[0];
+};
+var mapAsync = async (items, transform) => await allThrowRejected(items.map(transform));
+function range(s, end) {
+  const rawSize = Math.max(0, void 0 !== end ? end - s : s);
+  const size2 = isFinite(rawSize) && !isNaN(rawSize) ? rawSize : 0;
+  return Array.from(Array(size2).keys()).map((i) => i + (void 0 !== end ? s : 0));
+}
+
+// packages/utils/common/lib/request.js
+var import_cross_fetch = __toESM(require_node_ponyfill(), 1);
+
+// packages/http/common/lib/HttpStatusCode.js
+var HttpStatusCode;
+(function(HttpStatusCode2) {
+  HttpStatusCode2[HttpStatusCode2["Continue"] = 100] = "Continue";
+  HttpStatusCode2[HttpStatusCode2["SwitchingProtocols"] = 101] = "SwitchingProtocols";
+  HttpStatusCode2[HttpStatusCode2["Processing"] = 102] = "Processing";
+  HttpStatusCode2[HttpStatusCode2["Ok"] = 200] = "Ok";
+  HttpStatusCode2[HttpStatusCode2["Created"] = 201] = "Created";
+  HttpStatusCode2[HttpStatusCode2["Accepted"] = 202] = "Accepted";
+  HttpStatusCode2[HttpStatusCode2["NonAuthoritativeInformation"] = 203] = "NonAuthoritativeInformation";
+  HttpStatusCode2[HttpStatusCode2["NoContent"] = 204] = "NoContent";
+  HttpStatusCode2[HttpStatusCode2["ResetContent"] = 205] = "ResetContent";
+  HttpStatusCode2[HttpStatusCode2["PartialContent"] = 206] = "PartialContent";
+  HttpStatusCode2[HttpStatusCode2["MultiStatus"] = 207] = "MultiStatus";
+  HttpStatusCode2[HttpStatusCode2["AlreadyReported"] = 208] = "AlreadyReported";
+  HttpStatusCode2[HttpStatusCode2["ImUsed"] = 226] = "ImUsed";
+  HttpStatusCode2[HttpStatusCode2["MultipleChoices"] = 300] = "MultipleChoices";
+  HttpStatusCode2[HttpStatusCode2["MovedPermanently"] = 301] = "MovedPermanently";
+  HttpStatusCode2[HttpStatusCode2["Found"] = 302] = "Found";
+  HttpStatusCode2[HttpStatusCode2["SeeOther"] = 303] = "SeeOther";
+  HttpStatusCode2[HttpStatusCode2["NotModified"] = 304] = "NotModified";
+  HttpStatusCode2[HttpStatusCode2["UseProxy"] = 305] = "UseProxy";
+  HttpStatusCode2[HttpStatusCode2["SwitchProxy"] = 306] = "SwitchProxy";
+  HttpStatusCode2[HttpStatusCode2["TemporaryRedirect"] = 307] = "TemporaryRedirect";
+  HttpStatusCode2[HttpStatusCode2["PermanentRedirect"] = 308] = "PermanentRedirect";
+  HttpStatusCode2[HttpStatusCode2["BadRequest"] = 400] = "BadRequest";
+  HttpStatusCode2[HttpStatusCode2["Unauthorized"] = 401] = "Unauthorized";
+  HttpStatusCode2[HttpStatusCode2["PaymentRequired"] = 402] = "PaymentRequired";
+  HttpStatusCode2[HttpStatusCode2["Forbidden"] = 403] = "Forbidden";
+  HttpStatusCode2[HttpStatusCode2["NotFound"] = 404] = "NotFound";
+  HttpStatusCode2[HttpStatusCode2["MethodNotAllowed"] = 405] = "MethodNotAllowed";
+  HttpStatusCode2[HttpStatusCode2["NotAcceptable"] = 406] = "NotAcceptable";
+  HttpStatusCode2[HttpStatusCode2["ProxyAuthenticationRequired"] = 407] = "ProxyAuthenticationRequired";
+  HttpStatusCode2[HttpStatusCode2["RequestTimeout"] = 408] = "RequestTimeout";
+  HttpStatusCode2[HttpStatusCode2["Conflict"] = 409] = "Conflict";
+  HttpStatusCode2[HttpStatusCode2["Gone"] = 410] = "Gone";
+  HttpStatusCode2[HttpStatusCode2["LengthRequired"] = 411] = "LengthRequired";
+  HttpStatusCode2[HttpStatusCode2["PreconditionFailed"] = 412] = "PreconditionFailed";
+  HttpStatusCode2[HttpStatusCode2["PayloadTooLarge"] = 413] = "PayloadTooLarge";
+  HttpStatusCode2[HttpStatusCode2["UriTooLong"] = 414] = "UriTooLong";
+  HttpStatusCode2[HttpStatusCode2["UnsupportedMediaType"] = 415] = "UnsupportedMediaType";
+  HttpStatusCode2[HttpStatusCode2["RangeNotSatisfiable"] = 416] = "RangeNotSatisfiable";
+  HttpStatusCode2[HttpStatusCode2["ExpectationFailed"] = 417] = "ExpectationFailed";
+  HttpStatusCode2[HttpStatusCode2["IAmATeapot"] = 418] = "IAmATeapot";
+  HttpStatusCode2[HttpStatusCode2["MisdirectedRequest"] = 421] = "MisdirectedRequest";
+  HttpStatusCode2[HttpStatusCode2["UnprocessableEntity"] = 422] = "UnprocessableEntity";
+  HttpStatusCode2[HttpStatusCode2["Locked"] = 423] = "Locked";
+  HttpStatusCode2[HttpStatusCode2["FailedDependency"] = 424] = "FailedDependency";
+  HttpStatusCode2[HttpStatusCode2["UpgradeRequired"] = 426] = "UpgradeRequired";
+  HttpStatusCode2[HttpStatusCode2["PreconditionRequired"] = 428] = "PreconditionRequired";
+  HttpStatusCode2[HttpStatusCode2["TooManyRequests"] = 429] = "TooManyRequests";
+  HttpStatusCode2[HttpStatusCode2["RequestHeaderFieldsTooLarge"] = 431] = "RequestHeaderFieldsTooLarge";
+  HttpStatusCode2[HttpStatusCode2["UnavailableForLegalReasons"] = 451] = "UnavailableForLegalReasons";
+  HttpStatusCode2[HttpStatusCode2["InternalServerError"] = 500] = "InternalServerError";
+  HttpStatusCode2[HttpStatusCode2["NotImplemented"] = 501] = "NotImplemented";
+  HttpStatusCode2[HttpStatusCode2["BadGateway"] = 502] = "BadGateway";
+  HttpStatusCode2[HttpStatusCode2["ServiceUnavailable"] = 503] = "ServiceUnavailable";
+  HttpStatusCode2[HttpStatusCode2["GatewayTimeout"] = 504] = "GatewayTimeout";
+  HttpStatusCode2[HttpStatusCode2["HttpVersionNotSupported"] = 505] = "HttpVersionNotSupported";
+  HttpStatusCode2[HttpStatusCode2["VariantAlsoNegotiates"] = 506] = "VariantAlsoNegotiates";
+  HttpStatusCode2[HttpStatusCode2["InsufficientStorage"] = 507] = "InsufficientStorage";
+  HttpStatusCode2[HttpStatusCode2["LoopDetected"] = 508] = "LoopDetected";
+  HttpStatusCode2[HttpStatusCode2["NotExtended"] = 510] = "NotExtended";
+  HttpStatusCode2[HttpStatusCode2["NetworkAuthenticationRequired"] = 511] = "NetworkAuthenticationRequired";
+})(HttpStatusCode || (HttpStatusCode = {}));
+
 // node_modules/ip-regex/index.js
 var word = "[a-fA-F\\d:]";
 var boundry = (options) => options && options.includeBoundaries ? `(?:(?<=\\s|^)(?=${word})|(?<=${word})(?=\\s|$))` : "";
@@ -52967,27 +52990,6 @@ var ipRegex = (options) => options && options.exact ? v46Exact : new RegExp(`(?:
 ipRegex.v4 = (options) => options && options.exact ? v4exact : new RegExp(`${boundry(options)}${v4}${boundry(options)}`, "g");
 ipRegex.v6 = (options) => options && options.exact ? v6exact : new RegExp(`${boundry(options)}${v6}${boundry(options)}`, "g");
 var ip_regex_default = ipRegex;
-
-// packages/utils/common/lib/array.js
-var flatten1 = (arr) => {
-  const flat = [];
-  for (const items of arr) {
-    flat.push(...items);
-  }
-  return flat;
-};
-var getFirst = (array) => {
-  if (array.length === 0) {
-    throw new NotFound("Tried to access the first element of an empty array");
-  }
-  return array[0];
-};
-var mapAsync = async (items, transform) => await allThrowRejected(items.map(transform));
-function range(s, end) {
-  const rawSize = Math.max(0, void 0 !== end ? end - s : s);
-  const size2 = isFinite(rawSize) && !isNaN(rawSize) ? rawSize : 0;
-  return Array.from(Array(size2).keys()).map((i) => i + (void 0 !== end ? s : 0));
-}
 
 // packages/utils/common/lib/object.js
 var clearObject = (obj) => {
@@ -53039,7 +53041,7 @@ var ObjectConversionFailure = class extends TypeConversionFailure {
   constructor(failures, opts) {
     const [key, f] = Object.entries(failures)[0];
     if (!f) {
-      throw new InvalidArgument2("Expected at least one failure");
+      throw new InvalidArgument("Expected at least one failure");
     }
     super(f.expectedType, f.value, f.location ? `${key}.${f.location}` : key, opts);
     this.failures = failures;
@@ -53049,7 +53051,7 @@ var ArrayConversionFailure = class extends TypeConversionFailure {
   constructor(failures, opts) {
     const [index, f] = Object.entries(failures)[0];
     if (!f) {
-      throw new InvalidArgument2("Expected at least one failure");
+      throw new InvalidArgument("Expected at least one failure");
     }
     super(f.expectedType, f.value, f.location ? `[${index}].${f.location}` : `[${index}]`, opts);
     this.failures = failures;
@@ -53737,7 +53739,7 @@ var isEmpty2 = (objOrArrayOrString) => {
 var parseToInteger = (value) => {
   const n = Number(value);
   if (!Number.isInteger(n)) {
-    throw new InvalidArgument(`${value}`);
+    throw new InvalidArgument3(`${value}`);
   }
   return n;
 };
@@ -53755,13 +53757,13 @@ var Bytes = class _Bytes {
       this.bytes = Object.entries(args).reduce((sum, [u, v = 0]) => {
         const exp = suffixes.findIndex((e) => e === u);
         if (exp === -1) {
-          throw new InvalidArgument(u);
+          throw new InvalidArgument3(u);
         }
         return sum + v * base ** exp;
       }, 0);
     }
     if (!Number.isInteger(this.bytes)) {
-      throw new InvalidArgument(`Bytes are indivisible: ${this.bytes} bytes`);
+      throw new InvalidArgument3(`Bytes are indivisible: ${this.bytes} bytes`);
     }
   }
   static fromK8sString(value) {
@@ -53777,7 +53779,7 @@ var Bytes = class _Bytes {
         b: parseToInteger(value.slice(0, -1)) * k8sUnit2Byte(unit, decimalSuffixes, 1e3)
       });
     } catch (e) {
-      if (e instanceof InvalidArgument) {
+      if (e instanceof InvalidArgument3) {
         return new _Bytes({ b: parseToInteger(value) });
       }
       throw e;
@@ -53788,7 +53790,7 @@ var Bytes = class _Bytes {
       return x;
     }
     if (typeof x !== "number" || x < 0) {
-      throw new InvalidArgument(`expected a non-negative integer, got: ${x}`);
+      throw new InvalidArgument3(`expected a non-negative integer, got: ${x}`);
     }
     return bytes(x);
   }
@@ -53811,7 +53813,7 @@ var Bytes = class _Bytes {
   }
   toString({ decimals = 0, trimTrailingZeroes = false } = {}) {
     if (decimals < 0) {
-      throw new InvalidArgument("No negative decimals allowed.");
+      throw new InvalidArgument3("No negative decimals allowed.");
     }
     if (this.bytes === 0) {
       return "0 Bytes";
@@ -53857,16 +53859,16 @@ var stringSuffixes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"];
 var k8sUnit2Byte = (unit, suffixes, base) => {
   const exp = suffixes.findIndex((e) => e === unit);
   if (exp === -1) {
-    throw new InvalidArgument(unit);
+    throw new InvalidArgument3(unit);
   }
   return base ** exp;
 };
 var areValidArgs = (args) => {
   if (!isEmpty2(args) && isValidBinaryUints(args) && isValidDecimalUints(args)) {
-    throw new InvalidArgument(`Either binary or decimal suffixes allowed: ${Object.keys(args)}`);
+    throw new InvalidArgument3(`Either binary or decimal suffixes allowed: ${Object.keys(args)}`);
   }
   if (Object.values(args).some((v) => has(v) && typeof v === "number" && v < 0)) {
-    throw new InvalidArgument(`Only positiv values allowed: ${Object.values(args)}`);
+    throw new InvalidArgument3(`Only positiv values allowed: ${Object.values(args)}`);
   }
 };
 var isValidBinaryUints = (args) => Object.keys(args).every((a) => a.endsWith("i"));
@@ -53906,7 +53908,7 @@ var StreamBuffer = class {
   }
   async recv() {
     if (this.pending) {
-      throw new InvalidOperation("cannot call recv() multiple times without awaiting");
+      throw new InvalidOperation2("cannot call recv() multiple times without awaiting");
     }
     if (0 !== this.buffer.length) {
       return this.buffer.shift();
@@ -54243,7 +54245,7 @@ var procedureResponseFromLegacy = (msg) => {
 };
 var streamRequestToLegacy = (r) => {
   if (isOpenRequest(r)) {
-    throw new InvalidOperation2(`open request (method: ${r.method}) cannot be converted to legacy.`);
+    throw new InvalidOperation(`open request (method: ${r.method}) cannot be converted to legacy.`);
   }
   return isErrorRequest(r) ? {
     endpointId: r.streamId,
@@ -54321,7 +54323,7 @@ var RecvStreamSide = class extends StreamSide {
   }
   push(data) {
     if (!this.isAlive) {
-      throw new InvalidOperation(`receive buffer is already closed; push called with: ${data}`);
+      throw new InvalidOperation2(`receive buffer is already closed; push called with: ${data}`);
     }
     this.buffer.sendSync(data);
   }
@@ -54564,7 +54566,7 @@ var SimpleStreamyClient = class _SimpleStreamyClient {
   }
   async setContext(context2) {
     if (this.contextUpdate) {
-      throw new InvalidOperation2("setContext(): already in progress");
+      throw new InvalidOperation("setContext(): already in progress");
     }
     const up = this.contextUpdate = awaitLater(resolvablePromise());
     try {
@@ -56073,7 +56075,7 @@ var fromReplyRethrowing = async (fn, ...throwers) => {
   const rethrowers = throwers.slice(0, -1);
   const thrower = throwers.slice(-1)[0];
   if (!has(thrower) || !isThrower(thrower) || rethrowers.some((x) => isThrower(x))) {
-    throw new InvalidArgument("Expected an array of rethrowers with a thrower as a last argument");
+    throw new InvalidArgument3("Expected an array of rethrowers with a thrower as a last argument");
   }
   try {
     return fromReply(await fn());
@@ -56664,7 +56666,8 @@ var toChangePasswordServiceArgs = toObject({
 
 // packages/auth-service/common/lib/OAuthServiceArgs.js
 var toOAuthServiceArgs = toObject({
-  code: readOnly(toString)
+  code: readOnly(toString),
+  recaptchaToken: toUndefOr(toString)
 });
 
 // packages/auth-service/common/lib/PerformPasswordResetArgs.js
@@ -58006,7 +58009,7 @@ var SqlColumns = class _SqlColumns extends SqlPart {
   static forTable(table, d, dbSpec, transformer) {
     const cs = Array.isArray(d) ? d : Object.keys(d);
     if (cs.length === 0) {
-      throw new InvalidArgument(`No columns specified for table: ${table}.`);
+      throw new InvalidArgument3(`No columns specified for table: ${table}.`);
     }
     return new _SqlColumns(cs.map((col) => SqlColumn.forTable(table, col, dbSpec, transformer)));
   }
@@ -58110,7 +58113,7 @@ var SqlOn = class _SqlOn extends SqlPartWithValue {
     if (isOfType(condition, toOnConditionOr)) {
       return new _SqlOn(new SqlOr(flatten1(condition.or.map((c) => toCombinedOrLeftRightConditions(c)))));
     }
-    throw new InvalidArgument(pp`Unknown on condition: ${condition}`);
+    throw new InvalidArgument3(pp`Unknown on condition: ${condition}`);
   }
   constructor(condition) {
     super();
@@ -59013,7 +59016,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
   }
   async update(params) {
     if (Object.values(params.update).every((v) => void 0 === v)) {
-      throw new InvalidArgument("No update values provided.");
+      throw new InvalidArgument3("No update values provided.");
     }
     await retryWithBackoff(async () => {
       try {
@@ -59695,7 +59698,7 @@ var SingleStubProvider = class _SingleStubProvider {
   }
   async setContext(context2) {
     if (this.contextUpdate) {
-      throw new InvalidOperation(`setContext() in progress: ${this}`);
+      throw new InvalidOperation2(`setContext() in progress: ${this}`);
     }
     this.contextUpdate = (async () => {
       const origS = this.stub;
@@ -59788,7 +59791,7 @@ var SingleStubProvider = class _SingleStubProvider {
   async close() {
     var _a;
     if (!this.isOpen) {
-      throw new InvalidOperation(`attempting to close a StubProvider multiple times: ${this}`);
+      throw new InvalidOperation2(`attempting to close a StubProvider multiple times: ${this}`);
     }
     this.isOpen = false;
     await ((_a = await this.stub) === null || _a === void 0 ? void 0 : _a.close());
@@ -60153,7 +60156,7 @@ var isLocalHost = (host) => host.split(":")[0] === "localhost";
 var isDevHost = (host) => [".dev.codesphere.com", "3.codesphere.com", "5.codesphere.com"].some((s) => host.endsWith(s));
 var createBaseUrl = (protocol, host, dc) => {
   if (host.includes("://")) {
-    throw new InvalidArgument("Host should not contain protocol.");
+    throw new InvalidArgument3("Host should not contain protocol.");
   }
   const p = isLocalHost(host) ? protocol : `${protocol}s`;
   const prefix = !has(dc) || isLocalHost(host) || host.startsWith(`${dc}.`) ? "" : `${dc}${isDevHost(host) ? "-" : "."}`;
@@ -60495,14 +60498,14 @@ var planIdByConfig = async (products, planTitle, onDemand = false) => {
   const availablePlans = (await products.listHostingPlans()).filter((p) => !p.deprecated);
   const planIdByName = (_a = availablePlans.find((p) => p.title === planTitle && p.characteristics.onDemand === onDemand)) === null || _a === void 0 ? void 0 : _a.id;
   if (has(planTitle) && !has(planIdByName)) {
-    throw new InvalidArgument(`Unknown plan ${planTitle}. Available plans: ${availablePlans.filter((p) => !p.characteristics.onDemand).map((p) => p.title).join(", ")}`);
+    throw new InvalidArgument3(`Unknown plan ${planTitle}. Available plans: ${availablePlans.filter((p) => !p.characteristics.onDemand).map((p) => p.title).join(", ")}`);
   }
   if (planIdByName) {
     return planIdByName;
   }
   const defaultPlanId = (_b = availablePlans.find((p) => p.title === DEFAULT_PLAN_TITLE && !p.characteristics.onDemand)) === null || _b === void 0 ? void 0 : _b.id;
   if (!defaultPlanId) {
-    throw new InvalidArgument(`Could not find default plan ${DEFAULT_PLAN_TITLE}. Available plans: ${availablePlans.filter((p) => !p.characteristics.onDemand).map((p) => p.title).join(", ")}`);
+    throw new InvalidArgument3(`Could not find default plan ${DEFAULT_PLAN_TITLE}. Available plans: ${availablePlans.filter((p) => !p.characteristics.onDemand).map((p) => p.title).join(", ")}`);
   }
   return defaultPlanId;
 };
