@@ -71090,6 +71090,7 @@ var AVAILABLE_EXPERIMENTS = [
   "public-api",
   "pubsub-postgres",
   "react",
+  "react-user-settings",
   "recursive-watcher",
   "restricted-domains",
   "streamy-token-refresh",
@@ -72141,10 +72142,10 @@ var workspace = {
   planId: toPlanId,
   replicas: toPositiveInteger,
   vpnConfig: toNullOr(toString),
-  collectTraces: toUndefOr(toBoolean),
+  collectTraces: toBoolean,
   restricted: toBoolean,
   baseImage: toUndefOr(toString),
-  persistentLogs: toUndefOr(toBoolean)
+  persistentLogs: toBoolean
 };
 var toWorkspace = toObject(workspace);
 var validServerNameRegex = new RegExp("^(?:[a-z]|[a-z][-a-z0-9]{0,30}[a-z0-9])$");
@@ -73677,7 +73678,8 @@ var toWorkspaceDbEntry = toObject({
   vpnConfig: toNullOr(toString),
   restricted: toBoolean,
   baseImage: toUndefOr(toString),
-  collectTraces: toUndefOr(toBoolean)
+  collectTraces: toBoolean,
+  persistentLogs: toBoolean
 });
 var unsafeDbRecordToWorkspaceDbEntry = (r) => {
   var _a, _b, _c, _d, _e;
@@ -73698,7 +73700,8 @@ var unsafeDbRecordToWorkspaceDbEntry = (r) => {
     vpnConfig: (_e = r.vpnConfig) !== null && _e !== void 0 ? _e : null,
     restricted: r.restricted,
     baseImage: r.baseImage,
-    collectTraces: r.collectTraces
+    collectTraces: r.collectTraces,
+    persistentLogs: r.persistentLogs
   };
 };
 var NO_CONDITION = {};
@@ -73821,7 +73824,8 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
       "welcomeMessage",
       "restricted",
       "baseImage",
-      "collectTraces"
+      "collectTraces",
+      "persistentLogs"
     ], condition);
     return rs.map(unsafeDbRecordToWorkspaceDbEntry);
   }
@@ -74017,11 +74021,12 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
         "vpnConfig",
         "welcomeMessage",
         "restricted",
-        "collectTraces"
+        "collectTraces",
+        "persistentLogs"
       ],
       []
     ], [NO_CONDITION, { workspaceId: void 0 }])).map((w) => {
-      var _a, _b, _c, _d, _e, _f;
+      var _a, _b, _c, _d, _e, _f, _g, _h;
       return toWorkspace({
         ...w,
         userId: checkHas(w.userId),
@@ -74032,7 +74037,9 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
         initialBranch: (_c = w.initialBranch) !== null && _c !== void 0 ? _c : null,
         sourceWorkspaceId: (_d = w.sourceWorkspaceId) !== null && _d !== void 0 ? _d : null,
         vpnConfig: (_e = w.vpnConfig) !== null && _e !== void 0 ? _e : null,
-        restricted: (_f = w.restricted) !== null && _f !== void 0 ? _f : true
+        restricted: (_f = w.restricted) !== null && _f !== void 0 ? _f : true,
+        collectTraces: (_g = w.collectTraces) !== null && _g !== void 0 ? _g : false,
+        persistentLogs: (_h = w.persistentLogs) !== null && _h !== void 0 ? _h : false
       });
     });
   }
