@@ -1219,7 +1219,7 @@ var require_package = __commonJS({
   "node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "16.5.0",
+      version: "16.6.1",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -1242,7 +1242,7 @@ var require_package = __commonJS({
         lint: "standard",
         pretest: "npm run lint && npm run dts-check",
         test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=lcov",
+        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -1312,8 +1312,10 @@ var require_main = __commonJS({
       return obj;
     }
     function _parseVault(options) {
+      options = options || {};
       const vaultPath = _vaultPath(options);
-      const result = DotenvModule.configDotenv({ path: vaultPath });
+      options.path = vaultPath;
+      const result = DotenvModule.configDotenv(options);
       if (!result.parsed) {
         const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
         err.code = "MISSING_DATA";
@@ -1341,6 +1343,9 @@ var require_main = __commonJS({
     }
     function _debug(message) {
       console.log(`[dotenv@${version}][DEBUG] ${message}`);
+    }
+    function _log(message) {
+      console.log(`[dotenv@${version}] ${message}`);
     }
     function _dotenvKey(options) {
       if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
@@ -1409,8 +1414,9 @@ var require_main = __commonJS({
     }
     function _configVault(options) {
       const debug = Boolean(options && options.debug);
-      if (debug) {
-        _debug("Loading env from encrypted .env.vault");
+      const quiet = options && "quiet" in options ? options.quiet : true;
+      if (debug || !quiet) {
+        _log("Loading env from encrypted .env.vault");
       }
       const parsed = DotenvModule._parseVault(options);
       let processEnv = process.env;
@@ -1424,6 +1430,7 @@ var require_main = __commonJS({
       const dotenvPath = path2.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug = Boolean(options && options.debug);
+      const quiet = options && "quiet" in options ? options.quiet : true;
       if (options && options.encoding) {
         encoding = options.encoding;
       } else {
@@ -1460,6 +1467,22 @@ var require_main = __commonJS({
         processEnv = options.processEnv;
       }
       DotenvModule.populate(processEnv, parsedAll, options);
+      if (debug || !quiet) {
+        const keysCount = Object.keys(parsedAll).length;
+        const shortPaths = [];
+        for (const filePath of optionPaths) {
+          try {
+            const relative = path2.relative(process.cwd(), filePath);
+            shortPaths.push(relative);
+          } catch (e) {
+            if (debug) {
+              _debug(`Failed to load ${filePath} ${e.message}`);
+            }
+            lastError = e;
+          }
+        }
+        _log(`injecting env (${keysCount}) from ${shortPaths.join(",")}`);
+      }
       if (lastError) {
         return { parsed: parsedAll, error: lastError };
       } else {
@@ -67423,6 +67446,15 @@ LogEntry.create = (level, message, options) => {
   return new LogEntry(message, level, tags, error);
 };
 
+// packages/utils/common/lib/string.js
+var stringifyPretty = (x) => JSON.stringify(x, void 0, 2);
+var pp = (ss, ...vals) => ss[0] + vals.map((v, i) => `${v instanceof RawString ? v.s : stringifyPretty(v)}${ss[i + 1]}`);
+var RawString = class {
+  constructor(s) {
+    this.s = s;
+  }
+};
+
 // packages/utils/common/lib/logging.js
 var logD = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Debug, message, options));
 var logI = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Info, message, options));
@@ -67439,13 +67471,15 @@ var LogEnv;
 var initializedAt = "";
 var uninitializedLogger = () => {
   return {
-    log: () => {
+    log: (entry) => {
       throw new Uninitialized([
         "Logging not initialized. Possible causes:",
         " - Forgot to call one of the initLogging functions.",
         " - initLogging is imported from lib, but the logX functions from src (or vv.).",
         "   (tests: compare the imports in the `jestEnv.setup.ts` files with your logX imports.)",
-        " - Trying to log after tearDownLogging was called (e.g. after test tear down)."
+        " - Trying to log after tearDownLogging was called (e.g. after test tear down).",
+        ...[pp`attempted to log: "${entry}"`],
+        [...errorCauseChain(entry.cause)].filter(has).map((e) => toError(e)).map((e) => `with cause: '${e.message}' at ${e.stack}`).join("\n")
       ].join("\n"));
     }
   };
@@ -67474,15 +67508,6 @@ ${initializedAt}
   initializedAt = ((_a = Error().stack) !== null && _a !== void 0 ? _a : "\nUnknown location").split("\n").slice(2).map((x) => x.replace(/^    at /, "      @ ")).join("\n");
   LOGGER = new ForwardingLogger().addLogger(loggerForEnv(env));
   return LOGGER;
-};
-
-// packages/utils/common/lib/string.js
-var stringifyPretty = (x) => JSON.stringify(x, void 0, 2);
-var pp = (ss, ...vals) => ss[0] + vals.map((v, i) => `${v instanceof RawString ? v.s : stringifyPretty(v)}${ss[i + 1]}`);
-var RawString = class {
-  constructor(s) {
-    this.s = s;
-  }
 };
 
 // packages/utils/common/lib/errors.js
@@ -71077,7 +71102,9 @@ var AVAILABLE_EXPERIMENTS = [
   "gpu-plan",
   "hermetic",
   "ide-react",
+  "ide-split-react",
   "language-server",
+  "managed-services",
   MAINTENANCE_MODE_EXP_NAME,
   "msd",
   "o11y",
@@ -71091,6 +71118,7 @@ var AVAILABLE_EXPERIMENTS = [
   "pubsub-postgres",
   "react",
   "react-user-settings",
+  "recaptcha-v3",
   "recursive-watcher",
   "restricted-domains",
   "streamy-token-refresh",
@@ -71492,7 +71520,8 @@ var toChangePasswordServiceArgs = toObject({
 // packages/auth-service/common/lib/OAuthServiceArgs.js
 var toOAuthServiceArgs = toObject({
   code: readOnly(toString),
-  recaptchaToken: toUndefOr(toString)
+  recaptchaToken: toUndefOr(toString),
+  recaptchaAction: toUndefOr(toString)
 });
 
 // packages/auth-service/common/lib/PerformPasswordResetArgs.js
@@ -71504,7 +71533,8 @@ var toPerformPasswordResetArgs = toObject({
 // packages/auth-service/common/lib/SignUpArgs.js
 var toSignUpArgs = toObject({
   ...emailAndPassword,
-  recaptchaToken: readOnly(toString)
+  recaptchaToken: readOnly(toString),
+  recaptchaAction: toUndefOr(toString)
 });
 
 // packages/utils/common/lib/timeSpan.js
@@ -71586,7 +71616,8 @@ var user = {
   firstName: toUndefOr(toNullOr(toString)),
   lastName: toUndefOr(toNullOr(toString)),
   avatarId: toUndefOr(toNullOr(toString)),
-  deletedAt: toUndefOr(toDate)
+  deletedAt: toUndefOr(toDate),
+  acceptedTos: toUndefOr(toDate)
 };
 var toUser = toObject(user);
 var toUserWithSignedUp = toObject({
@@ -71702,7 +71733,8 @@ var authService = {
     deactivateUser: rpc({
       access: "public",
       request: toDeactivateUserArgs,
-      response: toDeactivateUserInfo
+      response: toDeactivateUserInfo,
+      defaultOptions: { timeout: { seconds: 30 } }
     }),
     updateProfile: rpc({
       access: "public",
@@ -71734,6 +71766,11 @@ var authService = {
       request: toSignUpArgs,
       response: toVoid,
       defaultOptions: { timeout: duration({ seconds: 10 }) }
+    }),
+    acceptTos: rpc({
+      access: "public",
+      request: toVoid,
+      response: toVoid
     }),
     authForCustomDomain: rpc({
       access: "public",
@@ -72081,7 +72118,8 @@ var toPipelineMetaConfig = toObject({
   replicaId: toString,
   serverName: toString,
   workspaceId: toNonNegativeInteger,
-  otelLogCollectorHostname: toUndefOr(toString)
+  otelLogCollectorHostname: toUndefOr(toString),
+  persistentLogs: toUndefOr(toBoolean)
 });
 
 // packages/workspace-agent/common/lib/pipeline/logging.js
