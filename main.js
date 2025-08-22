@@ -63170,7 +63170,7 @@ __export(github_action_deploy_workspace_exports, {
 module.exports = __toCommonJS(github_action_deploy_workspace_exports);
 var import_reflect_metadata = __toESM(require_Reflect(), 1);
 
-// node_modules/@octokit/core/node_modules/universal-user-agent/index.js
+// node_modules/@octokit/rest/node_modules/universal-user-agent/index.js
 function getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
     return navigator.userAgent;
@@ -63181,7 +63181,7 @@ function getUserAgent() {
   return "<environment undetectable>";
 }
 
-// node_modules/@octokit/core/node_modules/before-after-hook/lib/register.js
+// node_modules/@octokit/rest/node_modules/before-after-hook/lib/register.js
 function register(state, name, method, options) {
   if (typeof method !== "function") {
     throw new Error("method for before hook must be a function");
@@ -63204,7 +63204,7 @@ function register(state, name, method, options) {
   });
 }
 
-// node_modules/@octokit/core/node_modules/before-after-hook/lib/add.js
+// node_modules/@octokit/rest/node_modules/before-after-hook/lib/add.js
 function addHook(state, kind, name, hook2) {
   const orig = hook2;
   if (!state.registry[name]) {
@@ -63239,7 +63239,7 @@ function addHook(state, kind, name, hook2) {
   });
 }
 
-// node_modules/@octokit/core/node_modules/before-after-hook/lib/remove.js
+// node_modules/@octokit/rest/node_modules/before-after-hook/lib/remove.js
 function removeHook(state, name, method) {
   if (!state.registry[name]) {
     return;
@@ -63253,7 +63253,7 @@ function removeHook(state, name, method) {
   state.registry[name].splice(index, 1);
 }
 
-// node_modules/@octokit/core/node_modules/before-after-hook/index.js
+// node_modules/@octokit/rest/node_modules/before-after-hook/index.js
 var bind = Function.bind;
 var bindable = bind.bind(bind);
 function bindApi(hook2, state, name) {
@@ -63287,7 +63287,7 @@ function Collection() {
 }
 var before_after_hook_default = { Singular, Collection };
 
-// node_modules/@octokit/core/node_modules/@octokit/endpoint/dist-bundle/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/endpoint/dist-bundle/index.js
 var VERSION = "0.0.0-development";
 var userAgent = `octokit-endpoint.js/${VERSION} ${getUserAgent()}`;
 var DEFAULTS = {
@@ -63600,10 +63600,10 @@ function withDefaults(oldDefaults, newDefaults) {
 }
 var endpoint = withDefaults(null, DEFAULTS);
 
-// node_modules/@octokit/core/node_modules/@octokit/request/dist-bundle/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/request/dist-bundle/index.js
 var import_fast_content_type_parse = __toESM(require_fast_content_type_parse(), 1);
 
-// node_modules/@octokit/core/node_modules/@octokit/request-error/dist-src/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/request-error/dist-src/index.js
 var RequestError = class extends Error {
   name;
   /**
@@ -63642,7 +63642,7 @@ var RequestError = class extends Error {
   }
 };
 
-// node_modules/@octokit/core/node_modules/@octokit/request/dist-bundle/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/request/dist-bundle/index.js
 var VERSION2 = "0.0.0-development";
 var defaults_default = {
   headers: {
@@ -64463,7 +64463,7 @@ function withCustomRequest(customRequest) {
   });
 }
 
-// node_modules/@octokit/core/node_modules/@octokit/auth-token/dist-bundle/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/auth-token/dist-bundle/index.js
 var b64url = "(?:[a-zA-Z0-9_-]+)";
 var sep = "\\.";
 var jwtRE = new RegExp(`^${b64url}${sep}${b64url}${sep}${b64url}$`);
@@ -64508,10 +64508,10 @@ var createTokenAuth = function createTokenAuth2(token) {
   });
 };
 
-// node_modules/@octokit/core/dist-src/version.js
+// node_modules/@octokit/rest/node_modules/@octokit/core/dist-src/version.js
 var VERSION6 = "7.0.2";
 
-// node_modules/@octokit/core/dist-src/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/core/dist-src/index.js
 var noop = () => {
 };
 var consoleWarn = console.warn.bind(console);
@@ -64638,10 +64638,10 @@ var Octokit = class {
   auth;
 };
 
-// node_modules/@octokit/plugin-request-log/dist-src/version.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-request-log/dist-src/version.js
 var VERSION7 = "6.0.0";
 
-// node_modules/@octokit/plugin-request-log/dist-src/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-request-log/dist-src/index.js
 function requestLog(octokit) {
   octokit.hook.wrap("request", (request3, options) => {
     octokit.log.debug("request", options);
@@ -64665,7 +64665,7 @@ function requestLog(octokit) {
 }
 requestLog.VERSION = VERSION7;
 
-// node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
 var VERSION8 = "0.0.0-development";
 function normalizePaginatedListResponse(response) {
   if (!response.data) {
@@ -64768,10 +64768,10 @@ function paginateRest(octokit) {
 }
 paginateRest.VERSION = VERSION8;
 
-// node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
 var VERSION9 = "16.0.0";
 
-// node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/generated/endpoints.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/generated/endpoints.js
 var Endpoints = {
   actions: {
     addCustomLabelsToSelfHostedRunnerForOrg: [
@@ -66876,7 +66876,7 @@ var Endpoints = {
 };
 var endpoints_default = Endpoints;
 
-// node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/endpoints-to-methods.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/endpoints-to-methods.js
 var endpointMethodsMap = /* @__PURE__ */ new Map();
 for (const [scope, endpoints] of Object.entries(endpoints_default)) {
   for (const [methodName, endpoint3] of Object.entries(endpoints)) {
@@ -66999,7 +66999,7 @@ function decorate(octokit, scope, methodName, defaults, decorations) {
   return Object.assign(withDecorations, requestWithDefaults);
 }
 
-// node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
+// node_modules/@octokit/rest/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
 function restEndpointMethods(octokit) {
   const api = endpointsToMethods(octokit);
   return {
@@ -67869,6 +67869,7 @@ var toInteger = (x) => {
 var toRestrictedInteger = (name, test) => toRestrictedNumber(name, (n) => test(toInteger(n)));
 var toNonNegativeInteger = toRestrictedInteger("NonNegativeInteger", (n) => n >= 0);
 var toPositiveInteger = toRestrictedInteger("PositiveInteger", (n) => n > 0);
+var toPositiveNumber = toRestrictedNumber("toPositiveNumber", (n) => n > 0);
 
 // packages/utils/common/lib/typing.js
 var TypeConversionFailure = class extends Exception {
@@ -68597,22 +68598,20 @@ var bytes = (x) => new Bytes({ b: x });
 var MiB = (x) => new Bytes({ Mi: x });
 var GiB = (x) => new Bytes({ Gi: x });
 var Bytes = class _Bytes {
+  static max(first, ...rest) {
+    return rest.reduce((max, curr) => curr.bytes > max.bytes ? curr : max, first);
+  }
   constructor(args) {
     areValidArgs(args);
     const base = isValidBinaryUints(args) ? 1024 : 1e3;
     const suffixes = base === 1024 ? binarySuffixes : decimalSuffixes;
-    {
-      this.bytes = Object.entries(args).reduce((sum, [u, v = 0]) => {
-        const exp = suffixes.findIndex((e) => e === u);
-        if (exp === -1) {
-          throw new InvalidArgument3(u);
-        }
-        return sum + v * base ** exp;
-      }, 0);
-    }
-    if (!Number.isInteger(this.bytes)) {
-      throw new InvalidArgument3(`Bytes are indivisible: ${this.bytes} bytes`);
-    }
+    this.bytes = Math.ceil(Object.entries(args).reduce((sum, [u, v = 0]) => {
+      const exp = suffixes.findIndex((e) => e === u);
+      if (exp === -1) {
+        throw new InvalidArgument3(u);
+      }
+      return sum + v * base ** exp;
+    }, 0));
   }
   static fromK8sString(value) {
     if (value.endsWith("i")) {
@@ -69939,7 +69938,8 @@ var team = {
   avatarId: readOnly(toUndefOr(toNullOr(toString))),
   avatarUrl: toUndefOr(toNullOr(toString)),
   isFirst: toUndefOr(toBoolean),
-  deletionPending: toUndefOr(toBoolean)
+  deletionPending: toUndefOr(toBoolean),
+  createdAt: toUndefOr(toDate)
 };
 var toTeam = toObject(team);
 var toTeamWithRole = toObject({
@@ -70626,7 +70626,8 @@ var workspaceDeploymentService = {
     workspaceIsOutdated: rpc({
       access: "public",
       response: toBoolean,
-      request: toWorkspaceServiceArgs2
+      request: toWorkspaceServiceArgs2,
+      defaultOptions: { timeout: { seconds: 10 } }
     }),
     hasCapacity: rpc({
       access: "public",
@@ -71384,6 +71385,12 @@ GitAuthStub = __decorate6([
 ], GitAuthStub);
 
 // packages/payment-service/common/lib/Product.js
+var __decorate7 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var ProductId;
 (function(ProductId2) {
   ProductId2[ProductId2["HostingBasic"] = 1] = "HostingBasic";
@@ -71453,6 +71460,41 @@ var workspacePlan = {
   maxReplicas: toPositiveInteger
 };
 var toWorkspacePlan = toObject(workspacePlan);
+var wsO11yComponent = {
+  cpu: toPositiveNumber,
+  ramGiB: toPositiveNumber,
+  replicas: toPositiveInteger
+};
+var toWsO11yComponent = toObject(wsO11yComponent);
+var toWsO11yComponentWithStorage = toObject({
+  ...wsO11yComponent,
+  storage: toObject({
+    replication: toUndefOr(toNonNegativeInteger)
+  })
+});
+var toWsO11yPlanCharacteristic = toObject({
+  title: toString,
+  priceUsd: toUndefOr(toPositiveNumber),
+  datastore: toWsO11yComponentWithStorage,
+  collector: toWsO11yComponent,
+  suggestedLoadPerSecond: toUndefOr(toObject({
+    logs: toPositiveInteger,
+    traces: toPositiveInteger,
+    metrics: toPositiveInteger
+  }))
+});
+var toWsO11yConfig = toObject({
+  minStorageGiB: toPositiveNumber,
+  maxStorageGiB: toPositiveNumber,
+  defaultStorageGiB: toPositiveNumber,
+  storagePriceUsdPerGiB: toUndefOr(toPositiveNumber),
+  plans: toRecord(toWsO11yPlanCharacteristic)
+});
+var WsO11yPlanNotFound = class WsO11yPlanNotFound2 extends SimpleSerializableException {
+};
+WsO11yPlanNotFound = __decorate7([
+  registerError()
+], WsO11yPlanNotFound);
 
 // packages/payment-service/common/lib/api/products.js
 var productsService = {
@@ -71488,6 +71530,11 @@ var productsService = {
       access: "public",
       response: toArray(toDockerImageHostingPlanWithPricePerHour),
       request: toVoid
+    }),
+    getWsO11yConfig: rpc({
+      access: "public",
+      response: toWsO11yConfig,
+      request: toVoid
     })
   }
 };
@@ -71497,6 +71544,12 @@ var ProductsStub = class extends productsStub {
 
 // packages/auth-service/common/lib/api/auth.js
 var import_inversify6 = __toESM(require_inversify(), 1);
+
+// packages/auth-service/common/lib/ChangePasswordServiceArgs.js
+var toChangePasswordServiceArgs = toObject({
+  password: readOnly(toString),
+  newPassword: readOnly(toString)
+});
 
 // packages/auth-service/common/lib/EmailContainer.js
 var emailContainer = {
@@ -71510,12 +71563,6 @@ var emailAndPassword = {
   password: readOnly(toString)
 };
 var toEmailAndPassword = toObject(emailAndPassword);
-
-// packages/auth-service/common/lib/ChangePasswordServiceArgs.js
-var toChangePasswordServiceArgs = toObject({
-  ...emailAndPassword,
-  newPassword: readOnly(toString)
-});
 
 // packages/auth-service/common/lib/OAuthServiceArgs.js
 var toOAuthServiceArgs = toObject({
@@ -71591,6 +71638,39 @@ var toUploadFileArgs = toObject({
   file: readOnly(toString)
 });
 
+// packages/utils/common/lib/isValidEmail.js
+var tester = /^[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+var isValidEmail = (email) => {
+  if (!email) {
+    return false;
+  }
+  const emailParts = email.split("@");
+  if (emailParts.length !== 2) {
+    return false;
+  }
+  const account = emailParts[0];
+  const address = emailParts[1];
+  if (account.length > 64) {
+    return false;
+  }
+  if (address.length > 255) {
+    return false;
+  }
+  const domainParts = address.split(".");
+  if (domainParts.some((part) => {
+    return part.length > 63;
+  })) {
+    return false;
+  }
+  if (!tester.test(email)) {
+    return false;
+  }
+  if (email.includes("+") && !email.endsWith("@codesphere.com")) {
+    return false;
+  }
+  return true;
+};
+
 // packages/auth/common/lib/user.js
 var ServiceId;
 (function(ServiceId2) {
@@ -71626,6 +71706,17 @@ var toUserWithSignedUp = toObject({
 });
 
 // packages/auth-service/common/lib/api/user.js
+var toEmail = (x) => {
+  if (isString(x) && isValidEmail(x)) {
+    return x;
+  }
+  throw new TypeConversionFailure("Email (e.g. email@domain.com)", x);
+};
+var toUpdateEmailInfo = toObject({
+  newEmail: toEmail,
+  createdAt: toDate,
+  pending: toBoolean
+});
 var userService = {
   name: "User",
   context: toHttpContext,
@@ -71647,13 +71738,18 @@ var userService = {
       access: "public",
       request: toVoid,
       response: toVoid
+    }),
+    getUpdateEmailInfo: rpc({
+      access: "public",
+      request: toVoid,
+      response: toUpdateEmailInfo
     })
   }
 };
 var userStub = createAuthnStubClass("User", userService);
 
 // packages/auth-service/common/lib/api/auth.js
-var __decorate7 = function(decorators, target, key, desc) {
+var __decorate8 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -71662,13 +71758,14 @@ var __decorate7 = function(decorators, target, key, desc) {
 var __metadata2 = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var PasswordResetExpired_1;
 var DeactivateUserFailed_1;
 var InvalidCredentials = class InvalidCredentials2 extends SimpleSerializableException {
   constructor(opts) {
     super("Invalid credentials", opts);
   }
 };
-InvalidCredentials = __decorate7([
+InvalidCredentials = __decorate8([
   registerError(),
   __metadata2("design:paramtypes", [Object])
 ], InvalidCredentials);
@@ -71677,7 +71774,7 @@ var UserDeleted = class UserDeleted2 extends SimpleSerializableException {
     super("User is deleted", opts);
   }
 };
-UserDeleted = __decorate7([
+UserDeleted = __decorate8([
   registerError(),
   __metadata2("design:paramtypes", [Object])
 ], UserDeleted);
@@ -71686,7 +71783,7 @@ var RecaptchaCheckFailed = class RecaptchaCheckFailed2 extends SimpleSerializabl
     super(msg, opts);
   }
 };
-RecaptchaCheckFailed = __decorate7([
+RecaptchaCheckFailed = __decorate8([
   registerError(),
   __metadata2("design:paramtypes", [String, Object])
 ], RecaptchaCheckFailed);
@@ -71695,10 +71792,18 @@ var UserCreationFailed = class UserCreationFailed2 extends SimpleSerializableExc
     super(msg, opts);
   }
 };
-UserCreationFailed = __decorate7([
+UserCreationFailed = __decorate8([
   registerError(),
   __metadata2("design:paramtypes", [String, Object])
 ], UserCreationFailed);
+var PasswordResetExpired = PasswordResetExpired_1 = class PasswordResetExpired2 extends SimpleSerializableException {
+  static create(opts) {
+    return new PasswordResetExpired_1("Password reset request expired", opts);
+  }
+};
+PasswordResetExpired = PasswordResetExpired_1 = __decorate8([
+  registerError()
+], PasswordResetExpired);
 var customDomainAuthRequest = {
   appToken: toString,
   sessionId: toString
@@ -71723,7 +71828,7 @@ var DeactivateUserFailed = DeactivateUserFailed_1 = class DeactivateUserFailed2 
     return new DeactivateUserFailed_1("Failed to delete the user preliminarily. You still have teams which are not ready to be shut down.", opts);
   }
 };
-DeactivateUserFailed = DeactivateUserFailed_1 = __decorate7([
+DeactivateUserFailed = DeactivateUserFailed_1 = __decorate8([
   registerError()
 ], DeactivateUserFailed);
 var authService = {
@@ -71766,6 +71871,21 @@ var authService = {
       request: toSignUpArgs,
       response: toVoid,
       defaultOptions: { timeout: duration({ seconds: 10 }) }
+    }),
+    changePassword: rpc({
+      access: "public",
+      request: toChangePasswordServiceArgs,
+      response: toVoid
+    }),
+    requestPasswordReset: rpc({
+      access: "public",
+      request: toEmailContainer,
+      response: toVoid
+    }),
+    performPasswordReset: rpc({
+      access: "public",
+      request: toPerformPasswordResetArgs,
+      response: toVoid
     }),
     acceptTos: rpc({
       access: "public",
@@ -71814,38 +71934,23 @@ var legacyAuthService = {
       request: toUpdateEmailServiceArgs,
       response: toVoid
     }),
-    changePassword: rpc({
-      access: "public",
-      request: toChangePasswordServiceArgs,
-      response: toVoid
-    }),
-    requestPasswordReset: rpc({
-      access: "public",
-      request: toEmailContainer,
-      response: toVoid
-    }),
-    performPasswordReset: rpc({
-      access: "public",
-      request: toPerformPasswordResetArgs,
-      response: toVoid
-    }),
     ...authService.methods,
     ...userService.methods
   }
 };
 var AuthStub = class AuthStub2 extends createAuthnStubClass("AuthStub", authService) {
 };
-AuthStub = __decorate7([
+AuthStub = __decorate8([
   (0, import_inversify6.injectable)()
 ], AuthStub);
 var LegacyAuthStub = class LegacyAuthStub2 extends createAuthnStubClass("LegacyAuthStub", legacyAuthService) {
 };
-LegacyAuthStub = __decorate7([
+LegacyAuthStub = __decorate8([
   (0, import_inversify6.injectable)()
 ], LegacyAuthStub);
 var AuthReplyStub = class AuthReplyStub2 extends createAuthnReplyStubClass("AuthReplyStub", legacyAuthService) {
 };
-AuthReplyStub = __decorate7([
+AuthReplyStub = __decorate8([
   (0, import_inversify6.injectable)()
 ], AuthReplyStub);
 
@@ -71925,7 +72030,7 @@ var HttpEndpoint = class {
 };
 
 // packages/auth-service/common/lib/session/api.js
-var __decorate8 = function(decorators, target, key, desc) {
+var __decorate9 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -71989,7 +72094,7 @@ var SessionStub = SessionStub_1 = class SessionStub2 {
   }
 };
 SessionStub.ID = serviceId("SessionStub");
-SessionStub = SessionStub_1 = __decorate8([
+SessionStub = SessionStub_1 = __decorate9([
   (0, import_inversify7.injectable)(),
   __metadata3("design:paramtypes", [HttpEndpoint])
 ], SessionStub);
@@ -72333,7 +72438,7 @@ var configToLandscape = (config) => {
 };
 
 // packages/workspace-agent/common/lib/api/pipeline.js
-var __decorate9 = function(decorators, target, key, desc) {
+var __decorate10 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -72469,12 +72574,12 @@ var pipelineService = {
 };
 var PipelineStub = class PipelineStub2 extends createAuthnStubClass("PipelineStub", pipelineService) {
 };
-PipelineStub = __decorate9([
+PipelineStub = __decorate10([
   (0, import_inversify8.injectable)()
 ], PipelineStub);
 
 // packages/workspace-service/common/lib/errors.js
-var __decorate10 = function(decorators, target, key, desc) {
+var __decorate11 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -72501,7 +72606,7 @@ var FreeWorkspaceLimitReached = class FreeWorkspaceLimitReached2 extends SimpleS
     super(msg);
   }
 };
-FreeWorkspaceLimitReached = __decorate10([
+FreeWorkspaceLimitReached = __decorate11([
   registerError(),
   __metadata4("design:paramtypes", [String])
 ], FreeWorkspaceLimitReached);
@@ -73290,7 +73395,7 @@ var cached = (f, timeoutMs) => {
 };
 
 // packages/payment-service/node/lib/data-access/Products.js
-var __decorate11 = function(decorators, target, key, desc) {
+var __decorate12 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -73420,7 +73525,7 @@ var ProductsDb = ProductsDb_1 = class ProductsDb2 extends Products {
     return await this.listWorkspacePlansCached();
   }
 };
-ProductsDb = ProductsDb_1 = __decorate11([
+ProductsDb = ProductsDb_1 = __decorate12([
   (0, import_inversify9.injectable)(),
   __param(0, (0, import_inversify9.inject)(Database.ID)),
   __metadata5("design:paramtypes", [Database])
@@ -73607,7 +73712,7 @@ var toUploadFileArgs2 = toObject({
 });
 
 // packages/workspace-service/common/lib/api/workspaces.js
-var __decorate12 = function(decorators, target, key, desc) {
+var __decorate13 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -73615,7 +73720,7 @@ var __decorate12 = function(decorators, target, key, desc) {
 };
 var VpnConfigNotFound = class VpnConfigNotFound2 extends SimpleSerializableException {
 };
-VpnConfigNotFound = __decorate12([
+VpnConfigNotFound = __decorate13([
   registerError()
 ], VpnConfigNotFound);
 var workspacesService = {
@@ -73670,12 +73775,12 @@ var workspacesService = {
 var workspacesStub = createAuthnStubClass("WorkspacesStub", workspacesService);
 var WorkspacesStub = class WorkspacesStub2 extends workspacesStub {
 };
-WorkspacesStub = __decorate12([
+WorkspacesStub = __decorate13([
   (0, import_inversify10.injectable)()
 ], WorkspacesStub);
 
 // packages/workspace-service/node/lib/data-access/WorkspacesDAO.js
-var __decorate13 = function(decorators, target, key, desc) {
+var __decorate14 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -74249,7 +74354,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
     });
   }
 };
-WorkspacesDAODatabase = __decorate13([
+WorkspacesDAODatabase = __decorate14([
   (0, import_inversify11.injectable)(),
   __param2(0, (0, import_inversify11.inject)(serviceId("Workspace"))),
   __param2(1, (0, import_inversify11.inject)(Database.ID)),
@@ -74734,7 +74839,7 @@ var connectJsonClient = async (address) => {
 
 // packages/team-service/common/lib/api/team.js
 var import_inversify12 = __toESM(require_inversify(), 1);
-var __decorate14 = function(decorators, target, key, desc) {
+var __decorate15 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -74760,7 +74865,7 @@ var FetchMembersFailed = FetchMembersFailed_1 = class FetchMembersFailed2 extend
     return new FetchMembersFailed_1("Failed to fetch your team members please try again later", opts);
   }
 };
-FetchMembersFailed = FetchMembersFailed_1 = __decorate14([
+FetchMembersFailed = FetchMembersFailed_1 = __decorate15([
   registerError()
 ], FetchMembersFailed);
 var IsLastAdmin = IsLastAdmin_1 = class IsLastAdmin2 extends SimpleSerializableException {
@@ -74768,7 +74873,7 @@ var IsLastAdmin = IsLastAdmin_1 = class IsLastAdmin2 extends SimpleSerializableE
     return new IsLastAdmin_1("The team must have another admin", opts);
   }
 };
-IsLastAdmin = IsLastAdmin_1 = __decorate14([
+IsLastAdmin = IsLastAdmin_1 = __decorate15([
   registerError()
 ], IsLastAdmin);
 var LeaveTeamFailed = LeaveTeamFailed_1 = class LeaveTeamFailed2 extends SimpleSerializableException {
@@ -74776,7 +74881,7 @@ var LeaveTeamFailed = LeaveTeamFailed_1 = class LeaveTeamFailed2 extends SimpleS
     return new LeaveTeamFailed_1("Failed to leave team try again later", opts);
   }
 };
-LeaveTeamFailed = LeaveTeamFailed_1 = __decorate14([
+LeaveTeamFailed = LeaveTeamFailed_1 = __decorate15([
   registerError()
 ], LeaveTeamFailed);
 var ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = class ChangeMemberRoleFailed2 extends SimpleSerializableException {
@@ -74784,7 +74889,7 @@ var ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = class ChangeMemberRoleFa
     return new ChangeMemberRoleFailed_1("Failed to change member role please try again later", opts);
   }
 };
-ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = __decorate14([
+ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = __decorate15([
   registerError()
 ], ChangeMemberRoleFailed);
 var NotEnoughSeats = NotEnoughSeats_1 = class NotEnoughSeats2 extends SimpleSerializableException {
@@ -74792,7 +74897,7 @@ var NotEnoughSeats = NotEnoughSeats_1 = class NotEnoughSeats2 extends SimpleSeri
     return new NotEnoughSeats_1("Not enough seats to add more team members", opts);
   }
 };
-NotEnoughSeats = NotEnoughSeats_1 = __decorate14([
+NotEnoughSeats = NotEnoughSeats_1 = __decorate15([
   registerError()
 ], NotEnoughSeats);
 var SendInviteFailed = SendInviteFailed_1 = class SendInviteFailed2 extends SimpleSerializableException {
@@ -74800,7 +74905,7 @@ var SendInviteFailed = SendInviteFailed_1 = class SendInviteFailed2 extends Simp
     return new SendInviteFailed_1("Failed to send invitation try again later", opts);
   }
 };
-SendInviteFailed = SendInviteFailed_1 = __decorate14([
+SendInviteFailed = SendInviteFailed_1 = __decorate15([
   registerError()
 ], SendInviteFailed);
 var InvalidInvitation = InvalidInvitation_1 = class InvalidInvitation2 extends SimpleSerializableException {
@@ -74808,7 +74913,7 @@ var InvalidInvitation = InvalidInvitation_1 = class InvalidInvitation2 extends S
     return new InvalidInvitation_1("Failed to accept invitation.", opts);
   }
 };
-InvalidInvitation = InvalidInvitation_1 = __decorate14([
+InvalidInvitation = InvalidInvitation_1 = __decorate15([
   registerError()
 ], InvalidInvitation);
 var TeamUpdateFailed = TeamUpdateFailed_1 = class TeamUpdateFailed2 extends SimpleSerializableException {
@@ -74816,7 +74921,7 @@ var TeamUpdateFailed = TeamUpdateFailed_1 = class TeamUpdateFailed2 extends Simp
     return new TeamUpdateFailed_1("Team update failed please try again later", opts);
   }
 };
-TeamUpdateFailed = TeamUpdateFailed_1 = __decorate14([
+TeamUpdateFailed = TeamUpdateFailed_1 = __decorate15([
   registerError()
 ], TeamUpdateFailed);
 var FileTooLarge = FileTooLarge_1 = class FileTooLarge2 extends SimpleSerializableException {
@@ -74824,7 +74929,7 @@ var FileTooLarge = FileTooLarge_1 = class FileTooLarge2 extends SimpleSerializab
     return new FileTooLarge_1(msg, opts);
   }
 };
-FileTooLarge = FileTooLarge_1 = __decorate14([
+FileTooLarge = FileTooLarge_1 = __decorate15([
   registerError()
 ], FileTooLarge);
 var IncorrectType = IncorrectType_1 = class IncorrectType2 extends SimpleSerializableException {
@@ -74832,12 +74937,12 @@ var IncorrectType = IncorrectType_1 = class IncorrectType2 extends SimpleSeriali
     return new IncorrectType_1(msg, opts);
   }
 };
-IncorrectType = IncorrectType_1 = __decorate14([
+IncorrectType = IncorrectType_1 = __decorate15([
   registerError()
 ], IncorrectType);
 var RemoveMemberFailed = class RemoveMemberFailed2 extends SimpleSerializableException {
 };
-RemoveMemberFailed = __decorate14([
+RemoveMemberFailed = __decorate15([
   registerError()
 ], RemoveMemberFailed);
 var AvatarNotFound = AvatarNotFound_1 = class AvatarNotFound2 extends NotFound {
@@ -74845,7 +74950,7 @@ var AvatarNotFound = AvatarNotFound_1 = class AvatarNotFound2 extends NotFound {
     return new AvatarNotFound_1("Team has no Avatar", opts);
   }
 };
-AvatarNotFound = AvatarNotFound_1 = __decorate14([
+AvatarNotFound = AvatarNotFound_1 = __decorate15([
   registerError()
 ], AvatarNotFound);
 var FetchTeamsFailed = FetchTeamsFailed_1 = class FetchTeamsFailed2 extends SimpleSerializableException {
@@ -74853,7 +74958,7 @@ var FetchTeamsFailed = FetchTeamsFailed_1 = class FetchTeamsFailed2 extends Simp
     return new FetchTeamsFailed_1("Failed to fetch your teams. Please try again later", opts);
   }
 };
-FetchTeamsFailed = FetchTeamsFailed_1 = __decorate14([
+FetchTeamsFailed = FetchTeamsFailed_1 = __decorate15([
   registerError()
 ], FetchTeamsFailed);
 var SetDeletionPendingFailed = SetDeletionPendingFailed_1 = class SetDeletionPendingFailed2 extends SimpleSerializableException {
@@ -74861,7 +74966,7 @@ var SetDeletionPendingFailed = SetDeletionPendingFailed_1 = class SetDeletionPen
     return new SetDeletionPendingFailed_1(msg, opts);
   }
 };
-SetDeletionPendingFailed = SetDeletionPendingFailed_1 = __decorate14([
+SetDeletionPendingFailed = SetDeletionPendingFailed_1 = __decorate15([
   registerError()
 ], SetDeletionPendingFailed);
 var ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = class ReactivateDeletedUserTeamsFailed2 extends SimpleSerializableException {
@@ -74869,7 +74974,7 @@ var ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = clas
     return new ReactivateDeletedUserTeamsFailed_1("Reactivating the teams of the deleted user failed.", opts);
   }
 };
-ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = __decorate14([
+ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = __decorate15([
   registerError()
 ], ReactivateDeletedUserTeamsFailed);
 var FetchInvitationsFailed = FetchInvitationsFailed_1 = class FetchInvitationsFailed2 extends SimpleSerializableException {
@@ -74877,27 +74982,27 @@ var FetchInvitationsFailed = FetchInvitationsFailed_1 = class FetchInvitationsFa
     return new FetchInvitationsFailed_1("Failed to fetch your invitations. Please try again later", opts);
   }
 };
-FetchInvitationsFailed = FetchInvitationsFailed_1 = __decorate14([
+FetchInvitationsFailed = FetchInvitationsFailed_1 = __decorate15([
   registerError()
 ], FetchInvitationsFailed);
 var DeleteTeamFailed = class DeleteTeamFailed2 extends SimpleSerializableException {
 };
-DeleteTeamFailed = __decorate14([
+DeleteTeamFailed = __decorate15([
   registerError()
 ], DeleteTeamFailed);
 var DomainDeletionFailed = class DomainDeletionFailed2 extends DeleteTeamFailed {
 };
-DomainDeletionFailed = __decorate14([
+DomainDeletionFailed = __decorate15([
   registerError()
 ], DomainDeletionFailed);
 var WorkspaceDeletionFailed = class WorkspaceDeletionFailed2 extends DeleteTeamFailed {
 };
-WorkspaceDeletionFailed = __decorate14([
+WorkspaceDeletionFailed = __decorate15([
   registerError()
 ], WorkspaceDeletionFailed);
 var VpnDeletionFailed = class VpnDeletionFailed2 extends DeleteTeamFailed {
 };
-VpnDeletionFailed = __decorate14([
+VpnDeletionFailed = __decorate15([
   registerError()
 ], VpnDeletionFailed);
 var teamService = {
@@ -75016,7 +75121,7 @@ var teamService = {
 var teamStub = createAuthnStubClass("TeamStub", teamService);
 var TeamStub = class TeamStub2 extends teamStub {
 };
-TeamStub = __decorate14([
+TeamStub = __decorate15([
   (0, import_inversify12.injectable)()
 ], TeamStub);
 
@@ -75039,7 +75144,7 @@ var createServiceUrl = (protocol, host, servicePath, dc) => {
 
 // packages/workspace-proxy/common/lib/api/pipeline.js
 var import_inversify13 = __toESM(require_inversify(), 1);
-var __decorate15 = function(decorators, target, key, desc) {
+var __decorate16 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -75165,7 +75270,7 @@ var pipelineProxyService = {
 };
 var PipelineProxyStub = class PipelineProxyStub2 extends createAuthnStubClass("PipelineProxyStub", pipelineProxyService) {
 };
-PipelineProxyStub = __decorate15([
+PipelineProxyStub = __decorate16([
   (0, import_inversify13.injectable)()
 ], PipelineProxyStub);
 
@@ -75174,7 +75279,7 @@ var import_inversify15 = __toESM(require_inversify(), 1);
 
 // packages/workspace-agent/common/lib/api/process.js
 var import_inversify14 = __toESM(require_inversify(), 1);
-var __decorate16 = function(decorators, target, key, desc) {
+var __decorate17 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -75215,7 +75320,7 @@ var ProcessExecutionFailed = ProcessExecutionFailed_1 = class ProcessExecutionFa
     super(message);
   }
 };
-ProcessExecutionFailed = ProcessExecutionFailed_1 = __decorate16([
+ProcessExecutionFailed = ProcessExecutionFailed_1 = __decorate17([
   registerError(),
   __metadata7("design:paramtypes", [String])
 ], ProcessExecutionFailed);
@@ -75224,7 +75329,7 @@ var ProcessTimedOut = class ProcessTimedOut2 extends SimpleSerializableException
     super(message);
   }
 };
-ProcessTimedOut = __decorate16([
+ProcessTimedOut = __decorate17([
   registerError(),
   __metadata7("design:paramtypes", [String])
 ], ProcessTimedOut);
@@ -75245,12 +75350,12 @@ var processService = {
 var processStub = createAuthnStubClass("ProcessStub", processService);
 var ProcessStub = class ProcessStub2 extends processStub {
 };
-ProcessStub = __decorate16([
+ProcessStub = __decorate17([
   (0, import_inversify14.injectable)()
 ], ProcessStub);
 
 // packages/workspace-proxy/common/lib/api/process.js
-var __decorate17 = function(decorators, target, key, desc) {
+var __decorate18 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -75274,13 +75379,13 @@ var processProxyService = {
 var processProxyStub = createAuthnStubClass("ProcessProxyStub", processProxyService);
 var ProcessProxyStub = class ProcessProxyStub2 extends processProxyStub {
 };
-ProcessProxyStub = __decorate17([
+ProcessProxyStub = __decorate18([
   (0, import_inversify15.injectable)()
 ], ProcessProxyStub);
 
 // packages/workspace-service/common/lib/api/landscape.js
 var import_inversify16 = __toESM(require_inversify(), 1);
-var __decorate18 = function(decorators, target, key, desc) {
+var __decorate19 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -75322,7 +75427,7 @@ var landscapeService = {
 var landscapeStub = createAuthnStubClass("LandscapeStub", landscapeService);
 var LandscapeStub = class LandscapeStub2 extends landscapeStub {
 };
-LandscapeStub = __decorate18([
+LandscapeStub = __decorate19([
   (0, import_inversify16.injectable)()
 ], LandscapeStub);
 
