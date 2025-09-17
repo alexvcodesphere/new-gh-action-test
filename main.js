@@ -71099,6 +71099,7 @@ var AVAILABLE_EXPERIMENTS = [
   "react-create-ws",
   "env-state",
   "esbuild",
+  "exec-manager-react",
   "external-mounter",
   "file-tree-lit",
   "git-panel",
