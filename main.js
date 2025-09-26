@@ -71106,7 +71106,6 @@ var AVAILABLE_EXPERIMENTS = [
   "gpu-plan",
   "hermetic",
   "ide-filetree-react",
-  "ide-git-react",
   "ide-react",
   "ide-split-react",
   "language-server",
@@ -72225,7 +72224,6 @@ var import_inversify8 = __toESM(require_inversify(), 1);
 var toPipelineMetaConfig = toObject({
   configDir: toString,
   workingDirectory: toString,
-  internalDataDir: toString,
   maxLogsPerStep: toNumber,
   envVars: toRecord(toString),
   replicaId: toString,
