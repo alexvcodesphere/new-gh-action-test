@@ -53330,14 +53330,16 @@ var isOfType = (x, converter) => {
 };
 var readOnly = (convert) => convert;
 var toAny = (x) => x;
-var toArray = (convert) => {
+var toArray = (convert, refine) => {
   return (x) => {
     if (!Array.isArray(x)) {
       throw new TypeConversionFailure("Array", x);
     }
-    const a = x.map((value) => {
+    const a = x.map((value, index, array) => {
       try {
-        return { value: convert(value) };
+        const r = convert(value);
+        refine === null || refine === void 0 ? void 0 : refine(r, index, array);
+        return { value: r };
       } catch (e) {
         if (e instanceof TypeConversionFailure) {
           return { error: e };
@@ -53352,9 +53354,9 @@ var toArray = (convert) => {
     return a.map(({ value }) => value);
   };
 };
-var toNonEmptyArray = (convert) => (x) => {
+var toNonEmptyArray = (convert, refine) => (x) => {
   if (Array.isArray(x) && x.length > 0) {
-    return toArray(convert)(x);
+    return toArray(convert, refine)(x);
   }
   throw new TypeConversionFailure("non-empty array", x);
 };
