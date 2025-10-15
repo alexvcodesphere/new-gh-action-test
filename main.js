@@ -54073,16 +54073,18 @@ var Bytes = class _Bytes {
     }
     return dec < binary ? `${dec}${decimalSuffixes[i]}` : `${binary}${binarySuffixes[i]}`;
   }
-  toString({ decimals = 0, trimTrailingZeroes = false } = {}) {
+  toString({ decimals = 0, trimTrailingZeroes = false, unitBase = "1000" } = {}) {
     if (decimals < 0) {
       throw new InvalidArgument3("No negative decimals allowed.");
     }
+    const suffixes = stringSuffixes[unitBase];
     if (this.bytes === 0) {
-      return "0 Bytes";
+      return `0 ${suffixes[0]}`;
     }
-    const exp = Math.floor(Math.log(this.bytes) / Math.log(1024));
-    const value = (this.bytes / Math.pow(1024, exp)).toFixed(decimals);
-    return `${trimTrailingZeroes ? parseFloat(value) : value} ${stringSuffixes[exp]}`;
+    const base = unitBase === "1024" ? 1024 : 1e3;
+    const exp = Math.floor(Math.log(this.bytes) / Math.log(base));
+    const value = (this.bytes / Math.pow(base, exp)).toFixed(decimals);
+    return `${trimTrailingZeroes ? parseFloat(value) : value} ${suffixes[exp]}`;
   }
   add(other) {
     return bytes(this.bytes + other.bytes);
@@ -54117,7 +54119,10 @@ var Bytes = class _Bytes {
 };
 var binarySuffixes = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
 var decimalSuffixes = ["b", "k", "M", "G", "T", "P", "E"];
-var stringSuffixes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"];
+var stringSuffixes = {
+  "1024": ["Bytes", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"],
+  "1000": ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
+};
 var k8sUnit2Byte = (unit, suffixes, base) => {
   const exp = suffixes.findIndex((e) => e === unit);
   if (exp === -1) {
@@ -55543,7 +55548,6 @@ var LandscapeStatus;
   LandscapeStatus2["Deploying"] = "Deploying servers";
   LandscapeStatus2["ServersDeployed"] = "Servers are deployed";
   LandscapeStatus2["Scaled"] = "Servers are scaled";
-  LandscapeStatus2["Failed"] = "Landscape deploy failed";
 })(LandscapeStatus || (LandscapeStatus = {}));
 var toLandscapeStatus = toStringEnum("LandscapeStatus", LandscapeStatus);
 
@@ -56473,6 +56477,7 @@ var CodesphereEnv;
   CodesphereEnv2["Test"] = "test";
   CodesphereEnv2["LocalTest"] = "local-test";
   CodesphereEnv2["PrivateCloud"] = "private-cloud";
+  CodesphereEnv2["TelioDev"] = "telio-dev";
 })(CodesphereEnv || (CodesphereEnv = {}));
 var codesphereEnvId = serviceId("CodesphereEnv");
 var toCodesphereEnv = toStringEnum("CodesphereEnv", CodesphereEnv);
@@ -56565,10 +56570,19 @@ var isEnabled = (name) => {
   return enabled.has(name);
 };
 
+// packages/utils/common/lib/features.js
+var AVAILABLE_FEATURES = ["email-signup", "email-signin"];
+var availableFeatures = [...AVAILABLE_FEATURES];
+var toFeatureName = toLiteralUnion("FeatureName", availableFeatures);
+
 // packages/ide/common/lib/BrowserConfig.js
 var toExperiments = toObject({
   available: toReadOnly(toArray(toString)),
   enabled: toReadOnly(toArray(toExperimentName))
+});
+var toFeatures = toObject({
+  available: toReadOnly(toArray(toString)),
+  enabled: toReadOnly(toArray(toFeatureName))
 });
 var toBrowserConfig = toObject({
   version: toString,
