@@ -56515,11 +56515,8 @@ var MAINTENANCE_MODE_EXP_NAME = "maintenance-mode";
 var AVAILABLE_EXPERIMENTS = [
   "ceph-subtree-pinning",
   "react-create-ws",
-  "env-state",
-  "esbuild",
   "exec-manager-react",
   "external-mounter",
-  "file-tree-lit",
   "git-panel",
   "gpu-plan",
   "hermetic",
@@ -56535,30 +56532,22 @@ var AVAILABLE_EXPERIMENTS = [
   "msd",
   "o11y",
   "overview-react",
-  "package-mount-external",
   "persistent-logs",
   "persistent-nix",
   "privileged-ports",
-  "plan-characteristics-db",
   "public-api",
-  "pubsub-postgres",
-  "react",
   "react-user-settings",
   "recaptcha-v3",
   "recursive-watcher",
   "restricted-domains",
   "streamy-token-refresh",
-  "split-layout",
-  "squily-postgres",
   "time-gen-access-token",
-  "time-listDir",
   "time-sameDc",
   "tcp-udp",
   "usage-history",
   "virtual-machines",
   "vpn",
-  "ws-vscode-server",
-  "ws-server-esbuild"
+  "ws-vscode-server"
 ];
 var availableExperiments = [...AVAILABLE_EXPERIMENTS];
 var toExperimentName = toLiteralUnion("ExperimentName", availableExperiments);
