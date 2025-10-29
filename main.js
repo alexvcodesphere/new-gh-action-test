@@ -10233,6 +10233,190 @@ var require_node_ponyfill = __commonJS({
   }
 });
 
+// node_modules/deprecation/dist-node/index.js
+var require_dist_node = __commonJS({
+  "node_modules/deprecation/dist-node/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var Deprecation = class extends Error {
+      constructor(message) {
+        super(message);
+        if (Error.captureStackTrace) {
+          Error.captureStackTrace(this, this.constructor);
+        }
+        this.name = "Deprecation";
+      }
+    };
+    exports2.Deprecation = Deprecation;
+  }
+});
+
+// node_modules/wrappy/wrappy.js
+var require_wrappy = __commonJS({
+  "node_modules/wrappy/wrappy.js"(exports2, module2) {
+    module2.exports = wrappy;
+    function wrappy(fn, cb) {
+      if (fn && cb) return wrappy(fn)(cb);
+      if (typeof fn !== "function")
+        throw new TypeError("need wrapper function");
+      Object.keys(fn).forEach(function(k) {
+        wrapper[k] = fn[k];
+      });
+      return wrapper;
+      function wrapper() {
+        var args = new Array(arguments.length);
+        for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i];
+        }
+        var ret = fn.apply(this, args);
+        var cb2 = args[args.length - 1];
+        if (typeof ret === "function" && ret !== cb2) {
+          Object.keys(cb2).forEach(function(k) {
+            ret[k] = cb2[k];
+          });
+        }
+        return ret;
+      }
+    }
+  }
+});
+
+// node_modules/once/once.js
+var require_once = __commonJS({
+  "node_modules/once/once.js"(exports2, module2) {
+    var wrappy = require_wrappy();
+    module2.exports = wrappy(once);
+    module2.exports.strict = wrappy(onceStrict);
+    once.proto = once(function() {
+      Object.defineProperty(Function.prototype, "once", {
+        value: function() {
+          return once(this);
+        },
+        configurable: true
+      });
+      Object.defineProperty(Function.prototype, "onceStrict", {
+        value: function() {
+          return onceStrict(this);
+        },
+        configurable: true
+      });
+    });
+    function once(fn) {
+      var f = function() {
+        if (f.called) return f.value;
+        f.called = true;
+        return f.value = fn.apply(this, arguments);
+      };
+      f.called = false;
+      return f;
+    }
+    function onceStrict(fn) {
+      var f = function() {
+        if (f.called)
+          throw new Error(f.onceError);
+        f.called = true;
+        return f.value = fn.apply(this, arguments);
+      };
+      var name = fn.name || "Function wrapped with `once`";
+      f.onceError = name + " shouldn't be called more than once";
+      f.called = false;
+      return f;
+    }
+  }
+});
+
+// node_modules/@octokit/request-error/dist-node/index.js
+var require_dist_node2 = __commonJS({
+  "node_modules/@octokit/request-error/dist-node/index.js"(exports2, module2) {
+    "use strict";
+    var __create2 = Object.create;
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __getProtoOf2 = Object.getPrototypeOf;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
+      // If the importer is in node compatibility mode or this is not an ESM
+      // file that has been converted to a CommonJS file using a Babel-
+      // compatible transform (i.e. "__esModule" has not been set), then set
+      // "default" to the CommonJS "module.exports" for node compatibility.
+      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
+      mod
+    ));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var dist_src_exports = {};
+    __export2(dist_src_exports, {
+      RequestError: () => RequestError3
+    });
+    module2.exports = __toCommonJS2(dist_src_exports);
+    var import_deprecation = require_dist_node();
+    var import_once = __toESM2(require_once());
+    var logOnceCode = (0, import_once.default)((deprecation) => console.warn(deprecation));
+    var logOnceHeaders = (0, import_once.default)((deprecation) => console.warn(deprecation));
+    var RequestError3 = class extends Error {
+      constructor(message, statusCode, options) {
+        super(message);
+        if (Error.captureStackTrace) {
+          Error.captureStackTrace(this, this.constructor);
+        }
+        this.name = "HttpError";
+        this.status = statusCode;
+        let headers;
+        if ("headers" in options && typeof options.headers !== "undefined") {
+          headers = options.headers;
+        }
+        if ("response" in options) {
+          this.response = options.response;
+          headers = options.response.headers;
+        }
+        const requestCopy = Object.assign({}, options.request);
+        if (options.request.headers.authorization) {
+          requestCopy.headers = Object.assign({}, options.request.headers, {
+            authorization: options.request.headers.authorization.replace(
+              /(?<! ) .*$/,
+              " [REDACTED]"
+            )
+          });
+        }
+        requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+        this.request = requestCopy;
+        Object.defineProperty(this, "code", {
+          get() {
+            logOnceCode(
+              new import_deprecation.Deprecation(
+                "[@octokit/request-error] `error.code` is deprecated, use `error.status`."
+              )
+            );
+            return statusCode;
+          }
+        });
+        Object.defineProperty(this, "headers", {
+          get() {
+            logOnceHeaders(
+              new import_deprecation.Deprecation(
+                "[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`."
+              )
+            );
+            return headers || {};
+          }
+        });
+      }
+    };
+  }
+});
+
 // node_modules/@actions/core/lib/utils.js
 var require_utils2 = __commonJS({
   "node_modules/@actions/core/lib/utils.js"(exports2) {
@@ -30793,7 +30977,7 @@ var require_utils4 = __commonJS({
 });
 
 // node_modules/universal-user-agent/dist-node/index.js
-var require_dist_node = __commonJS({
+var require_dist_node3 = __commonJS({
   "node_modules/universal-user-agent/dist-node/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -30954,7 +31138,7 @@ var require_before_after_hook = __commonJS({
 });
 
 // node_modules/@octokit/endpoint/dist-node/index.js
-var require_dist_node2 = __commonJS({
+var require_dist_node4 = __commonJS({
   "node_modules/@octokit/endpoint/dist-node/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -30979,7 +31163,7 @@ var require_dist_node2 = __commonJS({
       endpoint: () => endpoint3
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var import_universal_user_agent7 = require_dist_node();
+    var import_universal_user_agent7 = require_dist_node3();
     var VERSION11 = "9.0.6";
     var userAgent3 = `octokit-endpoint.js/${VERSION11} ${(0, import_universal_user_agent7.getUserAgent)()}`;
     var DEFAULTS3 = {
@@ -31299,190 +31483,6 @@ var require_dist_node2 = __commonJS({
   }
 });
 
-// node_modules/deprecation/dist-node/index.js
-var require_dist_node3 = __commonJS({
-  "node_modules/deprecation/dist-node/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var Deprecation = class extends Error {
-      constructor(message) {
-        super(message);
-        if (Error.captureStackTrace) {
-          Error.captureStackTrace(this, this.constructor);
-        }
-        this.name = "Deprecation";
-      }
-    };
-    exports2.Deprecation = Deprecation;
-  }
-});
-
-// node_modules/wrappy/wrappy.js
-var require_wrappy = __commonJS({
-  "node_modules/wrappy/wrappy.js"(exports2, module2) {
-    module2.exports = wrappy;
-    function wrappy(fn, cb) {
-      if (fn && cb) return wrappy(fn)(cb);
-      if (typeof fn !== "function")
-        throw new TypeError("need wrapper function");
-      Object.keys(fn).forEach(function(k) {
-        wrapper[k] = fn[k];
-      });
-      return wrapper;
-      function wrapper() {
-        var args = new Array(arguments.length);
-        for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i];
-        }
-        var ret = fn.apply(this, args);
-        var cb2 = args[args.length - 1];
-        if (typeof ret === "function" && ret !== cb2) {
-          Object.keys(cb2).forEach(function(k) {
-            ret[k] = cb2[k];
-          });
-        }
-        return ret;
-      }
-    }
-  }
-});
-
-// node_modules/once/once.js
-var require_once = __commonJS({
-  "node_modules/once/once.js"(exports2, module2) {
-    var wrappy = require_wrappy();
-    module2.exports = wrappy(once);
-    module2.exports.strict = wrappy(onceStrict);
-    once.proto = once(function() {
-      Object.defineProperty(Function.prototype, "once", {
-        value: function() {
-          return once(this);
-        },
-        configurable: true
-      });
-      Object.defineProperty(Function.prototype, "onceStrict", {
-        value: function() {
-          return onceStrict(this);
-        },
-        configurable: true
-      });
-    });
-    function once(fn) {
-      var f = function() {
-        if (f.called) return f.value;
-        f.called = true;
-        return f.value = fn.apply(this, arguments);
-      };
-      f.called = false;
-      return f;
-    }
-    function onceStrict(fn) {
-      var f = function() {
-        if (f.called)
-          throw new Error(f.onceError);
-        f.called = true;
-        return f.value = fn.apply(this, arguments);
-      };
-      var name = fn.name || "Function wrapped with `once`";
-      f.onceError = name + " shouldn't be called more than once";
-      f.called = false;
-      return f;
-    }
-  }
-});
-
-// node_modules/@octokit/request-error/dist-node/index.js
-var require_dist_node4 = __commonJS({
-  "node_modules/@octokit/request-error/dist-node/index.js"(exports2, module2) {
-    "use strict";
-    var __create2 = Object.create;
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __getProtoOf2 = Object.getPrototypeOf;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
-      // If the importer is in node compatibility mode or this is not an ESM
-      // file that has been converted to a CommonJS file using a Babel-
-      // compatible transform (i.e. "__esModule" has not been set), then set
-      // "default" to the CommonJS "module.exports" for node compatibility.
-      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
-      mod
-    ));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var dist_src_exports = {};
-    __export2(dist_src_exports, {
-      RequestError: () => RequestError3
-    });
-    module2.exports = __toCommonJS2(dist_src_exports);
-    var import_deprecation = require_dist_node3();
-    var import_once = __toESM2(require_once());
-    var logOnceCode = (0, import_once.default)((deprecation) => console.warn(deprecation));
-    var logOnceHeaders = (0, import_once.default)((deprecation) => console.warn(deprecation));
-    var RequestError3 = class extends Error {
-      constructor(message, statusCode, options) {
-        super(message);
-        if (Error.captureStackTrace) {
-          Error.captureStackTrace(this, this.constructor);
-        }
-        this.name = "HttpError";
-        this.status = statusCode;
-        let headers;
-        if ("headers" in options && typeof options.headers !== "undefined") {
-          headers = options.headers;
-        }
-        if ("response" in options) {
-          this.response = options.response;
-          headers = options.response.headers;
-        }
-        const requestCopy = Object.assign({}, options.request);
-        if (options.request.headers.authorization) {
-          requestCopy.headers = Object.assign({}, options.request.headers, {
-            authorization: options.request.headers.authorization.replace(
-              /(?<! ) .*$/,
-              " [REDACTED]"
-            )
-          });
-        }
-        requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
-        this.request = requestCopy;
-        Object.defineProperty(this, "code", {
-          get() {
-            logOnceCode(
-              new import_deprecation.Deprecation(
-                "[@octokit/request-error] `error.code` is deprecated, use `error.status`."
-              )
-            );
-            return statusCode;
-          }
-        });
-        Object.defineProperty(this, "headers", {
-          get() {
-            logOnceHeaders(
-              new import_deprecation.Deprecation(
-                "[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`."
-              )
-            );
-            return headers || {};
-          }
-        });
-      }
-    };
-  }
-});
-
 // node_modules/@octokit/request/dist-node/index.js
 var require_dist_node5 = __commonJS({
   "node_modules/@octokit/request/dist-node/index.js"(exports2, module2) {
@@ -31509,8 +31509,8 @@ var require_dist_node5 = __commonJS({
       request: () => request3
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var import_endpoint3 = require_dist_node2();
-    var import_universal_user_agent7 = require_dist_node();
+    var import_endpoint3 = require_dist_node4();
+    var import_universal_user_agent7 = require_dist_node3();
     var VERSION11 = "8.4.1";
     function isPlainObject5(value) {
       if (typeof value !== "object" || value === null)
@@ -31523,7 +31523,7 @@ var require_dist_node5 = __commonJS({
       const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
       return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
     }
-    var import_request_error3 = require_dist_node4();
+    var import_request_error3 = require_dist_node2();
     function getBufferResponse(response) {
       return response.arrayBuffer();
     }
@@ -31722,7 +31722,7 @@ var require_dist_node6 = __commonJS({
     });
     module2.exports = __toCommonJS2(dist_src_exports);
     var import_request32 = require_dist_node5();
-    var import_universal_user_agent7 = require_dist_node();
+    var import_universal_user_agent7 = require_dist_node3();
     var VERSION11 = "7.0.2";
     var import_request22 = require_dist_node5();
     var import_request6 = require_dist_node5();
@@ -31928,7 +31928,7 @@ var require_dist_node8 = __commonJS({
       Octokit: () => Octokit3
     });
     module2.exports = __toCommonJS2(dist_src_exports);
-    var import_universal_user_agent7 = require_dist_node();
+    var import_universal_user_agent7 = require_dist_node3();
     var import_before_after_hook2 = require_before_after_hook();
     var import_request6 = require_dist_node5();
     var import_graphql2 = require_dist_node6();
@@ -53446,7 +53446,7 @@ var toString = (x) => {
   throw new TypeConversionFailure("string", x);
 };
 var toNonEmptyString = (x) => {
-  if (isString(x) && x !== "") {
+  if (isString(x) && x.trim() !== "") {
     return x;
   }
   throw new TypeConversionFailure("non-empty string", x);
@@ -53588,6 +53588,15 @@ var withDefault = (convert, makeDefault) => {
 };
 var withDefaultIfNull = (convert, makeDefault) => {
   return (x) => null === x ? makeDefault() : convert(x);
+};
+var LengthError = class extends TypeConversionFailure {
+};
+var toNonEmptyStringWithMaxLength = (maxLength) => (x) => {
+  const s = toNonEmptyString(x);
+  if (s.length > maxLength) {
+    throw new LengthError(`Value exceeds max length of ${maxLength}`, s);
+  }
+  return s;
 };
 
 // packages/utils/common/lib/request.js
@@ -57285,6 +57294,12 @@ var authService = {
       request: toEmailAndPassword,
       response: toSessionInfo
     }),
+    authorizeWithOAuth: rpc({
+      access: "public",
+      request: toOAuthServiceArgs,
+      response: toOAuthAuthentication,
+      defaultOptions: { timeout: duration({ seconds: 10 }) }
+    }),
     uploadAvatar: rpc({
       access: "public",
       request: toUploadFileArgs,
@@ -57332,12 +57347,6 @@ var legacyAuthService = {
   name: "AuthLegacy",
   context: toHttpContext,
   methods: {
-    authorizeWithOAuth: rpc({
-      access: "public",
-      request: toOAuthServiceArgs,
-      response: toOAuthAuthentication,
-      defaultOptions: { timeout: duration({ seconds: 10 }) }
-    }),
     confirmEmail: rpc({
       access: "public",
       request: toConfirmEmailArgs,
@@ -59090,18 +59099,19 @@ var getTotalIdeReplicasOfPlan = async (db, teamId, idePlanId) => getTotalReplica
 var import_inversify10 = __toESM(require_inversify(), 1);
 
 // packages/team-service/common/lib/model/TeamServiceArgs.js
+var MAX_TEAM_NAME_LENGTH = 256;
 var teamServiceArgs = {
   teamId: readOnly(toNonNegativeInteger)
 };
 var toTeamServiceArgs = toObject(teamServiceArgs);
 var toCreateTeamArgs = toObject({
-  name: readOnly(toNonEmptyString),
+  name: readOnly(toNonEmptyStringWithMaxLength(MAX_TEAM_NAME_LENGTH)),
   dc: toUndefOr(toNumber),
   firstTeamToken: readOnly(toUndefOr(toString))
 });
 var toUpdateTeamArgs = toObject({
   ...teamServiceArgs,
-  name: readOnly(toUndefOr(toString)),
+  name: readOnly(toUndefOr(toNonEmptyStringWithMaxLength(MAX_TEAM_NAME_LENGTH))),
   description: readOnly(toUndefOr(toString))
 });
 var toSendInviteArgs = toObject({
@@ -59393,7 +59403,8 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
       "restricted",
       "baseImage",
       "collectTraces",
-      "persistentLogs"
+      "persistentLogs",
+      "createdAt"
     ], condition);
     return rs.map(unsafeDbRecordToWorkspaceDbEntry);
   }
