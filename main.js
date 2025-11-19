@@ -36427,10 +36427,10 @@ var require_websocket_server = __commonJS({
             process.nextTick(emitClose, this);
           }
         } else {
-          const server = this._server;
+          const server2 = this._server;
           this._removeListeners();
           this._removeListeners = this._server = null;
-          server.close(() => {
+          server2.close(() => {
             emitClose(this);
           });
         }
@@ -36613,17 +36613,17 @@ var require_websocket_server = __commonJS({
       }
     };
     module2.exports = WebSocketServer2;
-    function addListeners(server, map) {
-      for (const event of Object.keys(map)) server.on(event, map[event]);
+    function addListeners(server2, map) {
+      for (const event of Object.keys(map)) server2.on(event, map[event]);
       return function removeListeners() {
         for (const event of Object.keys(map)) {
-          server.removeListener(event, map[event]);
+          server2.removeListener(event, map[event]);
         }
       };
     }
-    function emitClose(server) {
-      server._state = CLOSED;
-      server.emit("close");
+    function emitClose(server2) {
+      server2._state = CLOSED;
+      server2.emit("close");
     }
     function socketOnError() {
       this.destroy();
@@ -36642,11 +36642,11 @@ var require_websocket_server = __commonJS({
 ` + Object.keys(headers).map((h) => `${h}: ${headers[h]}`).join("\r\n") + "\r\n\r\n" + message
       );
     }
-    function abortHandshakeOrEmitwsClientError(server, req, socket, code, message, headers) {
-      if (server.listenerCount("wsClientError")) {
+    function abortHandshakeOrEmitwsClientError(server2, req, socket, code, message, headers) {
+      if (server2.listenerCount("wsClientError")) {
         const err = new Error(message);
         Error.captureStackTrace(err, abortHandshakeOrEmitwsClientError);
-        server.emit("wsClientError", err, socket, req);
+        server2.emit("wsClientError", err, socket, req);
       } else {
         abortHandshake(socket, code, message, headers);
       }
@@ -49790,22 +49790,20 @@ var toTeamWithMembers = toObject({
 // packages/workspace-service/common/lib/api/envVars.js
 var import_inversify = __toESM(require_inversify(), 1);
 
-// packages/utils/common/lib/inputCheck.js
+// packages/utils/common/lib/envVars.js
 var isEnvVarName = (value) => envVarNamePattern.test(value);
 var envVarNamePattern = /^[A-Za-z_][A-Za-z0-9_.-]*$/;
-var INVALID_CI_PROFILE_NAME = [
-  "The profile name must only consist of",
-  " letters, numbers, underscores (`_`)",
-  " and hyphens (`-`)."
-].join("");
-var ipv4Regex = "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])";
-var ipv6Regex = "([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}";
-var ipv4 = new RegExp(`^${ipv4Regex}$`);
-var ipv6 = new RegExp(`^${ipv6Regex}$`);
-var ipv4Subnet = "/(?:[1-9]|[1-2][0-9]|3[0-2])";
-var ipv6Subnet = "/(?:[1-9]|[1-5][0-9]|6[0-4])";
-var ipv4WithSubnets = new RegExp(`^${ipv4Regex}${ipv4Subnet}(?:,\\s*${ipv4Regex}${ipv4Subnet})*$`);
-var ipv6WithSubnets = new RegExp(`^${ipv6Regex}${ipv6Subnet}(?:,\\s*${ipv6Regex}${ipv6Subnet})*$`);
+var toEnvVarName = (x) => {
+  const s = toString(x);
+  if (isEnvVarName(s)) {
+    return s;
+  }
+  throw new TypeConversionFailure("EnvVarName", x);
+};
+var toEnvironmentVariable = toObject({
+  name: toEnvVarName,
+  value: toString
+});
 
 // packages/workspace-service/common/lib/api/envVars.js
 var __decorate2 = function(decorators, target, key, desc) {
@@ -49817,23 +49815,12 @@ var __decorate2 = function(decorators, target, key, desc) {
 var toWorkspaceServiceArgs = toObject({
   workspaceId: toNumber
 });
-var toEnvVarName = (x) => {
-  const s = toString(x);
-  if (isEnvVarName(s)) {
-    return s;
-  }
-  throw new TypeConversionFailure("EnvVarName", x);
-};
 var toEnvVars = (x) => {
   if (!isObject(x)) {
     throw new TypeConversionFailure("record", x);
   }
   return Object.fromEntries(Object.entries(x).map(([k, v]) => [toEnvVarName(k), toString(v)]));
 };
-var toEnvironmentVariable = toObject({
-  name: toEnvVarName,
-  value: toString
-});
 var toUpdateEnvVarsArgs = toObject({
   workspaceId: toNonNegativeInteger,
   envVars: toEnvVars
@@ -50934,6 +50921,7 @@ var AVAILABLE_EXPERIMENTS = [
   "managed-services",
   MAINTENANCE_MODE_EXP_NAME,
   "metrics-react",
+  "ms-in-ls",
   "msd",
   "o11y",
   "overview-react",
@@ -51669,7 +51657,7 @@ var authService = {
       access: "public",
       request: toDeactivateUserArgs,
       response: toDeactivateUserInfo,
-      defaultOptions: { timeout: { seconds: 30 } }
+      defaultOptions: { timeout: { seconds: 60 } }
     }),
     updateProfile: rpc({
       access: "public",
@@ -51684,7 +51672,8 @@ var authService = {
     restoreUser: rpc({
       access: "public",
       request: toEmailAndPassword,
-      response: toVoid
+      response: toVoid,
+      defaultOptions: { timeout: { seconds: 60 } }
     }),
     signIn: rpc({
       access: "public",
@@ -51788,7 +51777,7 @@ AuthReplyStub = __decorate8([
 var import_inversify7 = __toESM(require_inversify(), 1);
 
 // packages/utils/common/lib/url.js
-var isLocalHost = (host) => host.split(":")[0] === "localhost";
+var isLocalHost = (host) => host.split(":")[0] === "localhost" || host.split(":")[0] === "127.0.0.1";
 var isDevHost = (host) => [".dev.codesphere.com", "3.codesphere.com", "5.codesphere.com"].some((s) => host.endsWith(s));
 var createBaseUrl = (protocol, host, dc) => {
   if (host.includes("://")) {
@@ -52119,75 +52108,6 @@ var prepareUrlPathRegex = () => {
 var validUrlPathRegex = prepareUrlPathRegex();
 var toUrlPath = toStringMatchingRegex("UrlPath", validUrlPathRegex);
 
-// packages/workspace-service/common/lib/Workspace.js
-var GitProvider;
-(function(GitProvider2) {
-  GitProvider2["GitHub"] = "github";
-  GitProvider2["GitLab"] = "gitlab";
-  GitProvider2["Bitbucket"] = "bitbucket";
-})(GitProvider || (GitProvider = {}));
-var toGitProvider2 = toStringEnum("GitProvider", GitProvider);
-var workspace = {
-  id: readOnly(toNonNegativeInteger),
-  dataCenterId: readOnly(toNumber),
-  userId: readOnly(toNonNegativeInteger),
-  teamId: readOnly(toNonNegativeInteger),
-  name: toString,
-  gitUrl: readOnly(toNullOr(toString)),
-  isPrivateRepo: readOnly(toBoolean),
-  welcomeMessage: readOnly(toNullOr(toString)),
-  initialBranch: readOnly(toNullOr(toString)),
-  cloneDepth: toUndefOr(toPositiveInteger),
-  sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
-  planId: toPlanId,
-  replicas: toPositiveInteger,
-  vpnConfig: toNullOr(toString),
-  collectTraces: toBoolean,
-  restricted: toBoolean,
-  baseImage: toUndefOr(toString),
-  persistentLogs: toBoolean
-};
-var toWorkspace = toObject(workspace);
-var validServerNameRegex = new RegExp("^(?:[a-z]|[a-z][-a-z0-9]{0,30}[a-z0-9])$");
-var toMsdServerName = toStringMatchingRegex("MsdServerName", validServerNameRegex);
-var toServerPath = toObject({
-  port: toPositiveInteger,
-  path: toUrlPath,
-  stripPath: toBoolean
-});
-var toServerPort = toObject({
-  port: toPositiveInteger,
-  isPublic: toBoolean
-});
-var toServerNetwork = toObject({
-  ports: toNonEmptyArray(toServerPort),
-  paths: toArray(toServerPath)
-});
-var serverV2 = {
-  name: readOnly(toMsdServerName),
-  planId: toPlanId,
-  replicas: toPositiveInteger,
-  mountSubPath: toUndefOr(toPathWithoutTraversal),
-  network: toServerNetwork
-};
-var toServerV2 = toObject(serverV2);
-var serverV1 = {
-  name: readOnly(toMsdServerName),
-  planId: toPlanId,
-  replicas: toPositiveInteger,
-  stripPath: toBoolean,
-  isPublic: toUndefOr(toBoolean),
-  network: toUndefOr(toObject({
-    path: toUrlPath
-  }))
-};
-var toServerV1 = toObject(serverV1);
-var toServer = toOr(toServerV1, toServerV2);
-var uniqueServerId = ({ workspaceId, name }) => `${workspaceId}-${name}`;
-var IDE_SERVER_NAME = "codesphere-ide";
-var DEFAULT_PORT = 3e3;
-var workspaceDevDomain = (workspaceId, workspaceHostingBaseDomain) => `${workspaceId}-${DEFAULT_PORT}.${workspaceHostingBaseDomain}`;
-
 // packages/workspace-agent/common/lib/pipeline/types.js
 var singleRunningStageKinds = ["prepare", "test"];
 var multiRunningStageKinds = ["run"];
@@ -52274,40 +52194,6 @@ var stageExecutionInfo = {
 };
 var toStageExecutionInfo = toObject(stageExecutionInfo);
 var isAdvancedNetworkConfig = (c) => isOfType(c, toAdvancedNetworkConfig);
-var simpleNetworkToServerNetwork = (networkConfig, isPublic) => {
-  var _a;
-  return {
-    ports: [
-      {
-        port: DEFAULT_PORT,
-        isPublic: isPublic !== null && isPublic !== void 0 ? isPublic : true
-      }
-    ],
-    paths: !networkConfig || !(isPublic !== null && isPublic !== void 0 ? isPublic : true) ? [] : [
-      {
-        port: DEFAULT_PORT,
-        path: networkConfig.path,
-        stripPath: (_a = networkConfig.stripPath) !== null && _a !== void 0 ? _a : false
-      }
-    ]
-  };
-};
-var advancedNetworkToServerNetwork = (networkConfig) => ({
-  ...networkConfig,
-  paths: networkConfig.paths.map((p) => ({ stripPath: false, ...p }))
-});
-var configToLandscape = (config) => {
-  return Object.entries(config).map(([k, v]) => {
-    var _a;
-    return toServerV2({
-      name: k,
-      planId: v.plan,
-      replicas: (_a = v.replicas) !== null && _a !== void 0 ? _a : 1,
-      mountSubPath: v.mountSubPath || void 0,
-      network: v.network && isAdvancedNetworkConfig(v.network) ? advancedNetworkToServerNetwork(v.network) : simpleNetworkToServerNetwork(v.network, v.isPublic)
-    });
-  });
-};
 
 // packages/workspace-agent/common/lib/api/pipeline.js
 var __decorate10 = function(decorators, target, key, desc) {
@@ -53465,6 +53351,291 @@ var getPlanCharacteristicId = serviceId("GetPlanCharacteristic");
 var getWorkspacePlanId = serviceId("GetWorkspacePlan");
 var getHostingResourcesId = serviceId("GetHostingResources");
 
+// packages/payment-service/common/lib/api/usage.js
+var __decorate13 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata6 = function(k, v) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var InvalidDateRange = class InvalidDateRange2 extends SimpleSerializableException {
+  constructor(msg) {
+    super(msg, { scope: "public" });
+  }
+};
+InvalidDateRange = __decorate13([
+  registerError(),
+  __metadata6("design:paramtypes", [String])
+], InvalidDateRange);
+var LANDSCAPE_SERVICE = "Landscape Service";
+var IDE_PLAN = "IDE Plan";
+var WORKSPACE = "Workspace";
+var DATABASE = "Database";
+var DOCKER_DEPLOYMENT = "Docker Deployment";
+var SEATS = "Seats";
+var allResourceTypes = [
+  LANDSCAPE_SERVICE,
+  IDE_PLAN,
+  WORKSPACE,
+  DATABASE,
+  DOCKER_DEPLOYMENT,
+  SEATS
+];
+var toResourceType = toLiteralUnion("resourceType", allResourceTypes);
+var SortingOption;
+(function(SortingOption2) {
+  SortingOption2["IdAsc"] = "idAsc";
+  SortingOption2["IdDesc"] = "idDesc";
+  SortingOption2["UsageAsc"] = "usageAsc";
+  SortingOption2["UsageDesc"] = "usageDesc";
+  SortingOption2["ResourceNameAsc"] = "resourceNameAsc";
+  SortingOption2["ResourceNameDesc"] = "resourceNameDesc";
+  SortingOption2["ResourceTypeAsc"] = "resourceTypeAsc";
+  SortingOption2["ResourceTypeDesc"] = "resourceTypeDesc";
+})(SortingOption || (SortingOption = {}));
+var baseUsageParams = {
+  teamId: toNumber,
+  beginDate: toDate,
+  endDate: toDate,
+  limit: toUndefOr(toRestrictedInteger("Integer in range 1 to 100", (n) => n > 0 && n <= 100)),
+  offset: toUndefOr(toNonNegativeInteger)
+};
+var toUsageParams = toObject(baseUsageParams);
+var toSummaryUsageParams = toObject({
+  ...baseUsageParams,
+  resourceTypes: toUndefOr(toNonEmptyArray(toResourceType)),
+  sortBy: toStringEnum("SortingOption", SortingOption)
+});
+var toWorkspaceUsageParams = toObject({
+  ...baseUsageParams,
+  workspaceId: toNumber
+});
+var toServerUsageParams = toObject({
+  ...baseUsageParams,
+  workspaceId: toNumber,
+  serverName: toString
+});
+var toDatabaseUsageParams = toObject({
+  ...baseUsageParams,
+  databaseId: toString
+});
+var toDockerDeploymentUsageParams = toObject({
+  ...baseUsageParams,
+  deploymentId: toString
+});
+var baseEventData = {
+  initiatorId: toString,
+  initiatorEmail: toUndefOr(toString)
+};
+var baseWorkspaceData = {
+  workspaceId: toNonNegativeInteger,
+  workspaceName: toString,
+  wsOwnerUserId: toNumber,
+  wsOwnerUserEmail: toString
+};
+var toWorkspaceUsageStartEvent = toObject({
+  ...baseEventData,
+  ...baseWorkspaceData,
+  beginDate: toDate,
+  sourceWorkspaceId: toUndefOr(toNonNegativeInteger),
+  repoUrl: toUndefOr(toString),
+  branch: toUndefOr(toString)
+});
+var toWorkspaceUsageEndEvent = toObject({
+  ...baseEventData,
+  ...baseWorkspaceData,
+  endDate: toDate
+});
+var toWorkspaceUsageEvent = toOr(toWorkspaceUsageStartEvent, toWorkspaceUsageEndEvent);
+var toPaginatedWorkspaceUsageEvents = toObject({
+  events: toArray(toWorkspaceUsageEvent),
+  totalItems: toInteger,
+  limit: toPositiveInteger,
+  offset: toNonNegativeInteger
+});
+var baseDatabaseData = {
+  databaseId: toString,
+  databaseName: toString,
+  engine: toString,
+  version: toString,
+  regionId: toString,
+  provider: toString,
+  planId: toNonNegativeInteger,
+  planName: toString,
+  replicas: toNonNegativeInteger
+};
+var toDatabaseUsageStartEvent = toObject({
+  ...baseEventData,
+  ...baseDatabaseData,
+  beginDate: toDate
+});
+var toDatabaseUsageEndEvent = toObject({
+  ...baseEventData,
+  ...baseDatabaseData,
+  endDate: toDate
+});
+var toDatabaseUsageEvent = toOr(toDatabaseUsageStartEvent, toDatabaseUsageEndEvent);
+var toPaginatedDatabaseUsageEvents = toObject({
+  events: toArray(toDatabaseUsageEvent),
+  totalItems: toInteger,
+  limit: toPositiveInteger,
+  offset: toNonNegativeInteger
+});
+var baseDeploymentsData = {
+  deploymentId: toString,
+  deploymentName: toString,
+  repository: toString,
+  port: toPositiveInteger,
+  regionId: toString,
+  provider: toString,
+  planId: toNonNegativeInteger,
+  planName: toString
+};
+var toDeploymentUsageStartEvent = toObject({
+  ...baseEventData,
+  ...baseDeploymentsData,
+  beginDate: toDate
+});
+var toDeploymentUsageEndEvent = toObject({
+  ...baseEventData,
+  ...baseDeploymentsData,
+  endDate: toDate
+});
+var toDeploymentUsageEvent = toOr(toDeploymentUsageStartEvent, toDeploymentUsageEndEvent);
+var toPaginatedDeploymentUsageEvents = toObject({
+  events: toArray(toDeploymentUsageEvent),
+  totalItems: toInteger,
+  limit: toPositiveInteger,
+  offset: toNonNegativeInteger
+});
+var baseSeatData = {
+  seats: toNonNegativeInteger
+};
+var toSeatUsageStartEvent = toObject({
+  ...baseEventData,
+  ...baseSeatData,
+  beginDate: toDate
+});
+var toSeatUsageEndEvent = toObject({
+  ...baseEventData,
+  ...baseSeatData,
+  endDate: toDate
+});
+var toSeatUsageEvent = toOr(toSeatUsageStartEvent, toSeatUsageEndEvent);
+var toPaginatedSeatUsageEvents = toObject({
+  events: toArray(toSeatUsageEvent),
+  totalItems: toInteger,
+  limit: toPositiveInteger,
+  offset: toNonNegativeInteger
+});
+var baseServerData = {
+  workspaceId: toNonNegativeInteger,
+  workspaceName: toString,
+  serverName: toString,
+  ownerUserId: toInteger,
+  ownerUserEmail: toString,
+  planId: toNonNegativeInteger,
+  planName: toString,
+  replicas: toPositiveInteger,
+  onDemand: toBoolean
+};
+var toServerUsageStartEvent = toObject({
+  ...baseEventData,
+  ...baseServerData,
+  beginDate: toDate
+});
+var toServerUsageEndEvent = toObject({
+  ...baseEventData,
+  ...baseServerData,
+  endDate: toDate
+});
+var toServerUsageEvent = toOr(toServerUsageStartEvent, toServerUsageEndEvent);
+var toPaginatedServerUsageEvents = toObject({
+  events: toArray(toServerUsageEvent),
+  totalItems: toInteger,
+  limit: toPositiveInteger,
+  offset: toNonNegativeInteger
+});
+var baseUsageSummary = {
+  id: toString,
+  name: toString,
+  usageSeconds: toNumber
+};
+var toServerUsageSummary = toObject({
+  ...baseUsageSummary,
+  type: toLiteralUnion("type", [LANDSCAPE_SERVICE, IDE_PLAN]),
+  plan: toString,
+  mode: toLiteralUnion("mode", ["on-demand", "always-on"]),
+  replicas: toPositiveInteger
+});
+var toWorkspaceUsageSummary = toObject({
+  ...baseUsageSummary,
+  type: toLiteral(WORKSPACE)
+});
+var toDatabaseUsageSummary = toObject({
+  ...baseUsageSummary,
+  type: toLiteral(DATABASE),
+  plan: toString,
+  replicas: toPositiveInteger
+});
+var toDeploymentsUsageSummary = toObject({
+  ...baseUsageSummary,
+  type: toLiteral(DOCKER_DEPLOYMENT),
+  plan: toString
+});
+var toSeatsUsageSummary = toObject({
+  ...baseUsageSummary,
+  type: toLiteral(SEATS),
+  plan: toString
+});
+var toUsageSummary = toArray(toOr(toServerUsageSummary, toWorkspaceUsageSummary, toDatabaseUsageSummary, toDeploymentsUsageSummary, toSeatsUsageSummary));
+var toPaginatedUsageSummary = toObject({
+  summary: toUsageSummary,
+  totalItems: toInteger,
+  limit: toPositiveInteger,
+  offset: toNonNegativeInteger
+});
+var usageService = {
+  name: "Usage",
+  context: toHttpContext,
+  methods: {
+    listWorkspaceEvents: rpc({
+      access: "public",
+      request: toWorkspaceUsageParams,
+      response: toPaginatedWorkspaceUsageEvents
+    }),
+    listServerEvents: rpc({
+      access: "public",
+      request: toServerUsageParams,
+      response: toPaginatedServerUsageEvents
+    }),
+    listDatabaseEvents: rpc({
+      access: "public",
+      request: toDatabaseUsageParams,
+      response: toPaginatedDatabaseUsageEvents
+    }),
+    listDockerDeploymentEvents: rpc({
+      access: "public",
+      request: toDockerDeploymentUsageParams,
+      response: toPaginatedDeploymentUsageEvents
+    }),
+    listSeatEvents: rpc({
+      access: "public",
+      request: toUsageParams,
+      response: toPaginatedSeatUsageEvents
+    }),
+    listSummaryOfTeam: rpc({
+      access: "public",
+      request: toSummaryUsageParams,
+      response: toPaginatedUsageSummary
+    })
+  }
+};
+var usageStub = createAuthnStubClass("UsageStub", usageService);
+
 // packages/stubs/node/lib/storage/database/squily/queries/usage.js
 var listAllIdeServersMissingStartEvent = async (db, { ideServerName }) => {
   const query = (dialect) => rawSql(dialect)`
@@ -53584,8 +53755,110 @@ var toUploadFileArgs2 = toObject({
   file: readOnly(toString)
 });
 
+// packages/workspace-service/common/lib/Workspace.js
+var GitProvider;
+(function(GitProvider2) {
+  GitProvider2["GitHub"] = "github";
+  GitProvider2["GitLab"] = "gitlab";
+  GitProvider2["Bitbucket"] = "bitbucket";
+})(GitProvider || (GitProvider = {}));
+var toGitProvider2 = toStringEnum("GitProvider", GitProvider);
+var workspace = {
+  id: readOnly(toNonNegativeInteger),
+  dataCenterId: readOnly(toNumber),
+  userId: readOnly(toInteger),
+  teamId: readOnly(toNonNegativeInteger),
+  name: toString,
+  gitUrl: readOnly(toNullOr(toString)),
+  isPrivateRepo: readOnly(toBoolean),
+  welcomeMessage: readOnly(toNullOr(toString)),
+  initialBranch: readOnly(toNullOr(toString)),
+  cloneDepth: toUndefOr(toPositiveInteger),
+  sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
+  planId: toPlanId,
+  replicas: toPositiveInteger,
+  vpnConfig: toNullOr(toString),
+  collectTraces: toBoolean,
+  restricted: toBoolean,
+  baseImage: toUndefOr(toString),
+  persistentLogs: toBoolean
+};
+var toWorkspace = toObject(workspace);
+var validServerNameRegex = new RegExp("^(?:[a-z]|[a-z][-a-z0-9]{0,30}[a-z0-9])$");
+var toMsdServerName = toStringMatchingRegex("MsdServerName", validServerNameRegex);
+var toServerPath = toObject({
+  port: toPositiveInteger,
+  path: toUrlPath,
+  stripPath: toBoolean
+});
+var toServerPort = toObject({
+  port: toPositiveInteger,
+  isPublic: toBoolean
+});
+var toServerNetwork = toObject({
+  ports: toNonEmptyArray(toServerPort),
+  paths: toArray(toServerPath)
+});
+var server = {
+  name: readOnly(toMsdServerName),
+  planId: toPlanId,
+  replicas: toPositiveInteger,
+  mountSubPath: toUndefOr(toPathWithoutTraversal),
+  network: toServerNetwork
+};
+var toServer = toObject(server);
+var serverV1 = {
+  name: readOnly(toMsdServerName),
+  planId: toPlanId,
+  replicas: toPositiveInteger,
+  stripPath: toBoolean,
+  isPublic: toUndefOr(toBoolean),
+  network: toUndefOr(toObject({
+    path: toUrlPath
+  }))
+};
+var toServerV1 = toObject(serverV1);
+var uniqueServerId = ({ workspaceId, name }) => `${workspaceId}-${name}`;
+var IDE_SERVER_NAME = "codesphere-ide";
+var DEFAULT_PORT = 3e3;
+var workspaceDevDomain = (workspaceId, workspaceHostingBaseDomain) => `${workspaceId}-${DEFAULT_PORT}.${workspaceHostingBaseDomain}`;
+var simpleNetworkToServerNetwork = (networkConfig, isPublic) => {
+  var _a;
+  return {
+    ports: [
+      {
+        port: DEFAULT_PORT,
+        isPublic: isPublic !== null && isPublic !== void 0 ? isPublic : true
+      }
+    ],
+    paths: !networkConfig || !(isPublic !== null && isPublic !== void 0 ? isPublic : true) ? [] : [
+      {
+        port: DEFAULT_PORT,
+        path: networkConfig.path,
+        stripPath: (_a = networkConfig.stripPath) !== null && _a !== void 0 ? _a : false
+      }
+    ]
+  };
+};
+var advancedNetworkToServerNetwork = (networkConfig) => ({
+  ...networkConfig,
+  paths: networkConfig.paths.map((p) => ({ stripPath: false, ...p }))
+});
+var configToLandscape = (config) => {
+  return Object.entries(config).map(([k, v]) => {
+    var _a;
+    return toServer({
+      name: k,
+      planId: v.plan,
+      replicas: (_a = v.replicas) !== null && _a !== void 0 ? _a : 1,
+      mountSubPath: v.mountSubPath || void 0,
+      network: v.network && isAdvancedNetworkConfig(v.network) ? advancedNetworkToServerNetwork(v.network) : simpleNetworkToServerNetwork(v.network, v.isPublic)
+    });
+  });
+};
+
 // packages/workspace-service/common/lib/api/workspaces.js
-var __decorate13 = function(decorators, target, key, desc) {
+var __decorate14 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -53593,7 +53866,7 @@ var __decorate13 = function(decorators, target, key, desc) {
 };
 var VpnConfigNotFound = class VpnConfigNotFound2 extends SimpleSerializableException {
 };
-VpnConfigNotFound = __decorate13([
+VpnConfigNotFound = __decorate14([
   registerError()
 ], VpnConfigNotFound);
 var workspacesService = {
@@ -53648,18 +53921,18 @@ var workspacesService = {
 var workspacesStub = createAuthnStubClass("WorkspacesStub", workspacesService);
 var WorkspacesStub = class WorkspacesStub2 extends workspacesStub {
 };
-WorkspacesStub = __decorate13([
+WorkspacesStub = __decorate14([
   (0, import_inversify10.injectable)()
 ], WorkspacesStub);
 
 // packages/workspace-service/node/lib/data-access/WorkspacesDAO.js
-var __decorate14 = function(decorators, target, key, desc) {
+var __decorate15 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata6 = function(k, v) {
+var __metadata7 = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var __param2 = function(paramIndex, decorator) {
@@ -53673,7 +53946,7 @@ var toIdeServer = toObject({
   workspaceName: toString,
   planId: toNonNegativeInteger,
   replicas: toNonNegativeInteger,
-  ownerUserId: toNonNegativeInteger,
+  ownerUserId: toInteger,
   dataCenterId: toNonNegativeInteger,
   teamId: toNonNegativeInteger
 });
@@ -53689,7 +53962,7 @@ var toWorkspaceDbEntry = toObject({
   replicas: readOnly(toPositiveInteger),
   sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
   teamId: readOnly(toNonNegativeInteger),
-  userId: readOnly(toNonNegativeInteger),
+  userId: readOnly(toInteger),
   welcomeMessage: readOnly(toNullOr(toString)),
   vpnConfig: toNullOr(toString),
   restricted: toBoolean,
@@ -53910,7 +54183,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
     var _a, _b, _c;
     const updateDate = /* @__PURE__ */ new Date();
     const { teamId, name, dataCenterId, userId, sourceWorkspaceId, gitUrl, initialBranch, planId, replicas, collectTraces } = await this.get(id, tx);
-    const userEmail = await this.getUserEmail(userId, tx);
+    const userEmail = await ignoreErrorAsync(() => this.getUserEmail(userId, tx), [NotFound]);
     if (update.planId || update.replicas) {
       await this.stopIdeServerUsage({
         initiatorUserId,
@@ -53929,7 +54202,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
         workspaceName: name,
         dataCenterId,
         ownerUserId: userId,
-        ownerUserEmail: userEmail
+        ownerUserEmail: userEmail !== null && userEmail !== void 0 ? userEmail : ""
       }, tx);
     }
     if (!update.name) {
@@ -53949,7 +54222,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
       workspaceName: (_c = update.name) !== null && _c !== void 0 ? _c : name,
       dataCenterId,
       wsOwnerUserId: userId,
-      wsOwnerUserEmail: userEmail,
+      wsOwnerUserEmail: userEmail !== null && userEmail !== void 0 ? userEmail : "",
       sourceWorkspaceId: sourceWorkspaceId !== null && sourceWorkspaceId !== void 0 ? sourceWorkspaceId : void 0,
       initialRepoUrl: gitUrl !== null && gitUrl !== void 0 ? gitUrl : void 0,
       initialBranch: initialBranch !== null && initialBranch !== void 0 ? initialBranch : void 0,
@@ -54228,12 +54501,12 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
     });
   }
 };
-WorkspacesDAODatabase = __decorate14([
+WorkspacesDAODatabase = __decorate15([
   (0, import_inversify11.injectable)(),
   __param2(0, (0, import_inversify11.inject)(serviceId("Workspace"))),
   __param2(1, (0, import_inversify11.inject)(Database.ID)),
   __param2(2, (0, import_inversify11.inject)(getWorkspacePlanId)),
-  __metadata6("design:paramtypes", [Object, Database, Function])
+  __metadata7("design:paramtypes", [Object, Database, Function])
 ], WorkspacesDAODatabase);
 
 // packages/script-lib/lib/codesphere.js
@@ -54715,7 +54988,7 @@ var connectJsonClient = async (address) => {
 
 // packages/team-service/common/lib/api/team.js
 var import_inversify12 = __toESM(require_inversify(), 1);
-var __decorate15 = function(decorators, target, key, desc) {
+var __decorate16 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -54741,7 +55014,7 @@ var FetchMembersFailed = FetchMembersFailed_1 = class FetchMembersFailed2 extend
     return new FetchMembersFailed_1("Failed to fetch your team members please try again later", opts);
   }
 };
-FetchMembersFailed = FetchMembersFailed_1 = __decorate15([
+FetchMembersFailed = FetchMembersFailed_1 = __decorate16([
   registerError()
 ], FetchMembersFailed);
 var IsLastAdmin = IsLastAdmin_1 = class IsLastAdmin2 extends SimpleSerializableException {
@@ -54749,7 +55022,7 @@ var IsLastAdmin = IsLastAdmin_1 = class IsLastAdmin2 extends SimpleSerializableE
     return new IsLastAdmin_1("The team must have another admin", opts);
   }
 };
-IsLastAdmin = IsLastAdmin_1 = __decorate15([
+IsLastAdmin = IsLastAdmin_1 = __decorate16([
   registerError()
 ], IsLastAdmin);
 var LeaveTeamFailed = LeaveTeamFailed_1 = class LeaveTeamFailed2 extends SimpleSerializableException {
@@ -54757,7 +55030,7 @@ var LeaveTeamFailed = LeaveTeamFailed_1 = class LeaveTeamFailed2 extends SimpleS
     return new LeaveTeamFailed_1("Failed to leave team try again later", opts);
   }
 };
-LeaveTeamFailed = LeaveTeamFailed_1 = __decorate15([
+LeaveTeamFailed = LeaveTeamFailed_1 = __decorate16([
   registerError()
 ], LeaveTeamFailed);
 var ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = class ChangeMemberRoleFailed2 extends SimpleSerializableException {
@@ -54765,7 +55038,7 @@ var ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = class ChangeMemberRoleFa
     return new ChangeMemberRoleFailed_1("Failed to change member role please try again later", opts);
   }
 };
-ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = __decorate15([
+ChangeMemberRoleFailed = ChangeMemberRoleFailed_1 = __decorate16([
   registerError()
 ], ChangeMemberRoleFailed);
 var NotEnoughSeats = NotEnoughSeats_1 = class NotEnoughSeats2 extends SimpleSerializableException {
@@ -54773,7 +55046,7 @@ var NotEnoughSeats = NotEnoughSeats_1 = class NotEnoughSeats2 extends SimpleSeri
     return new NotEnoughSeats_1("Not enough seats to add more team members", opts);
   }
 };
-NotEnoughSeats = NotEnoughSeats_1 = __decorate15([
+NotEnoughSeats = NotEnoughSeats_1 = __decorate16([
   registerError()
 ], NotEnoughSeats);
 var SendInviteFailed = SendInviteFailed_1 = class SendInviteFailed2 extends SimpleSerializableException {
@@ -54781,7 +55054,7 @@ var SendInviteFailed = SendInviteFailed_1 = class SendInviteFailed2 extends Simp
     return new SendInviteFailed_1("Failed to send invitation try again later", opts);
   }
 };
-SendInviteFailed = SendInviteFailed_1 = __decorate15([
+SendInviteFailed = SendInviteFailed_1 = __decorate16([
   registerError()
 ], SendInviteFailed);
 var InvalidInvitation = InvalidInvitation_1 = class InvalidInvitation2 extends SimpleSerializableException {
@@ -54789,7 +55062,7 @@ var InvalidInvitation = InvalidInvitation_1 = class InvalidInvitation2 extends S
     return new InvalidInvitation_1("Failed to accept invitation.", opts);
   }
 };
-InvalidInvitation = InvalidInvitation_1 = __decorate15([
+InvalidInvitation = InvalidInvitation_1 = __decorate16([
   registerError()
 ], InvalidInvitation);
 var TeamUpdateFailed = TeamUpdateFailed_1 = class TeamUpdateFailed2 extends SimpleSerializableException {
@@ -54797,7 +55070,7 @@ var TeamUpdateFailed = TeamUpdateFailed_1 = class TeamUpdateFailed2 extends Simp
     return new TeamUpdateFailed_1("Team update failed please try again later", opts);
   }
 };
-TeamUpdateFailed = TeamUpdateFailed_1 = __decorate15([
+TeamUpdateFailed = TeamUpdateFailed_1 = __decorate16([
   registerError()
 ], TeamUpdateFailed);
 var FileTooLarge = FileTooLarge_1 = class FileTooLarge2 extends SimpleSerializableException {
@@ -54805,7 +55078,7 @@ var FileTooLarge = FileTooLarge_1 = class FileTooLarge2 extends SimpleSerializab
     return new FileTooLarge_1(msg, opts);
   }
 };
-FileTooLarge = FileTooLarge_1 = __decorate15([
+FileTooLarge = FileTooLarge_1 = __decorate16([
   registerError()
 ], FileTooLarge);
 var IncorrectType = IncorrectType_1 = class IncorrectType2 extends SimpleSerializableException {
@@ -54813,12 +55086,12 @@ var IncorrectType = IncorrectType_1 = class IncorrectType2 extends SimpleSeriali
     return new IncorrectType_1(msg, opts);
   }
 };
-IncorrectType = IncorrectType_1 = __decorate15([
+IncorrectType = IncorrectType_1 = __decorate16([
   registerError()
 ], IncorrectType);
 var RemoveMemberFailed = class RemoveMemberFailed2 extends SimpleSerializableException {
 };
-RemoveMemberFailed = __decorate15([
+RemoveMemberFailed = __decorate16([
   registerError()
 ], RemoveMemberFailed);
 var AvatarNotFound = AvatarNotFound_1 = class AvatarNotFound2 extends NotFound {
@@ -54826,7 +55099,7 @@ var AvatarNotFound = AvatarNotFound_1 = class AvatarNotFound2 extends NotFound {
     return new AvatarNotFound_1("Team has no Avatar", opts);
   }
 };
-AvatarNotFound = AvatarNotFound_1 = __decorate15([
+AvatarNotFound = AvatarNotFound_1 = __decorate16([
   registerError()
 ], AvatarNotFound);
 var FetchTeamsFailed = FetchTeamsFailed_1 = class FetchTeamsFailed2 extends SimpleSerializableException {
@@ -54834,7 +55107,7 @@ var FetchTeamsFailed = FetchTeamsFailed_1 = class FetchTeamsFailed2 extends Simp
     return new FetchTeamsFailed_1("Failed to fetch your teams. Please try again later", opts);
   }
 };
-FetchTeamsFailed = FetchTeamsFailed_1 = __decorate15([
+FetchTeamsFailed = FetchTeamsFailed_1 = __decorate16([
   registerError()
 ], FetchTeamsFailed);
 var SetDeletionPendingFailed = SetDeletionPendingFailed_1 = class SetDeletionPendingFailed2 extends SimpleSerializableException {
@@ -54842,7 +55115,7 @@ var SetDeletionPendingFailed = SetDeletionPendingFailed_1 = class SetDeletionPen
     return new SetDeletionPendingFailed_1(msg, opts);
   }
 };
-SetDeletionPendingFailed = SetDeletionPendingFailed_1 = __decorate15([
+SetDeletionPendingFailed = SetDeletionPendingFailed_1 = __decorate16([
   registerError()
 ], SetDeletionPendingFailed);
 var ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = class ReactivateDeletedUserTeamsFailed2 extends SimpleSerializableException {
@@ -54850,7 +55123,7 @@ var ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = clas
     return new ReactivateDeletedUserTeamsFailed_1("Reactivating the teams of the deleted user failed.", opts);
   }
 };
-ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = __decorate15([
+ReactivateDeletedUserTeamsFailed = ReactivateDeletedUserTeamsFailed_1 = __decorate16([
   registerError()
 ], ReactivateDeletedUserTeamsFailed);
 var FetchInvitationsFailed = FetchInvitationsFailed_1 = class FetchInvitationsFailed2 extends SimpleSerializableException {
@@ -54858,27 +55131,27 @@ var FetchInvitationsFailed = FetchInvitationsFailed_1 = class FetchInvitationsFa
     return new FetchInvitationsFailed_1("Failed to fetch your invitations. Please try again later", opts);
   }
 };
-FetchInvitationsFailed = FetchInvitationsFailed_1 = __decorate15([
+FetchInvitationsFailed = FetchInvitationsFailed_1 = __decorate16([
   registerError()
 ], FetchInvitationsFailed);
 var DeleteTeamFailed = class DeleteTeamFailed2 extends SimpleSerializableException {
 };
-DeleteTeamFailed = __decorate15([
+DeleteTeamFailed = __decorate16([
   registerError()
 ], DeleteTeamFailed);
 var DomainDeletionFailed = class DomainDeletionFailed2 extends DeleteTeamFailed {
 };
-DomainDeletionFailed = __decorate15([
+DomainDeletionFailed = __decorate16([
   registerError()
 ], DomainDeletionFailed);
 var WorkspaceDeletionFailed = class WorkspaceDeletionFailed2 extends DeleteTeamFailed {
 };
-WorkspaceDeletionFailed = __decorate15([
+WorkspaceDeletionFailed = __decorate16([
   registerError()
 ], WorkspaceDeletionFailed);
 var VpnDeletionFailed = class VpnDeletionFailed2 extends DeleteTeamFailed {
 };
-VpnDeletionFailed = __decorate15([
+VpnDeletionFailed = __decorate16([
   registerError()
 ], VpnDeletionFailed);
 var teamService = {
@@ -54997,13 +55270,13 @@ var teamService = {
 var teamStub = createAuthnStubClass("TeamStub", teamService);
 var TeamStub = class TeamStub2 extends teamStub {
 };
-TeamStub = __decorate15([
+TeamStub = __decorate16([
   (0, import_inversify12.injectable)()
 ], TeamStub);
 
 // packages/workspace-proxy/common/lib/api/pipeline.js
 var import_inversify13 = __toESM(require_inversify(), 1);
-var __decorate16 = function(decorators, target, key, desc) {
+var __decorate17 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -55129,7 +55402,7 @@ var pipelineProxyService = {
 };
 var PipelineProxyStub = class PipelineProxyStub2 extends createAuthnStubClass("PipelineProxyStub", pipelineProxyService) {
 };
-PipelineProxyStub = __decorate16([
+PipelineProxyStub = __decorate17([
   (0, import_inversify13.injectable)()
 ], PipelineProxyStub);
 
@@ -55138,13 +55411,13 @@ var import_inversify15 = __toESM(require_inversify(), 1);
 
 // packages/workspace-agent/common/lib/api/process.js
 var import_inversify14 = __toESM(require_inversify(), 1);
-var __decorate17 = function(decorators, target, key, desc) {
+var __decorate18 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata7 = function(k, v) {
+var __metadata8 = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ProcessExecutionFailed_1;
@@ -55179,18 +55452,18 @@ var ProcessExecutionFailed = ProcessExecutionFailed_1 = class ProcessExecutionFa
     super(message);
   }
 };
-ProcessExecutionFailed = ProcessExecutionFailed_1 = __decorate17([
+ProcessExecutionFailed = ProcessExecutionFailed_1 = __decorate18([
   registerError(),
-  __metadata7("design:paramtypes", [String])
+  __metadata8("design:paramtypes", [String])
 ], ProcessExecutionFailed);
 var ProcessTimedOut = class ProcessTimedOut2 extends SimpleSerializableException {
   constructor(message) {
     super(message);
   }
 };
-ProcessTimedOut = __decorate17([
+ProcessTimedOut = __decorate18([
   registerError(),
-  __metadata7("design:paramtypes", [String])
+  __metadata8("design:paramtypes", [String])
 ], ProcessTimedOut);
 var processService = {
   name: "Process",
@@ -55209,12 +55482,12 @@ var processService = {
 var processStub = createAuthnStubClass("ProcessStub", processService);
 var ProcessStub = class ProcessStub2 extends processStub {
 };
-ProcessStub = __decorate17([
+ProcessStub = __decorate18([
   (0, import_inversify14.injectable)()
 ], ProcessStub);
 
 // packages/workspace-proxy/common/lib/api/process.js
-var __decorate18 = function(decorators, target, key, desc) {
+var __decorate19 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -55238,13 +55511,13 @@ var processProxyService = {
 var processProxyStub = createAuthnStubClass("ProcessProxyStub", processProxyService);
 var ProcessProxyStub = class ProcessProxyStub2 extends processProxyStub {
 };
-ProcessProxyStub = __decorate18([
+ProcessProxyStub = __decorate19([
   (0, import_inversify15.injectable)()
 ], ProcessProxyStub);
 
 // packages/workspace-service/common/lib/api/landscape.js
 var import_inversify16 = __toESM(require_inversify(), 1);
-var __decorate19 = function(decorators, target, key, desc) {
+var __decorate20 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -55286,7 +55559,7 @@ var landscapeService = {
 var landscapeStub = createAuthnStubClass("LandscapeStub", landscapeService);
 var LandscapeStub = class LandscapeStub2 extends landscapeStub {
 };
-LandscapeStub = __decorate19([
+LandscapeStub = __decorate20([
   (0, import_inversify16.injectable)()
 ], LandscapeStub);
 
