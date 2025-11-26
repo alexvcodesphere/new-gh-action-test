@@ -39279,14 +39279,14 @@ var require_messages = __commonJS({
       name: "copyDone",
       length: 4
     };
-    var DatabaseError = class extends Error {
+    var DatabaseError2 = class extends Error {
       constructor(message, length, name) {
         super(message);
         this.length = length;
         this.name = name;
       }
     };
-    exports2.DatabaseError = DatabaseError;
+    exports2.DatabaseError = DatabaseError2;
     var CopyDataMessage = class {
       constructor(length, chunk) {
         this.length = length;
@@ -41874,7 +41874,7 @@ var require_lib5 = __commonJS({
     var defaults = require_defaults();
     var Connection = require_connection2();
     var Pool = require_pg_pool();
-    var { DatabaseError } = require_dist();
+    var { DatabaseError: DatabaseError2 } = require_dist();
     var { escapeIdentifier, escapeLiteral } = require_utils5();
     var poolFactory = (Client2) => {
       return class BoundPool extends Pool {
@@ -41891,7 +41891,7 @@ var require_lib5 = __commonJS({
       this._pools = [];
       this.Connection = Connection;
       this.types = require_pg_types();
-      this.DatabaseError = DatabaseError;
+      this.DatabaseError = DatabaseError2;
       this.escapeIdentifier = escapeIdentifier;
       this.escapeLiteral = escapeLiteral;
     };
@@ -49396,6 +49396,9 @@ var SimpleStreamyClient = class _SimpleStreamyClient {
     }
     try {
       await s.processResponse(r);
+      if (!s.isAlive) {
+        delete this.streams[id];
+      }
     } catch (e) {
       logE(e);
     }
@@ -50906,7 +50909,7 @@ var StaticDataCenterId;
 var MAINTENANCE_MODE_EXP_NAME = "maintenance-mode";
 var AVAILABLE_EXPERIMENTS = [
   "ceph-subtree-pinning",
-  "react-create-ws",
+  "custom-service-image",
   "exec-manager-react",
   "external-mounter",
   "git-panel",
@@ -50929,6 +50932,7 @@ var AVAILABLE_EXPERIMENTS = [
   "persistent-nix",
   "privileged-ports",
   "public-api",
+  "react-create-ws",
   "react-user-settings",
   "recaptcha-v3",
   "recursive-watcher",
@@ -52134,6 +52138,12 @@ var toStage = toObject({
   steps: toArray(toStep),
   healthEndpoint: toUndefOr(toUrl)
 });
+var toBasicEnvVar = toObject({
+  key: toString,
+  value: toString
+});
+var toEnvVar = toBasicEnvVar;
+var toEnv = toArray(toEnvVar);
 var toSimpleNetworkConfig = toObject({
   path: toUrlPath,
   stripPath: toUndefOr(toBoolean)
@@ -52159,9 +52169,24 @@ var toDeployStageServer = toObject({
   replicas: toUndefOr(toPositiveInteger),
   isPublic: toUndefOr(toBoolean),
   mountSubPath: toUndefOr(toPathWithoutTraversal),
-  network: toUndefOr(toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig))
+  network: toUndefOr(toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig)),
+  env: toUndefOr(toEnv),
+  baseImage: toUndefOr(toString)
 });
-var toDeployStage = toRecord(toDeployStageServer);
+var toManagedServiceConfig = toObject({
+  provider: toObject({
+    name: toString,
+    version: toString
+  }),
+  plan: toObject({
+    id: toNonNegativeInteger,
+    parameters: toRecord(toInteger)
+  }),
+  config: toRecord(toUnknown),
+  secrets: toRecord(toUnknown)
+});
+var isManagedServiceConfig = (x) => isOfType(x, toManagedServiceConfig);
+var toDeployStage = toRecord(toOr(toDeployStageServer, toManagedServiceConfig));
 var isDeployStage = (x) => isOfType(x, toDeployStage);
 var toPipelineConfigV01 = toObject({
   prepare: toStage,
@@ -52378,6 +52403,7 @@ var import_inversify9 = __toESM(require_inversify(), 1);
 
 // packages/stubs/node/lib/storage/database/squily/database.js
 var import_pg = __toESM(require_lib5(), 1);
+var import_pg_protocol = __toESM(require_dist(), 1);
 
 // packages/utils/common/lib/timing.js
 var TimeTracker = class {
@@ -52921,7 +52947,7 @@ var DatabaseImpl = class {
         pp`not implemented: ${tableOrJoin}`
       ].join(""));
     }
-    const r = await this.dialect.selectMany(SqlTable.create(tableOrJoin, this.dbSpec, this.transformer), SqlColumns.forTable(tableOrJoin, columns, this.dbSpec, this.transformer), this.maybeSqlCondition(tableOrJoin, condition, createParamIndexGenerator()));
+    const r = await this.dialect.selectMany(SqlTable.create(tableOrJoin, this.dbSpec, this.transformer), "ALL_COLUMNS_DISCOURAGED" === columns ? new AllColumns() : SqlColumns.forTable(tableOrJoin, columns, this.dbSpec, this.transformer), this.maybeSqlCondition(tableOrJoin, condition, createParamIndexGenerator()));
     return r.rows;
   }
   async selectManyLeftJoin(join2, columns, condition) {
@@ -52938,7 +52964,7 @@ var DatabaseImpl = class {
     const r = await this.dialect.selectMany(new SqlLeftJoin([
       SqlTableWithAlias.create(tableLeft, this.dbSpec, this.transformer),
       SqlTableWithAlias.create(tableRight, this.dbSpec, this.transformer)
-    ], SqlOn.forTables([tableLeft, tableRight], join2.on, paramIndexGenerator, this.dbSpec, this.transformer)), SqlColumns.forTables([
+    ], SqlOn.forTables([tableLeft, tableRight], join2.on, paramIndexGenerator, this.dbSpec, this.transformer)), "ALL_COLUMNS_DISCOURAGED" === columns ? new AllColumns() : SqlColumns.forTables([
       { table: tableLeft, columns: columns[0] },
       { table: tableRight, columns: columns[1] }
     ], this.dbSpec, this.transformer), condEmpty ? void 0 : new SqlConditionForJoin([
@@ -53804,7 +53830,8 @@ var server = {
   planId: toPlanId,
   replicas: toPositiveInteger,
   mountSubPath: toUndefOr(toPathWithoutTraversal),
-  network: toServerNetwork
+  network: toServerNetwork,
+  baseImage: toUndefOr(toString)
 };
 var toServer = toObject(server);
 var serverV1 = {
@@ -53817,6 +53844,10 @@ var serverV1 = {
     path: toUrlPath
   }))
 };
+var toServerWithEnv = toObject({
+  ...server,
+  env: toUndefOr(toEnv)
+});
 var toServerV1 = toObject(serverV1);
 var uniqueServerId = ({ workspaceId, name }) => `${workspaceId}-${name}`;
 var IDE_SERVER_NAME = "codesphere-ide";
@@ -53846,14 +53877,22 @@ var advancedNetworkToServerNetwork = (networkConfig) => ({
 });
 var configToLandscape = (config) => {
   return Object.entries(config).map(([k, v]) => {
-    var _a;
-    return toServer({
-      name: k,
-      planId: v.plan,
-      replicas: (_a = v.replicas) !== null && _a !== void 0 ? _a : 1,
-      mountSubPath: v.mountSubPath || void 0,
-      network: v.network && isAdvancedNetworkConfig(v.network) ? advancedNetworkToServerNetwork(v.network) : simpleNetworkToServerNetwork(v.network, v.isPublic)
-    });
+    if (isManagedServiceConfig(v)) {
+      return;
+    }
+    return deployStageServerToLandscape(k, v);
+  }).filter((x) => x !== void 0);
+};
+var deployStageServerToLandscape = (name, config) => {
+  var _a;
+  return toServerWithEnv({
+    name,
+    planId: config.plan,
+    replicas: (_a = config.replicas) !== null && _a !== void 0 ? _a : 1,
+    mountSubPath: config.mountSubPath || void 0,
+    env: config.env,
+    baseImage: config.baseImage,
+    network: config.network && isAdvancedNetworkConfig(config.network) ? advancedNetworkToServerNetwork(config.network) : simpleNetworkToServerNetwork(config.network, config.isPublic)
   });
 };
 
@@ -55525,7 +55564,7 @@ var __decorate20 = function(decorators, target, key, desc) {
 };
 var toUpdateLandscapeArgs = toObject({
   workspaceId: toNonNegativeInteger,
-  servers: toArray(toServer)
+  servers: toArray(toServerWithEnv)
 });
 var landscapeService = {
   name: "landscape",
@@ -55535,12 +55574,12 @@ var landscapeService = {
     landscapeStream: stream({
       access: "public",
       request: toObject({ workspaceId: toNonNegativeInteger }),
-      response: toArray(toServer)
+      response: toArray(toServerWithEnv)
     }),
     getLandscape: rpc({
       access: "public",
       request: toObject({ workspaceId: toNonNegativeInteger }),
-      response: toArray(toServer)
+      response: toArray(toServerWithEnv)
     }),
     tearDownLandscape: rpc({
       access: "public",
