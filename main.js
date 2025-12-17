@@ -56780,6 +56780,9 @@ var toStartWorkspaceServiceParams = toObject({
 var toGetWorkspaceServiceArgs = toObject({
   id: toNonNegativeInteger
 });
+var toGetByManagedServiceArgs = toObject({
+  id: toUuid
+});
 var toCreateWorkspaceServiceArgs = toObject({
   teamId: toNonNegativeInteger,
   name: toString,
@@ -56794,7 +56797,8 @@ var toCreateWorkspaceServiceArgs = toObject({
   replicas: toPositiveInteger,
   vpnConfig: toNullOr(toString),
   restricted: toUndefOr(toBoolean),
-  env: toUndefOr(toEnvVars)
+  env: toUndefOr(toEnvVars),
+  managedServiceId: toUndefOr(toUuid)
 });
 var toUpdateWorkspaceServiceArgs = toObject({
   workspaceId: toNonNegativeInteger,
@@ -57774,6 +57778,10 @@ var toOAuthAuthentication = toObject({
   isNewUser: toBoolean,
   sessionId: toSessionString
 });
+var toOAuthCallbackParams = toObject({
+  code: toString,
+  iss: toUndefOr(toString)
+});
 
 // packages/utils/common/lib/codesphereEnv.js
 var CodesphereEnv;
@@ -58253,6 +58261,7 @@ var toEmailAndPassword = toObject(emailAndPassword);
 // packages/auth-service/common/lib/OAuthServiceArgs.js
 var toOAuthServiceArgs = toObject({
   code: readOnly(toString),
+  iss: toUndefOr(toString),
   recaptchaToken: toUndefOr(toString),
   recaptchaAction: toUndefOr(toString)
 });
@@ -58368,6 +58377,7 @@ var ServiceId;
   ServiceId2["PaymentService"] = "payment-service";
   ServiceId2["UserDeletionCronJob"] = "userdeletion-cronjob";
   ServiceId2["WorkspaceService"] = "workspace-service";
+  ServiceId2["WorkspaceProxy"] = "workspace-proxy";
 })(ServiceId || (ServiceId = {}));
 var toAuthenticationMethod = toLiteralUnion("AuthenticationMethod", [
   ...ALL_OAUTH_PROVIDER_IDS,
@@ -60723,7 +60733,9 @@ var workspace = {
   collectTraces: toBoolean,
   restricted: toBoolean,
   baseImage: toUndefOr(toString),
-  persistentLogs: toBoolean
+  persistentLogs: toBoolean,
+  createdAt: toDate,
+  managedServiceId: toUndefOr(toUuid)
 };
 var toWorkspace = toObject(workspace);
 var validServerNameRegex = new RegExp("^(?:[a-z]|[a-z][-a-z0-9]{0,30}[a-z0-9])$");
@@ -60846,6 +60858,11 @@ var workspacesService = {
       request: toGetWorkspaceServiceArgs,
       response: toWorkspace
     }),
+    getByManagedService: rpc({
+      access: "internal",
+      request: toGetByManagedServiceArgs,
+      response: toWorkspace
+    }),
     hasAccess: rpc({
       access: "public",
       request: toHasAccessArgs,
@@ -60859,6 +60876,11 @@ var workspacesService = {
     listWorkspaces: rpc({
       access: "public",
       request: toTeamServiceArgs,
+      response: toArray(toWorkspace)
+    }),
+    listManagedServiceWorkspaces: rpc({
+      access: "internal",
+      request: toVoid,
       response: toArray(toWorkspace)
     }),
     updateWorkspace: rpc({
@@ -60924,7 +60946,9 @@ var toWorkspaceDbEntry = toObject({
   restricted: toBoolean,
   baseImage: toUndefOr(toString),
   collectTraces: toBoolean,
-  persistentLogs: toBoolean
+  persistentLogs: toBoolean,
+  createdAt: toDate,
+  managedServiceId: toUndefOr(toUuid)
 });
 var unsafeDbRecordToWorkspaceDbEntry = (r) => {
   var _a, _b, _c, _d, _e;
@@ -60946,7 +60970,9 @@ var unsafeDbRecordToWorkspaceDbEntry = (r) => {
     restricted: r.restricted,
     baseImage: r.baseImage,
     collectTraces: r.collectTraces,
-    persistentLogs: r.persistentLogs
+    persistentLogs: r.persistentLogs,
+    managedServiceId: r.managedServiceId,
+    createdAt: r.createdAt
   };
 };
 var NO_CONDITION = {};
@@ -60982,7 +61008,7 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
   async publish(teamId, workspace2) {
     await this.pubSub.publish(`${teamId}`, workspace2);
   }
-  async create({ ownerUserId, ownerUserEmail, teamId, name, isPrivateRepo, replicas, dataCenterId, planId, gitUrl, welcomeMessage, initialBranch, cloneDepth, sourceWorkspaceId, vpnConfig, initiatorUserId, initiatorUserEmail, restricted, baseImage: baseImage2, env }) {
+  async create({ ownerUserId, ownerUserEmail, teamId, name, isPrivateRepo, replicas, dataCenterId, planId, gitUrl, welcomeMessage, initialBranch, cloneDepth, sourceWorkspaceId, vpnConfig, initiatorUserId, initiatorUserEmail, restricted, baseImage: baseImage2, env, managedServiceId }) {
     return await this.db.transaction(async (tx) => {
       const ws = unsafeDbRecordToWorkspaceDbEntry(await rethrowAsync(() => tx.insert("workspaceService.workspaces", {
         userId: ownerUserId,
@@ -60999,7 +61025,8 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
         sourceWorkspaceId: sourceWorkspaceId !== null && sourceWorkspaceId !== void 0 ? sourceWorkspaceId : void 0,
         vpnConfig: vpnConfig !== null && vpnConfig !== void 0 ? vpnConfig : void 0,
         restricted,
-        baseImage: baseImage2
+        baseImage: baseImage2,
+        managedServiceId
       }), [
         DbUniquenessViolation,
         () => new InvalidWorkspaceName(ALREADY_EXISTS_ERROR)
@@ -61071,7 +61098,8 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
       "baseImage",
       "collectTraces",
       "persistentLogs",
-      "createdAt"
+      "createdAt",
+      "managedServiceId"
     ], condition);
     return rs.map(unsafeDbRecordToWorkspaceDbEntry);
   }
@@ -61082,8 +61110,45 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
     }
     return r;
   }
+  async getByManagedServiceId(managedServiceId) {
+    const r = (await this.listBy({ managedServiceId }))[0];
+    if (!r) {
+      throw new NotFound(`Could not find workspace with managed service id ${managedServiceId}`);
+    }
+    return r;
+  }
   async listByTeam(teamId) {
     return await this.listBy({ teamId });
+  }
+  async listManagedServiceWorkspaces() {
+    const condition = {
+      managedServiceId: {
+        "!=": void 0
+      }
+    };
+    const rs = await this.db.selectMany("workspaceService.workspaces", [
+      "cloneDepth",
+      "dataCenterId",
+      "gitUrl",
+      "idePlanId",
+      "id",
+      "initialBranch",
+      "isPrivateRepo",
+      "name",
+      "replicas",
+      "sourceWorkspaceId",
+      "teamId",
+      "userId",
+      "vpnConfig",
+      "welcomeMessage",
+      "restricted",
+      "baseImage",
+      "collectTraces",
+      "persistentLogs",
+      "createdAt",
+      "managedServiceId"
+    ], condition);
+    return rs.map(unsafeDbRecordToWorkspaceDbEntry);
   }
   async totalReplicasOfPlan(planId, teamId) {
     return await getTotalIdeReplicasOfPlan(this.db, teamId, planId);
@@ -61268,7 +61333,8 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
         "welcomeMessage",
         "restricted",
         "collectTraces",
-        "persistentLogs"
+        "persistentLogs",
+        "createdAt"
       ],
       []
     ], [NO_CONDITION, { workspaceId: void 0 }])).map((w) => {
@@ -61285,7 +61351,8 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
         vpnConfig: (_e = w.vpnConfig) !== null && _e !== void 0 ? _e : null,
         restricted: (_f = w.restricted) !== null && _f !== void 0 ? _f : true,
         collectTraces: (_g = w.collectTraces) !== null && _g !== void 0 ? _g : false,
-        persistentLogs: (_h = w.persistentLogs) !== null && _h !== void 0 ? _h : false
+        persistentLogs: (_h = w.persistentLogs) !== null && _h !== void 0 ? _h : false,
+        createdAt: w.createdAt
       });
     });
   }
@@ -62689,9 +62756,10 @@ var toUpdateLandscapeArgs = toObject({
   workspaceId: toNonNegativeInteger,
   servers: toArray(toServer)
 });
+var toReconcileError = toObject({ message: toString });
 var toManagedService2 = toObject({
   config: toManagedServiceConfig,
-  status: toManagedServiceStatus
+  status: toOr(toManagedServiceStatus, toReconcileError)
 });
 var toSyncLandscapeArgs = toObject({
   workspaceId: toNonNegativeInteger,
