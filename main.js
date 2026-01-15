@@ -102,7 +102,7 @@ var require_Reflect = __commonJS({
         var _Map = typeof Map === "function" && typeof Map.prototype.entries === "function" ? Map : CreateMapPolyfill();
         var _Set = typeof Set === "function" && typeof Set.prototype.entries === "function" ? Set : CreateSetPolyfill();
         var _WeakMap = typeof WeakMap === "function" ? WeakMap : CreateWeakMapPolyfill();
-        var registrySymbol = supportsSymbol ? Symbol.for("@reflect-metadata:registry") : void 0;
+        var registrySymbol = supportsSymbol ? /* @__PURE__ */ Symbol.for("@reflect-metadata:registry") : void 0;
         var metadataRegistry = GetOrCreateMetadataRegistry();
         var metadataProvider = CreateMetadataProvider(metadataRegistry);
         function decorate2(decorators, target, propertyKey, attributes) {
@@ -6851,67 +6851,67 @@ var require_proxy2 = __commonJS({
 var require_symbols = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/core/symbols.js"(exports2, module2) {
     module2.exports = {
-      kClose: Symbol("close"),
-      kDestroy: Symbol("destroy"),
-      kDispatch: Symbol("dispatch"),
-      kUrl: Symbol("url"),
-      kWriting: Symbol("writing"),
-      kResuming: Symbol("resuming"),
-      kQueue: Symbol("queue"),
-      kConnect: Symbol("connect"),
-      kConnecting: Symbol("connecting"),
-      kHeadersList: Symbol("headers list"),
-      kKeepAliveDefaultTimeout: Symbol("default keep alive timeout"),
-      kKeepAliveMaxTimeout: Symbol("max keep alive timeout"),
-      kKeepAliveTimeoutThreshold: Symbol("keep alive timeout threshold"),
-      kKeepAliveTimeoutValue: Symbol("keep alive timeout"),
-      kKeepAlive: Symbol("keep alive"),
-      kHeadersTimeout: Symbol("headers timeout"),
-      kBodyTimeout: Symbol("body timeout"),
-      kServerName: Symbol("server name"),
-      kLocalAddress: Symbol("local address"),
-      kHost: Symbol("host"),
-      kNoRef: Symbol("no ref"),
-      kBodyUsed: Symbol("used"),
-      kRunning: Symbol("running"),
-      kBlocking: Symbol("blocking"),
-      kPending: Symbol("pending"),
-      kSize: Symbol("size"),
-      kBusy: Symbol("busy"),
-      kQueued: Symbol("queued"),
-      kFree: Symbol("free"),
-      kConnected: Symbol("connected"),
-      kClosed: Symbol("closed"),
-      kNeedDrain: Symbol("need drain"),
-      kReset: Symbol("reset"),
-      kDestroyed: Symbol.for("nodejs.stream.destroyed"),
-      kMaxHeadersSize: Symbol("max headers size"),
-      kRunningIdx: Symbol("running index"),
-      kPendingIdx: Symbol("pending index"),
-      kError: Symbol("error"),
-      kClients: Symbol("clients"),
-      kClient: Symbol("client"),
-      kParser: Symbol("parser"),
-      kOnDestroyed: Symbol("destroy callbacks"),
-      kPipelining: Symbol("pipelining"),
-      kSocket: Symbol("socket"),
-      kHostHeader: Symbol("host header"),
-      kConnector: Symbol("connector"),
-      kStrictContentLength: Symbol("strict content length"),
-      kMaxRedirections: Symbol("maxRedirections"),
-      kMaxRequests: Symbol("maxRequestsPerClient"),
-      kProxy: Symbol("proxy agent options"),
-      kCounter: Symbol("socket request counter"),
-      kInterceptors: Symbol("dispatch interceptors"),
-      kMaxResponseSize: Symbol("max response size"),
-      kHTTP2Session: Symbol("http2Session"),
-      kHTTP2SessionState: Symbol("http2Session state"),
-      kHTTP2BuildRequest: Symbol("http2 build request"),
-      kHTTP1BuildRequest: Symbol("http1 build request"),
-      kHTTP2CopyHeaders: Symbol("http2 copy headers"),
-      kHTTPConnVersion: Symbol("http connection version"),
-      kRetryHandlerDefaultRetry: Symbol("retry agent default retry"),
-      kConstruct: Symbol("constructable")
+      kClose: /* @__PURE__ */ Symbol("close"),
+      kDestroy: /* @__PURE__ */ Symbol("destroy"),
+      kDispatch: /* @__PURE__ */ Symbol("dispatch"),
+      kUrl: /* @__PURE__ */ Symbol("url"),
+      kWriting: /* @__PURE__ */ Symbol("writing"),
+      kResuming: /* @__PURE__ */ Symbol("resuming"),
+      kQueue: /* @__PURE__ */ Symbol("queue"),
+      kConnect: /* @__PURE__ */ Symbol("connect"),
+      kConnecting: /* @__PURE__ */ Symbol("connecting"),
+      kHeadersList: /* @__PURE__ */ Symbol("headers list"),
+      kKeepAliveDefaultTimeout: /* @__PURE__ */ Symbol("default keep alive timeout"),
+      kKeepAliveMaxTimeout: /* @__PURE__ */ Symbol("max keep alive timeout"),
+      kKeepAliveTimeoutThreshold: /* @__PURE__ */ Symbol("keep alive timeout threshold"),
+      kKeepAliveTimeoutValue: /* @__PURE__ */ Symbol("keep alive timeout"),
+      kKeepAlive: /* @__PURE__ */ Symbol("keep alive"),
+      kHeadersTimeout: /* @__PURE__ */ Symbol("headers timeout"),
+      kBodyTimeout: /* @__PURE__ */ Symbol("body timeout"),
+      kServerName: /* @__PURE__ */ Symbol("server name"),
+      kLocalAddress: /* @__PURE__ */ Symbol("local address"),
+      kHost: /* @__PURE__ */ Symbol("host"),
+      kNoRef: /* @__PURE__ */ Symbol("no ref"),
+      kBodyUsed: /* @__PURE__ */ Symbol("used"),
+      kRunning: /* @__PURE__ */ Symbol("running"),
+      kBlocking: /* @__PURE__ */ Symbol("blocking"),
+      kPending: /* @__PURE__ */ Symbol("pending"),
+      kSize: /* @__PURE__ */ Symbol("size"),
+      kBusy: /* @__PURE__ */ Symbol("busy"),
+      kQueued: /* @__PURE__ */ Symbol("queued"),
+      kFree: /* @__PURE__ */ Symbol("free"),
+      kConnected: /* @__PURE__ */ Symbol("connected"),
+      kClosed: /* @__PURE__ */ Symbol("closed"),
+      kNeedDrain: /* @__PURE__ */ Symbol("need drain"),
+      kReset: /* @__PURE__ */ Symbol("reset"),
+      kDestroyed: /* @__PURE__ */ Symbol.for("nodejs.stream.destroyed"),
+      kMaxHeadersSize: /* @__PURE__ */ Symbol("max headers size"),
+      kRunningIdx: /* @__PURE__ */ Symbol("running index"),
+      kPendingIdx: /* @__PURE__ */ Symbol("pending index"),
+      kError: /* @__PURE__ */ Symbol("error"),
+      kClients: /* @__PURE__ */ Symbol("clients"),
+      kClient: /* @__PURE__ */ Symbol("client"),
+      kParser: /* @__PURE__ */ Symbol("parser"),
+      kOnDestroyed: /* @__PURE__ */ Symbol("destroy callbacks"),
+      kPipelining: /* @__PURE__ */ Symbol("pipelining"),
+      kSocket: /* @__PURE__ */ Symbol("socket"),
+      kHostHeader: /* @__PURE__ */ Symbol("host header"),
+      kConnector: /* @__PURE__ */ Symbol("connector"),
+      kStrictContentLength: /* @__PURE__ */ Symbol("strict content length"),
+      kMaxRedirections: /* @__PURE__ */ Symbol("maxRedirections"),
+      kMaxRequests: /* @__PURE__ */ Symbol("maxRequestsPerClient"),
+      kProxy: /* @__PURE__ */ Symbol("proxy agent options"),
+      kCounter: /* @__PURE__ */ Symbol("socket request counter"),
+      kInterceptors: /* @__PURE__ */ Symbol("dispatch interceptors"),
+      kMaxResponseSize: /* @__PURE__ */ Symbol("max response size"),
+      kHTTP2Session: /* @__PURE__ */ Symbol("http2Session"),
+      kHTTP2SessionState: /* @__PURE__ */ Symbol("http2Session state"),
+      kHTTP2BuildRequest: /* @__PURE__ */ Symbol("http2 build request"),
+      kHTTP1BuildRequest: /* @__PURE__ */ Symbol("http1 build request"),
+      kHTTP2CopyHeaders: /* @__PURE__ */ Symbol("http2 copy headers"),
+      kHTTPConnVersion: /* @__PURE__ */ Symbol("http connection version"),
+      kRetryHandlerDefaultRetry: /* @__PURE__ */ Symbol("retry agent default retry"),
+      kConstruct: /* @__PURE__ */ Symbol("constructable")
     };
   }
 });
@@ -9906,7 +9906,7 @@ var require_constants2 = __commonJS({
 var require_global = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/fetch/global.js"(exports2, module2) {
     "use strict";
-    var globalOrigin = Symbol.for("undici.globalOrigin.1");
+    var globalOrigin = /* @__PURE__ */ Symbol.for("undici.globalOrigin.1");
     function getGlobalOrigin() {
       return globalThis[globalOrigin];
     }
@@ -10558,12 +10558,12 @@ var require_symbols2 = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/fetch/symbols.js"(exports2, module2) {
     "use strict";
     module2.exports = {
-      kUrl: Symbol("url"),
-      kHeaders: Symbol("headers"),
-      kSignal: Symbol("signal"),
-      kState: Symbol("state"),
-      kGuard: Symbol("guard"),
-      kRealm: Symbol("realm")
+      kUrl: /* @__PURE__ */ Symbol("url"),
+      kHeaders: /* @__PURE__ */ Symbol("headers"),
+      kSignal: /* @__PURE__ */ Symbol("signal"),
+      kState: /* @__PURE__ */ Symbol("state"),
+      kGuard: /* @__PURE__ */ Symbol("guard"),
+      kRealm: /* @__PURE__ */ Symbol("realm")
     };
   }
 });
@@ -11956,7 +11956,7 @@ var require_request = __commonJS({
     var tokenRegExp = /^[\^_`a-zA-Z\-0-9!#$%&'*+.|~]+$/;
     var headerCharRegex = /[^\t\x20-\x7e\x80-\xff]/;
     var invalidPathRegex = /[^\u0021-\u00ff]/;
-    var kHandler = Symbol("handler");
+    var kHandler = /* @__PURE__ */ Symbol("handler");
     var channels = {};
     var extractBody;
     try {
@@ -12343,11 +12343,11 @@ var require_dispatcher_base = __commonJS({
       InvalidArgumentError
     } = require_errors();
     var { kDestroy, kClose, kDispatch, kInterceptors } = require_symbols();
-    var kDestroyed = Symbol("destroyed");
-    var kClosed = Symbol("closed");
-    var kOnDestroyed = Symbol("onDestroyed");
-    var kOnClosed = Symbol("onClosed");
-    var kInterceptedDispatch = Symbol("Intercepted Dispatch");
+    var kDestroyed = /* @__PURE__ */ Symbol("destroyed");
+    var kClosed = /* @__PURE__ */ Symbol("closed");
+    var kOnDestroyed = /* @__PURE__ */ Symbol("onDestroyed");
+    var kOnClosed = /* @__PURE__ */ Symbol("onClosed");
+    var kInterceptedDispatch = /* @__PURE__ */ Symbol("Intercepted Dispatch");
     var DispatcherBase = class extends Dispatcher {
       constructor() {
         super();
@@ -13002,7 +13002,7 @@ var require_RedirectHandler = __commonJS({
     var { InvalidArgumentError } = require_errors();
     var EE = require("events");
     var redirectableStatusCodes = [300, 301, 302, 303, 307, 308];
-    var kBody = Symbol("body");
+    var kBody = /* @__PURE__ */ Symbol("body");
     var BodyAsyncIterable = class {
       constructor(body) {
         this[kBody] = body;
@@ -13276,7 +13276,7 @@ var require_client = __commonJS({
     } = http2;
     var h2ExperimentalWarned = false;
     var FastBuffer = Buffer[Symbol.species];
-    var kClosedResolve = Symbol("kClosedResolve");
+    var kClosedResolve = /* @__PURE__ */ Symbol("kClosedResolve");
     var channels = {};
     try {
       const diagnosticsChannel = require("diagnostics_channel");
@@ -14946,7 +14946,7 @@ var require_fixed_queue = __commonJS({
 var require_pool_stats = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/pool-stats.js"(exports2, module2) {
     var { kFree, kConnected, kPending, kQueued, kRunning, kSize } = require_symbols();
-    var kPool = Symbol("pool");
+    var kPool = /* @__PURE__ */ Symbol("pool");
     var PoolStats = class {
       constructor(pool) {
         this[kPool] = pool;
@@ -14982,18 +14982,18 @@ var require_pool_base = __commonJS({
     var FixedQueue = require_fixed_queue();
     var { kConnected, kSize, kRunning, kPending, kQueued, kBusy, kFree, kUrl, kClose, kDestroy, kDispatch } = require_symbols();
     var PoolStats = require_pool_stats();
-    var kClients = Symbol("clients");
-    var kNeedDrain = Symbol("needDrain");
-    var kQueue = Symbol("queue");
-    var kClosedResolve = Symbol("closed resolve");
-    var kOnDrain = Symbol("onDrain");
-    var kOnConnect = Symbol("onConnect");
-    var kOnDisconnect = Symbol("onDisconnect");
-    var kOnConnectionError = Symbol("onConnectionError");
-    var kGetDispatcher = Symbol("get dispatcher");
-    var kAddClient = Symbol("add client");
-    var kRemoveClient = Symbol("remove client");
-    var kStats = Symbol("stats");
+    var kClients = /* @__PURE__ */ Symbol("clients");
+    var kNeedDrain = /* @__PURE__ */ Symbol("needDrain");
+    var kQueue = /* @__PURE__ */ Symbol("queue");
+    var kClosedResolve = /* @__PURE__ */ Symbol("closed resolve");
+    var kOnDrain = /* @__PURE__ */ Symbol("onDrain");
+    var kOnConnect = /* @__PURE__ */ Symbol("onConnect");
+    var kOnDisconnect = /* @__PURE__ */ Symbol("onDisconnect");
+    var kOnConnectionError = /* @__PURE__ */ Symbol("onConnectionError");
+    var kGetDispatcher = /* @__PURE__ */ Symbol("get dispatcher");
+    var kAddClient = /* @__PURE__ */ Symbol("add client");
+    var kRemoveClient = /* @__PURE__ */ Symbol("remove client");
+    var kStats = /* @__PURE__ */ Symbol("stats");
     var PoolBase = class extends DispatcherBase {
       constructor() {
         super();
@@ -15147,9 +15147,9 @@ var require_pool = __commonJS({
     var util = require_util2();
     var { kUrl, kInterceptors } = require_symbols();
     var buildConnector = require_connect();
-    var kOptions = Symbol("options");
-    var kConnections = Symbol("connections");
-    var kFactory = Symbol("factory");
+    var kOptions = /* @__PURE__ */ Symbol("options");
+    var kConnections = /* @__PURE__ */ Symbol("connections");
+    var kFactory = /* @__PURE__ */ Symbol("factory");
     function defaultFactory(origin, opts) {
       return new Client(origin, opts);
     }
@@ -15238,14 +15238,14 @@ var require_balanced_pool = __commonJS({
     var Pool = require_pool();
     var { kUrl, kInterceptors } = require_symbols();
     var { parseOrigin } = require_util2();
-    var kFactory = Symbol("factory");
-    var kOptions = Symbol("options");
-    var kGreatestCommonDivisor = Symbol("kGreatestCommonDivisor");
-    var kCurrentWeight = Symbol("kCurrentWeight");
-    var kIndex = Symbol("kIndex");
-    var kWeight = Symbol("kWeight");
-    var kMaxWeightPerServer = Symbol("kMaxWeightPerServer");
-    var kErrorPenalty = Symbol("kErrorPenalty");
+    var kFactory = /* @__PURE__ */ Symbol("factory");
+    var kOptions = /* @__PURE__ */ Symbol("options");
+    var kGreatestCommonDivisor = /* @__PURE__ */ Symbol("kGreatestCommonDivisor");
+    var kCurrentWeight = /* @__PURE__ */ Symbol("kCurrentWeight");
+    var kIndex = /* @__PURE__ */ Symbol("kIndex");
+    var kWeight = /* @__PURE__ */ Symbol("kWeight");
+    var kMaxWeightPerServer = /* @__PURE__ */ Symbol("kMaxWeightPerServer");
+    var kErrorPenalty = /* @__PURE__ */ Symbol("kErrorPenalty");
     function getGreatestCommonDivisor(a, b) {
       if (b === 0) return a;
       return getGreatestCommonDivisor(b, a % b);
@@ -15408,14 +15408,14 @@ var require_agent = __commonJS({
     var util = require_util2();
     var createRedirectInterceptor = require_redirectInterceptor();
     var { WeakRef: WeakRef2, FinalizationRegistry } = require_dispatcher_weakref()();
-    var kOnConnect = Symbol("onConnect");
-    var kOnDisconnect = Symbol("onDisconnect");
-    var kOnConnectionError = Symbol("onConnectionError");
-    var kMaxRedirections = Symbol("maxRedirections");
-    var kOnDrain = Symbol("onDrain");
-    var kFactory = Symbol("factory");
-    var kFinalizer = Symbol("finalizer");
-    var kOptions = Symbol("options");
+    var kOnConnect = /* @__PURE__ */ Symbol("onConnect");
+    var kOnDisconnect = /* @__PURE__ */ Symbol("onDisconnect");
+    var kOnConnectionError = /* @__PURE__ */ Symbol("onConnectionError");
+    var kMaxRedirections = /* @__PURE__ */ Symbol("maxRedirections");
+    var kOnDrain = /* @__PURE__ */ Symbol("onDrain");
+    var kFactory = /* @__PURE__ */ Symbol("factory");
+    var kFinalizer = /* @__PURE__ */ Symbol("finalizer");
+    var kOptions = /* @__PURE__ */ Symbol("options");
     function defaultFactory(origin, opts) {
       return opts && opts.connections === 1 ? new Client(origin, opts) : new Pool(origin, opts);
     }
@@ -15524,11 +15524,11 @@ var require_readable = __commonJS({
     var util = require_util2();
     var { ReadableStreamFrom, toUSVString } = require_util2();
     var Blob2;
-    var kConsume = Symbol("kConsume");
-    var kReading = Symbol("kReading");
-    var kBody = Symbol("kBody");
-    var kAbort = Symbol("abort");
-    var kContentType = Symbol("kContentType");
+    var kConsume = /* @__PURE__ */ Symbol("kConsume");
+    var kReading = /* @__PURE__ */ Symbol("kReading");
+    var kBody = /* @__PURE__ */ Symbol("kBody");
+    var kAbort = /* @__PURE__ */ Symbol("abort");
+    var kContentType = /* @__PURE__ */ Symbol("kContentType");
     var noop4 = () => {
     };
     module2.exports = class BodyReadable extends Readable {
@@ -15814,8 +15814,8 @@ var require_abort_signal = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/api/abort-signal.js"(exports2, module2) {
     var { addAbortListener } = require_util2();
     var { RequestAbortedError } = require_errors();
-    var kListener = Symbol("kListener");
-    var kSignal = Symbol("kSignal");
+    var kListener = /* @__PURE__ */ Symbol("kListener");
+    var kSignal = /* @__PURE__ */ Symbol("kSignal");
     function abort(self2) {
       if (self2.abort) {
         self2.abort();
@@ -16204,7 +16204,7 @@ var require_api_pipeline = __commonJS({
     var { AsyncResource } = require("async_hooks");
     var { addSignal, removeSignal } = require_abort_signal();
     var assert = require("assert");
-    var kResume = Symbol("resume");
+    var kResume = /* @__PURE__ */ Symbol("resume");
     var PipelineRequest = class extends Readable {
       constructor() {
         super({ autoDestroy: true });
@@ -16598,25 +16598,25 @@ var require_mock_symbols = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/mock/mock-symbols.js"(exports2, module2) {
     "use strict";
     module2.exports = {
-      kAgent: Symbol("agent"),
-      kOptions: Symbol("options"),
-      kFactory: Symbol("factory"),
-      kDispatches: Symbol("dispatches"),
-      kDispatchKey: Symbol("dispatch key"),
-      kDefaultHeaders: Symbol("default headers"),
-      kDefaultTrailers: Symbol("default trailers"),
-      kContentLength: Symbol("content length"),
-      kMockAgent: Symbol("mock agent"),
-      kMockAgentSet: Symbol("mock agent set"),
-      kMockAgentGet: Symbol("mock agent get"),
-      kMockDispatch: Symbol("mock dispatch"),
-      kClose: Symbol("close"),
-      kOriginalClose: Symbol("original agent close"),
-      kOrigin: Symbol("origin"),
-      kIsMockActive: Symbol("is mock active"),
-      kNetConnect: Symbol("net connect"),
-      kGetNetConnect: Symbol("get net connect"),
-      kConnected: Symbol("connected")
+      kAgent: /* @__PURE__ */ Symbol("agent"),
+      kOptions: /* @__PURE__ */ Symbol("options"),
+      kFactory: /* @__PURE__ */ Symbol("factory"),
+      kDispatches: /* @__PURE__ */ Symbol("dispatches"),
+      kDispatchKey: /* @__PURE__ */ Symbol("dispatch key"),
+      kDefaultHeaders: /* @__PURE__ */ Symbol("default headers"),
+      kDefaultTrailers: /* @__PURE__ */ Symbol("default trailers"),
+      kContentLength: /* @__PURE__ */ Symbol("content length"),
+      kMockAgent: /* @__PURE__ */ Symbol("mock agent"),
+      kMockAgentSet: /* @__PURE__ */ Symbol("mock agent set"),
+      kMockAgentGet: /* @__PURE__ */ Symbol("mock agent get"),
+      kMockDispatch: /* @__PURE__ */ Symbol("mock dispatch"),
+      kClose: /* @__PURE__ */ Symbol("close"),
+      kOriginalClose: /* @__PURE__ */ Symbol("original agent close"),
+      kOrigin: /* @__PURE__ */ Symbol("origin"),
+      kIsMockActive: /* @__PURE__ */ Symbol("is mock active"),
+      kNetConnect: /* @__PURE__ */ Symbol("net connect"),
+      kGetNetConnect: /* @__PURE__ */ Symbol("get net connect"),
+      kConnected: /* @__PURE__ */ Symbol("connected")
     };
   }
 });
@@ -17388,12 +17388,12 @@ var require_proxy_agent = __commonJS({
     var DispatcherBase = require_dispatcher_base();
     var { InvalidArgumentError, RequestAbortedError } = require_errors();
     var buildConnector = require_connect();
-    var kAgent = Symbol("proxy agent");
-    var kClient = Symbol("proxy client");
-    var kProxyHeaders = Symbol("proxy headers");
-    var kRequestTls = Symbol("request tls settings");
-    var kProxyTls = Symbol("proxy tls settings");
-    var kConnectEndpoint = Symbol("connect endpoint function");
+    var kAgent = /* @__PURE__ */ Symbol("proxy agent");
+    var kClient = /* @__PURE__ */ Symbol("proxy client");
+    var kProxyHeaders = /* @__PURE__ */ Symbol("proxy headers");
+    var kRequestTls = /* @__PURE__ */ Symbol("request tls settings");
+    var kProxyTls = /* @__PURE__ */ Symbol("proxy tls settings");
+    var kConnectEndpoint = /* @__PURE__ */ Symbol("connect endpoint function");
     function defaultProtocolPort(protocol) {
       return protocol === "https:" ? 443 : 80;
     }
@@ -17800,7 +17800,7 @@ var require_RetryHandler = __commonJS({
 var require_global2 = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/global.js"(exports2, module2) {
     "use strict";
-    var globalDispatcher = Symbol.for("undici.globalDispatcher.1");
+    var globalDispatcher = /* @__PURE__ */ Symbol.for("undici.globalDispatcher.1");
     var { InvalidArgumentError } = require_errors();
     var Agent = require_agent();
     if (getGlobalDispatcher() === void 0) {
@@ -17875,8 +17875,8 @@ var require_headers = __commonJS({
     var util = require("util");
     var { webidl } = require_webidl();
     var assert = require("assert");
-    var kHeadersMap = Symbol("headers map");
-    var kHeadersSortedMap = Symbol("headers map sorted");
+    var kHeadersMap = /* @__PURE__ */ Symbol("headers map");
+    var kHeadersSortedMap = /* @__PURE__ */ Symbol("headers map sorted");
     function isHTTPWhiteSpaceCharCode(code) {
       return code === 10 || code === 13 || code === 9 || code === 32;
     }
@@ -18203,7 +18203,7 @@ var require_headers = __commonJS({
           callbackFn.apply(thisArg, [value, key, this]);
         }
       }
-      [Symbol.for("nodejs.util.inspect.custom")]() {
+      [/* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom")]() {
         webidl.brandCheck(this, _Headers);
         return this[kHeadersList];
       }
@@ -18663,7 +18663,7 @@ var require_request2 = __commonJS({
     var assert = require("assert");
     var { getMaxListeners, setMaxListeners, getEventListeners, defaultMaxListeners } = require("events");
     var TransformStream = globalThis.TransformStream;
-    var kAbortController = Symbol("abortController");
+    var kAbortController = /* @__PURE__ */ Symbol("abortController");
     var requestFinalizer = new FinalizationRegistry(({ signal, abort }) => {
       signal.removeEventListener("abort", abort);
     });
@@ -20309,12 +20309,12 @@ var require_symbols3 = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/fileapi/symbols.js"(exports2, module2) {
     "use strict";
     module2.exports = {
-      kState: Symbol("FileReader state"),
-      kResult: Symbol("FileReader result"),
-      kError: Symbol("FileReader error"),
-      kLastProgressEventFired: Symbol("FileReader last progress event fired timestamp"),
-      kEvents: Symbol("FileReader events"),
-      kAborted: Symbol("FileReader aborted")
+      kState: /* @__PURE__ */ Symbol("FileReader state"),
+      kResult: /* @__PURE__ */ Symbol("FileReader result"),
+      kError: /* @__PURE__ */ Symbol("FileReader error"),
+      kLastProgressEventFired: /* @__PURE__ */ Symbol("FileReader last progress event fired timestamp"),
+      kEvents: /* @__PURE__ */ Symbol("FileReader events"),
+      kAborted: /* @__PURE__ */ Symbol("FileReader aborted")
     };
   }
 });
@@ -20324,7 +20324,7 @@ var require_progressevent = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/fileapi/progressevent.js"(exports2, module2) {
     "use strict";
     var { webidl } = require_webidl();
-    var kState = Symbol("ProgressEvent state");
+    var kState = /* @__PURE__ */ Symbol("ProgressEvent state");
     var ProgressEvent = class _ProgressEvent extends Event {
       constructor(type, eventInitDict = {}) {
         type = webidl.converters.DOMString(type);
@@ -22274,14 +22274,14 @@ var require_symbols5 = __commonJS({
   "node_modules/@actions/github/node_modules/undici/lib/websocket/symbols.js"(exports2, module2) {
     "use strict";
     module2.exports = {
-      kWebSocketURL: Symbol("url"),
-      kReadyState: Symbol("ready state"),
-      kController: Symbol("controller"),
-      kResponse: Symbol("response"),
-      kBinaryType: Symbol("binary type"),
-      kSentClose: Symbol("sent close"),
-      kReceivedClose: Symbol("received close"),
-      kByteParser: Symbol("byte parser")
+      kWebSocketURL: /* @__PURE__ */ Symbol("url"),
+      kReadyState: /* @__PURE__ */ Symbol("ready state"),
+      kController: /* @__PURE__ */ Symbol("controller"),
+      kResponse: /* @__PURE__ */ Symbol("response"),
+      kBinaryType: /* @__PURE__ */ Symbol("binary type"),
+      kSentClose: /* @__PURE__ */ Symbol("sent close"),
+      kReceivedClose: /* @__PURE__ */ Symbol("received close"),
+      kByteParser: /* @__PURE__ */ Symbol("byte parser")
     };
   }
 });
@@ -32855,216 +32855,17 @@ var require_constants7 = __commonJS({
     if (hasBlob) BINARY_TYPES.push("blob");
     module2.exports = {
       BINARY_TYPES,
+      CLOSE_TIMEOUT: 3e4,
       EMPTY_BUFFER: Buffer.alloc(0),
       GUID: "258EAFA5-E914-47DA-95CA-C5AB0DC85B11",
       hasBlob,
-      kForOnEventAttribute: Symbol("kIsForOnEventAttribute"),
-      kListener: Symbol("kListener"),
-      kStatusCode: Symbol("status-code"),
-      kWebSocket: Symbol("websocket"),
+      kForOnEventAttribute: /* @__PURE__ */ Symbol("kIsForOnEventAttribute"),
+      kListener: /* @__PURE__ */ Symbol("kListener"),
+      kStatusCode: /* @__PURE__ */ Symbol("status-code"),
+      kWebSocket: /* @__PURE__ */ Symbol("websocket"),
       NOOP: () => {
       }
     };
-  }
-});
-
-// node_modules/node-gyp-build/index.js
-var require_node_gyp_build = __commonJS({
-  "node_modules/node-gyp-build/index.js"(exports2, module2) {
-    var fs = require("fs");
-    var path2 = require("path");
-    var os = require("os");
-    var runtimeRequire = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require;
-    var vars = process.config && process.config.variables || {};
-    var prebuildsOnly = !!process.env.PREBUILDS_ONLY;
-    var abi = process.versions.modules;
-    var runtime = isElectron() ? "electron" : isNwjs() ? "node-webkit" : "node";
-    var arch = process.env.npm_config_arch || os.arch();
-    var platform = process.env.npm_config_platform || os.platform();
-    var libc = process.env.LIBC || (isAlpine(platform) ? "musl" : "glibc");
-    var armv = process.env.ARM_VERSION || (arch === "arm64" ? "8" : vars.arm_version) || "";
-    var uv = (process.versions.uv || "").split(".")[0];
-    module2.exports = load;
-    function load(dir) {
-      return runtimeRequire(load.path(dir));
-    }
-    load.path = function(dir) {
-      dir = path2.resolve(dir || ".");
-      try {
-        var name = runtimeRequire(path2.join(dir, "package.json")).name.toUpperCase().replace(/-/g, "_");
-        if (process.env[name + "_PREBUILD"]) dir = process.env[name + "_PREBUILD"];
-      } catch (err) {
-      }
-      if (!prebuildsOnly) {
-        var release = getFirst2(path2.join(dir, "build/Release"), matchBuild);
-        if (release) return release;
-        var debug = getFirst2(path2.join(dir, "build/Debug"), matchBuild);
-        if (debug) return debug;
-      }
-      var prebuild = resolve2(dir);
-      if (prebuild) return prebuild;
-      var nearby = resolve2(path2.dirname(process.execPath));
-      if (nearby) return nearby;
-      var target = [
-        "platform=" + platform,
-        "arch=" + arch,
-        "runtime=" + runtime,
-        "abi=" + abi,
-        "uv=" + uv,
-        armv ? "armv=" + armv : "",
-        "libc=" + libc,
-        "node=" + process.versions.node,
-        process.versions.electron ? "electron=" + process.versions.electron : "",
-        typeof __webpack_require__ === "function" ? "webpack=true" : ""
-        // eslint-disable-line
-      ].filter(Boolean).join(" ");
-      throw new Error("No native build was found for " + target + "\n    loaded from: " + dir + "\n");
-      function resolve2(dir2) {
-        var tuples = readdirSync(path2.join(dir2, "prebuilds")).map(parseTuple);
-        var tuple = tuples.filter(matchTuple(platform, arch)).sort(compareTuples)[0];
-        if (!tuple) return;
-        var prebuilds = path2.join(dir2, "prebuilds", tuple.name);
-        var parsed = readdirSync(prebuilds).map(parseTags);
-        var candidates = parsed.filter(matchTags(runtime, abi));
-        var winner = candidates.sort(compareTags(runtime))[0];
-        if (winner) return path2.join(prebuilds, winner.file);
-      }
-    };
-    function readdirSync(dir) {
-      try {
-        return fs.readdirSync(dir);
-      } catch (err) {
-        return [];
-      }
-    }
-    function getFirst2(dir, filter) {
-      var files = readdirSync(dir).filter(filter);
-      return files[0] && path2.join(dir, files[0]);
-    }
-    function matchBuild(name) {
-      return /\.node$/.test(name);
-    }
-    function parseTuple(name) {
-      var arr = name.split("-");
-      if (arr.length !== 2) return;
-      var platform2 = arr[0];
-      var architectures = arr[1].split("+");
-      if (!platform2) return;
-      if (!architectures.length) return;
-      if (!architectures.every(Boolean)) return;
-      return { name, platform: platform2, architectures };
-    }
-    function matchTuple(platform2, arch2) {
-      return function(tuple) {
-        if (tuple == null) return false;
-        if (tuple.platform !== platform2) return false;
-        return tuple.architectures.includes(arch2);
-      };
-    }
-    function compareTuples(a, b) {
-      return a.architectures.length - b.architectures.length;
-    }
-    function parseTags(file) {
-      var arr = file.split(".");
-      var extension = arr.pop();
-      var tags = { file, specificity: 0 };
-      if (extension !== "node") return;
-      for (var i = 0; i < arr.length; i++) {
-        var tag = arr[i];
-        if (tag === "node" || tag === "electron" || tag === "node-webkit") {
-          tags.runtime = tag;
-        } else if (tag === "napi") {
-          tags.napi = true;
-        } else if (tag.slice(0, 3) === "abi") {
-          tags.abi = tag.slice(3);
-        } else if (tag.slice(0, 2) === "uv") {
-          tags.uv = tag.slice(2);
-        } else if (tag.slice(0, 4) === "armv") {
-          tags.armv = tag.slice(4);
-        } else if (tag === "glibc" || tag === "musl") {
-          tags.libc = tag;
-        } else {
-          continue;
-        }
-        tags.specificity++;
-      }
-      return tags;
-    }
-    function matchTags(runtime2, abi2) {
-      return function(tags) {
-        if (tags == null) return false;
-        if (tags.runtime !== runtime2 && !runtimeAgnostic(tags)) return false;
-        if (tags.abi !== abi2 && !tags.napi) return false;
-        if (tags.uv && tags.uv !== uv) return false;
-        if (tags.armv && tags.armv !== armv) return false;
-        if (tags.libc && tags.libc !== libc) return false;
-        return true;
-      };
-    }
-    function runtimeAgnostic(tags) {
-      return tags.runtime === "node" && tags.napi;
-    }
-    function compareTags(runtime2) {
-      return function(a, b) {
-        if (a.runtime !== b.runtime) {
-          return a.runtime === runtime2 ? -1 : 1;
-        } else if (a.abi !== b.abi) {
-          return a.abi ? -1 : 1;
-        } else if (a.specificity !== b.specificity) {
-          return a.specificity > b.specificity ? -1 : 1;
-        } else {
-          return 0;
-        }
-      };
-    }
-    function isNwjs() {
-      return !!(process.versions && process.versions.nw);
-    }
-    function isElectron() {
-      if (process.versions && process.versions.electron) return true;
-      if (process.env.ELECTRON_RUN_AS_NODE) return true;
-      return typeof window !== "undefined" && window.process && window.process.type === "renderer";
-    }
-    function isAlpine(platform2) {
-      return platform2 === "linux" && fs.existsSync("/etc/alpine-release");
-    }
-    load.parseTags = parseTags;
-    load.matchTags = matchTags;
-    load.compareTags = compareTags;
-    load.parseTuple = parseTuple;
-    load.matchTuple = matchTuple;
-    load.compareTuples = compareTuples;
-  }
-});
-
-// node_modules/bufferutil/fallback.js
-var require_fallback = __commonJS({
-  "node_modules/bufferutil/fallback.js"(exports2, module2) {
-    "use strict";
-    var mask = (source, mask2, output, offset, length) => {
-      for (var i = 0; i < length; i++) {
-        output[offset + i] = source[i] ^ mask2[i & 3];
-      }
-    };
-    var unmask = (buffer, mask2) => {
-      const length = buffer.length;
-      for (var i = 0; i < length; i++) {
-        buffer[i] ^= mask2[i & 3];
-      }
-    };
-    module2.exports = { mask, unmask };
-  }
-});
-
-// node_modules/bufferutil/index.js
-var require_bufferutil = __commonJS({
-  "node_modules/bufferutil/index.js"(exports2, module2) {
-    "use strict";
-    try {
-      module2.exports = require_node_gyp_build()(__dirname);
-    } catch (e) {
-      module2.exports = require_fallback();
-    }
   }
 });
 
@@ -33128,7 +32929,7 @@ var require_buffer_util = __commonJS({
     };
     if (!process.env.WS_NO_BUFFER_UTIL) {
       try {
-        const bufferUtil = require_bufferutil();
+        const bufferUtil = require("bufferutil");
         module2.exports.mask = function(source, mask, output, offset, length) {
           if (length < 48) _mask(source, mask, output, offset, length);
           else bufferUtil.mask(source, mask, output, offset, length);
@@ -33147,8 +32948,8 @@ var require_buffer_util = __commonJS({
 var require_limiter = __commonJS({
   "node_modules/ws/lib/limiter.js"(exports2, module2) {
     "use strict";
-    var kDone = Symbol("kDone");
-    var kRun = Symbol("kRun");
+    var kDone = /* @__PURE__ */ Symbol("kDone");
+    var kRun = /* @__PURE__ */ Symbol("kRun");
     var Limiter = class {
       /**
        * Creates a new `Limiter`.
@@ -33203,11 +33004,11 @@ var require_permessage_deflate = __commonJS({
     var { kStatusCode } = require_constants7();
     var FastBuffer = Buffer[Symbol.species];
     var TRAILER = Buffer.from([0, 0, 255, 255]);
-    var kPerMessageDeflate = Symbol("permessage-deflate");
-    var kTotalLength = Symbol("total-length");
-    var kCallback = Symbol("callback");
-    var kBuffers = Symbol("buffers");
-    var kError = Symbol("error");
+    var kPerMessageDeflate = /* @__PURE__ */ Symbol("permessage-deflate");
+    var kTotalLength = /* @__PURE__ */ Symbol("total-length");
+    var kCallback = /* @__PURE__ */ Symbol("callback");
+    var kBuffers = /* @__PURE__ */ Symbol("buffers");
+    var kError = /* @__PURE__ */ Symbol("error");
     var zlibLimiter;
     var PerMessageDeflate = class {
       /**
@@ -34379,7 +34180,7 @@ var require_sender = __commonJS({
     var { EMPTY_BUFFER, kWebSocket, NOOP } = require_constants7();
     var { isBlob, isValidStatusCode } = require_validation();
     var { mask: applyMask, toBuffer } = require_buffer_util();
-    var kByteLength = Symbol("kByteLength");
+    var kByteLength = /* @__PURE__ */ Symbol("kByteLength");
     var maskBuffer = Buffer.alloc(4);
     var RANDOM_POOL_SIZE = 8 * 1024;
     var randomPool;
@@ -34862,14 +34663,14 @@ var require_event_target = __commonJS({
   "node_modules/ws/lib/event-target.js"(exports2, module2) {
     "use strict";
     var { kForOnEventAttribute, kListener } = require_constants7();
-    var kCode = Symbol("kCode");
-    var kData = Symbol("kData");
-    var kError = Symbol("kError");
-    var kMessage = Symbol("kMessage");
-    var kReason = Symbol("kReason");
-    var kTarget = Symbol("kTarget");
-    var kType = Symbol("kType");
-    var kWasClean = Symbol("kWasClean");
+    var kCode = /* @__PURE__ */ Symbol("kCode");
+    var kData = /* @__PURE__ */ Symbol("kData");
+    var kError = /* @__PURE__ */ Symbol("kError");
+    var kMessage = /* @__PURE__ */ Symbol("kMessage");
+    var kReason = /* @__PURE__ */ Symbol("kReason");
+    var kTarget = /* @__PURE__ */ Symbol("kTarget");
+    var kType = /* @__PURE__ */ Symbol("kType");
+    var kWasClean = /* @__PURE__ */ Symbol("kWasClean");
     var Event2 = class {
       /**
        * Create a new `Event`.
@@ -35257,6 +35058,7 @@ var require_websocket2 = __commonJS({
     var { isBlob } = require_validation();
     var {
       BINARY_TYPES,
+      CLOSE_TIMEOUT,
       EMPTY_BUFFER,
       GUID,
       kForOnEventAttribute,
@@ -35270,8 +35072,7 @@ var require_websocket2 = __commonJS({
     } = require_event_target();
     var { format, parse: parse3 } = require_extension();
     var { toBuffer } = require_buffer_util();
-    var closeTimeout = 30 * 1e3;
-    var kAborted = Symbol("kAborted");
+    var kAborted = /* @__PURE__ */ Symbol("kAborted");
     var protocolVersions = [8, 13];
     var readyStates = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
     var subprotocolRegex = /^[!#$%&'*+\-.0-9A-Z^_`|a-z~]+$/;
@@ -35316,6 +35117,7 @@ var require_websocket2 = __commonJS({
           initAsClient(this, address, protocols, options);
         } else {
           this._autoPong = options.autoPong;
+          this._closeTimeout = options.closeTimeout;
           this._isServer = true;
         }
       }
@@ -35717,6 +35519,7 @@ var require_websocket2 = __commonJS({
       const opts = {
         allowSynchronousEvents: true,
         autoPong: true,
+        closeTimeout: CLOSE_TIMEOUT,
         protocolVersion: protocolVersions[1],
         maxPayload: 100 * 1024 * 1024,
         skipUTF8Validation: false,
@@ -35734,6 +35537,7 @@ var require_websocket2 = __commonJS({
         port: void 0
       };
       websocket._autoPong = opts.autoPong;
+      websocket._closeTimeout = opts.closeTimeout;
       if (!protocolVersions.includes(opts.protocolVersion)) {
         throw new RangeError(
           `Unsupported protocol version: ${opts.protocolVersion} (supported versions: ${protocolVersions.join(", ")})`
@@ -36076,7 +35880,7 @@ var require_websocket2 = __commonJS({
     function setCloseTimer(websocket) {
       websocket._closeTimer = setTimeout(
         websocket._socket.destroy.bind(websocket._socket),
-        closeTimeout
+        websocket._closeTimeout
       );
     }
     function socketOnClose() {
@@ -36085,8 +35889,8 @@ var require_websocket2 = __commonJS({
       this.removeListener("data", socketOnData);
       this.removeListener("end", socketOnEnd);
       websocket._readyState = WebSocket2.CLOSING;
-      let chunk;
-      if (!this._readableState.endEmitted && !websocket._closeFrameReceived && !websocket._receiver._writableState.errorEmitted && (chunk = websocket._socket.read()) !== null) {
+      if (!this._readableState.endEmitted && !websocket._closeFrameReceived && !websocket._receiver._writableState.errorEmitted && this._readableState.length !== 0) {
+        const chunk = this.read(this._readableState.length);
         websocket._receiver.write(chunk);
       }
       websocket._receiver.end();
@@ -36277,7 +36081,7 @@ var require_websocket_server = __commonJS({
     var PerMessageDeflate = require_permessage_deflate();
     var subprotocol = require_subprotocol();
     var WebSocket2 = require_websocket2();
-    var { GUID, kWebSocket } = require_constants7();
+    var { CLOSE_TIMEOUT, GUID, kWebSocket } = require_constants7();
     var keyRegex = /^[+/0-9A-Za-z]{22}==$/;
     var RUNNING = 0;
     var CLOSING = 1;
@@ -36296,6 +36100,9 @@ var require_websocket_server = __commonJS({
        *     pending connections
        * @param {Boolean} [options.clientTracking=true] Specifies whether or not to
        *     track clients
+       * @param {Number} [options.closeTimeout=30000] Duration in milliseconds to
+       *     wait for the closing handshake to finish after `websocket.close()` is
+       *     called
        * @param {Function} [options.handleProtocols] A hook to handle protocols
        * @param {String} [options.host] The hostname where to bind the server
        * @param {Number} [options.maxPayload=104857600] The maximum allowed message
@@ -36324,6 +36131,7 @@ var require_websocket_server = __commonJS({
           perMessageDeflate: false,
           handleProtocols: null,
           clientTracking: true,
+          closeTimeout: CLOSE_TIMEOUT,
           verifyClient: null,
           noServer: false,
           backlog: null,
@@ -40300,8 +40108,8 @@ var require_split2 = __commonJS({
     "use strict";
     var { Transform } = require("stream");
     var { StringDecoder } = require("string_decoder");
-    var kLast = Symbol("last");
-    var kDecoder = Symbol("decoder");
+    var kLast = /* @__PURE__ */ Symbol("last");
+    var kDecoder = /* @__PURE__ */ Symbol("decoder");
     function transform(chunk, enc, cb) {
       let list;
       if (this.overflow) {
@@ -48699,7 +48507,7 @@ function bindApi(hook2, state, name) {
   });
 }
 function Singular() {
-  const singularHookName = Symbol("Singular");
+  const singularHookName = /* @__PURE__ */ Symbol("Singular");
   const singularHookState = {
     registry: {}
   };
@@ -52749,7 +52557,7 @@ var isCompatible = _makeCompatibilityCheck(VERSION11);
 
 // node_modules/@opentelemetry/api/build/esm/internal/global-utils.js
 var major = VERSION11.split(".")[0];
-var GLOBAL_OPENTELEMETRY_API_KEY = Symbol.for("opentelemetry.js.api." + major);
+var GLOBAL_OPENTELEMETRY_API_KEY = /* @__PURE__ */ Symbol.for("opentelemetry.js.api." + major);
 var _global = _globalThis;
 function registerGlobal(type, instance, diag2, allowOverride) {
   var _a;
@@ -54030,8 +53838,9 @@ var ConsoleLogLogger = class _ConsoleLogLogger extends FormattingLogger {
   }
 };
 var ForwardingLogger = class extends BaseLogger {
-  constructor() {
-    super(...arguments);
+  constructor(forwardDebugLogs = true) {
+    super();
+    this.forwardDebugLogs = forwardDebugLogs;
     this.loggers = [];
   }
   addLogger(logger) {
@@ -54041,6 +53850,9 @@ var ForwardingLogger = class extends BaseLogger {
   doLog(entry) {
     if (this.loggers.length === 0) {
       throw new Uninitialized("No loggers added. Forgot to call `initLogging`?");
+    }
+    if (!this.forwardDebugLogs && entry.level === LogLevel.Debug) {
+      return;
     }
     for (const x of this.loggers) {
       try {
@@ -54132,7 +53944,7 @@ var loggerForEnv = (env) => {
       return ConsoleLogger.coloredSimple();
   }
 };
-var initLogging = (env) => {
+var initLogging = (env, showDebugLogs = true) => {
   var _a;
   if (initializedAt) {
     throw new AlreadyInitialized(`Logging already initialized here:
@@ -54140,7 +53952,7 @@ ${initializedAt}
 `);
   }
   initializedAt = ((_a = Error().stack) !== null && _a !== void 0 ? _a : "\nUnknown location").split("\n").slice(2).map((x) => x.replace(/^    at /, "      @ ")).join("\n");
-  LOGGER = new ForwardingLogger().addLogger(loggerForEnv(env));
+  LOGGER = new ForwardingLogger(showDebugLogs).addLogger(loggerForEnv(env));
   return LOGGER;
 };
 
@@ -54336,19 +54148,21 @@ var resolvablePromise = () => {
 var throwOnTimeout = async ({ label, timeoutMs, promise, interrupt }) => {
   const timeout = toDuration(timeoutMs);
   const w = interruptableWait(timeoutMs);
+  let timedOut = false;
   try {
     return await Promise.race([
       promise,
       (async () => {
         try {
           await w;
+          timedOut = true;
         } catch (e) {
         }
         throw new TimedOut(`throwOnTimeout(${label !== null && label !== void 0 ? label : ""})`, timeout.asSeconds());
       })()
     ]);
   } catch (e) {
-    if (interrupt) {
+    if (interrupt && timedOut) {
       await logErrorAsync(async () => interrupt());
     }
     throw e;
@@ -54818,7 +54632,6 @@ var toNonEmptyStringWithMaxLength = (maxLength) => (x) => {
 };
 
 // packages/utils/common/lib/request.js
-var globalFetch = globalThis.fetch;
 var InvalidCertificate = class extends Exception {
   constructor(message) {
     super(message);
@@ -54845,7 +54658,7 @@ var fetch = async (url, options = {}) => {
     ...options,
     ...options.method ? { method: options.method.toUpperCase() } : {}
   };
-  const done = awaitLater(globalFetch(url, opts));
+  const done = awaitLater(globalThis.fetch(url, opts));
   try {
     return await throwOnTimeout({
       timeoutMs: options.timeout ? toDuration(options.timeout) : duration({ seconds: 5 }),
@@ -56847,6 +56660,8 @@ var LandscapeStatus;
   LandscapeStatus2["Deploying"] = "Deploying servers";
   LandscapeStatus2["ServersDeployed"] = "Servers are deployed";
   LandscapeStatus2["Scaled"] = "Servers are scaled";
+  LandscapeStatus2["Failed"] = "Landscape deploy failed";
+  LandscapeStatus2["Redeploying"] = "Received redeployment request";
 })(LandscapeStatus || (LandscapeStatus = {}));
 var toLandscapeStatus = toStringEnum("LandscapeStatus", LandscapeStatus);
 
@@ -57228,6 +57043,276 @@ var toHttpWithTrackingContext = asObjectNoCopy({
   metadata: toUserActivityMetadata
 });
 
+// packages/utils/common/lib/path.js
+var import_path = require("path");
+var POSIX_PATH_REGEX = new RegExp("^/?(?:[^/\0]+/?)*$");
+var toPosixPath = (p) => {
+  const s = toString(p);
+  if (!POSIX_PATH_REGEX.test(s)) {
+    throw new TypeConversionFailure("POSIX path", p);
+  }
+  return s;
+};
+var toPathWithoutTraversal = (p) => {
+  const s = toPosixPath(p);
+  if (s.split(import_path.sep).includes("..")) {
+    throw new TypeConversionFailure("path without ..", p);
+  }
+  return s;
+};
+
+// packages/utils/common/lib/typing/url.js
+var prepareUrlPathRegex = () => {
+  const unReservedCharsGroup = "-._~a-zA-Z0-9";
+  const subDelims = "!$&'()*+,;=";
+  const other = ":@";
+  const pathDelimiter = "/";
+  const singleCharsClass = [
+    "[",
+    unReservedCharsGroup,
+    subDelims,
+    other,
+    pathDelimiter,
+    "]"
+  ].join("");
+  const regexp = [
+    "^\\/",
+    "(?:",
+    singleCharsClass,
+    "|",
+    "%[0-9A-F]{2}",
+    ")*$"
+  ].join("");
+  return new RegExp(regexp);
+};
+var validUrlPathRegex = prepareUrlPathRegex();
+var toUrlPath = toStringMatchingRegex("UrlPath", validUrlPathRegex);
+
+// packages/workspace-agent/common/lib/pipeline/types.js
+var singleRunningStageKinds = ["prepare", "test"];
+var multiRunningStageKinds = ["run"];
+var stageKinds = [
+  ...singleRunningStageKinds,
+  ...multiRunningStageKinds
+];
+var toStageKind = toLiteralUnion("stageKind", stageKinds);
+var toStep = toObject({
+  name: toUndefOr(toString),
+  command: toString
+});
+var toUrl = (x) => {
+  if (x instanceof URL) {
+    return x;
+  }
+  try {
+    return new URL(toString(x));
+  } catch {
+    throw new TypeConversionFailure("URL string", x);
+  }
+};
+var toStage = toObject({
+  steps: toArray(toStep),
+  healthEndpoint: toUndefOr(toUrl)
+});
+var toEnv = toRecord(toString);
+var toSimpleNetworkConfig = toObject({
+  path: toUrlPath,
+  stripPath: toUndefOr(toBoolean)
+});
+var toPortConfig = toObject({
+  port: toPositiveInteger,
+  isPublic: toBoolean
+});
+var toPathConfig = toObject({
+  port: toPositiveInteger,
+  path: toUrlPath,
+  stripPath: toUndefOr(toBoolean)
+});
+var toAdvancedNetworkConfig = toObject({
+  ports: toNonEmptyArray(toPortConfig),
+  paths: toArray(toPathConfig)
+});
+var toNetworkConfig = toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig);
+var toDeployStageServerFields = {
+  steps: toArray(toStep),
+  healthEndpoint: toUndefOr(toUrl),
+  plan: toUndefOr(toPlanId),
+  replicas: toUndefOr(toPositiveInteger),
+  isPublic: toUndefOr(toBoolean),
+  mountSubPath: toUndefOr(toPathWithoutTraversal),
+  network: toUndefOr(toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig)),
+  env: toUndefOr(toEnv),
+  baseImage: toUndefOr(toString),
+  runAsUser: toUndefOr(toNonNegativeInteger),
+  runAsGroup: toUndefOr(toNonNegativeInteger)
+};
+var toDeployStageServer = toObject(toDeployStageServerFields);
+var toManagedServiceConfigFields = {
+  provider: toObject({
+    name: toString,
+    version: toString
+  }),
+  plan: toObject({
+    id: toNonNegativeInteger,
+    parameters: toRecord(toInteger)
+  }),
+  config: toRecord(toUnknown),
+  secrets: toRecord(toUnknown)
+};
+var toManagedServiceConfig = toObject(toManagedServiceConfigFields);
+var isManagedServiceConfig = (x) => isOfType(x, toManagedServiceConfig);
+var toDeployStage = toRecord(toOr(toDeployStageServer, toManagedServiceConfig));
+var isDeployStage = (x) => isOfType(x, toDeployStage);
+var toPipelineConfigV01 = toObject({
+  prepare: toStage,
+  test: toStage,
+  run: toStage
+});
+var toPipelineConfigV02 = toObject({
+  schemaVersion: toLiteral("v0.2"),
+  prepare: toStage,
+  test: toStage,
+  run: toDeployStage
+});
+var toPipelineConfig = toOr(toPipelineConfigV02, toPipelineConfigV01);
+var pipelineProcessingStates = [
+  "waiting",
+  "running",
+  "success",
+  "failure",
+  "aborted"
+];
+var executionInfo = {
+  state: toLiteralUnion("state", pipelineProcessingStates),
+  startedAt: toUndefOr(toDate),
+  finishedAt: toUndefOr(toDate)
+};
+var toExecutionInfo = toObject(executionInfo);
+var stageExecutionInfo = {
+  ...executionInfo,
+  steps: toArray(toExecutionInfo)
+};
+var toStageExecutionInfo = toObject(stageExecutionInfo);
+var isAdvancedNetworkConfig = (c) => isOfType(c, toAdvancedNetworkConfig);
+
+// packages/workspace-service/common/lib/Workspace.js
+var GitProvider;
+(function(GitProvider2) {
+  GitProvider2["GitHub"] = "github";
+  GitProvider2["GitLab"] = "gitlab";
+  GitProvider2["Bitbucket"] = "bitbucket";
+})(GitProvider || (GitProvider = {}));
+var toGitProvider = toStringEnum("GitProvider", GitProvider);
+var workspace = {
+  id: readOnly(toNonNegativeInteger),
+  dataCenterId: readOnly(toNumber),
+  userId: readOnly(toInteger),
+  teamId: readOnly(toNonNegativeInteger),
+  name: toString,
+  gitUrl: readOnly(toNullOr(toString)),
+  isPrivateRepo: readOnly(toBoolean),
+  welcomeMessage: readOnly(toNullOr(toString)),
+  initialBranch: readOnly(toNullOr(toString)),
+  cloneDepth: toUndefOr(toPositiveInteger),
+  sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
+  planId: toPlanId,
+  replicas: toPositiveInteger,
+  vpnConfig: toNullOr(toString),
+  collectTraces: toBoolean,
+  restricted: toBoolean,
+  baseImage: toUndefOr(toString),
+  persistentLogs: toBoolean,
+  createdAt: toDate,
+  managedServiceId: toUndefOr(toUuid)
+};
+var toWorkspace = toObject(workspace);
+var validServerNameRegex = new RegExp("^(?:[a-z]|[a-z][-a-z0-9]{0,30}[a-z0-9])$");
+var toMsdServerName = toStringMatchingRegex("MsdServerName", validServerNameRegex);
+var toServerPath = toObject({
+  port: toPositiveInteger,
+  path: toUrlPath,
+  stripPath: toBoolean
+});
+var toServerPort = toObject({
+  port: toPositiveInteger,
+  isPublic: toBoolean
+});
+var toServerNetwork = toObject({
+  ports: toNonEmptyArray(toServerPort),
+  paths: toArray(toServerPath)
+});
+var server = {
+  name: readOnly(toMsdServerName),
+  planId: toPlanId,
+  replicas: toPositiveInteger,
+  mountSubPath: toUndefOr(toPathWithoutTraversal),
+  network: toServerNetwork,
+  baseImage: toUndefOr(toString),
+  env: toUndefOr(toEnv),
+  runAsUser: toUndefOr(toNonNegativeInteger),
+  runAsGroup: toUndefOr(toNonNegativeInteger)
+};
+var toServer = toObject(server);
+var serverV1 = {
+  name: readOnly(toMsdServerName),
+  planId: toPlanId,
+  replicas: toPositiveInteger,
+  stripPath: toBoolean,
+  isPublic: toUndefOr(toBoolean),
+  network: toUndefOr(toObject({
+    path: toUrlPath
+  }))
+};
+var toServerV1 = toObject(serverV1);
+var uniqueServerId = ({ workspaceId, name }) => `${workspaceId}-${name}`;
+var IDE_SERVER_NAME = "codesphere-ide";
+var DEFAULT_PORT = 3e3;
+var workspaceDevDomain = (workspaceId, workspaceHostingBaseDomain) => `${workspaceId}-${DEFAULT_PORT}.${workspaceHostingBaseDomain}`;
+var simpleNetworkToServerNetwork = (networkConfig, isPublic) => {
+  var _a;
+  return {
+    ports: [
+      {
+        port: DEFAULT_PORT,
+        isPublic: isPublic !== null && isPublic !== void 0 ? isPublic : true
+      }
+    ],
+    paths: !networkConfig || !(isPublic !== null && isPublic !== void 0 ? isPublic : true) ? [] : [
+      {
+        port: DEFAULT_PORT,
+        path: networkConfig.path,
+        stripPath: (_a = networkConfig.stripPath) !== null && _a !== void 0 ? _a : false
+      }
+    ]
+  };
+};
+var advancedNetworkToServerNetwork = (networkConfig) => ({
+  ...networkConfig,
+  paths: networkConfig.paths.map((p) => ({ stripPath: false, ...p }))
+});
+var configToLandscape = (config) => {
+  return Object.entries(config).map(([k, v]) => {
+    if (isManagedServiceConfig(v)) {
+      return;
+    }
+    return deployStageServerToLandscape(k, v);
+  }).filter((x) => x !== void 0);
+};
+var deployStageServerToLandscape = (name, config) => {
+  var _a, _b, _c;
+  return toServer({
+    name,
+    planId: config.plan,
+    replicas: (_a = config.replicas) !== null && _a !== void 0 ? _a : 1,
+    mountSubPath: config.mountSubPath || void 0,
+    env: config.env,
+    baseImage: config.baseImage || void 0,
+    runAsUser: (_b = config.runAsUser) !== null && _b !== void 0 ? _b : void 0,
+    runAsGroup: (_c = config.runAsGroup) !== null && _c !== void 0 ? _c : void 0,
+    network: config.network && isAdvancedNetworkConfig(config.network) ? advancedNetworkToServerNetwork(config.network) : simpleNetworkToServerNetwork(config.network, config.isPublic)
+  });
+};
+
 // packages/deployment-service/common/lib/PrometheusResponse.js
 var toUnixTimeAndValueTuple = toTuple(toNumber, toOr(toString, toNumber));
 var toRangeVectorResultEntry = toObject({
@@ -57344,6 +57429,16 @@ var toReplicaResourceUtilization = toObject({
   planId: toPlanId,
   usage: toArray(toUnixTimeAndValueTuple)
 });
+var LandscapeServerReadinessStatus;
+(function(LandscapeServerReadinessStatus2) {
+  LandscapeServerReadinessStatus2["Ready"] = "Ready";
+  LandscapeServerReadinessStatus2["Reachable"] = "Reachable";
+  LandscapeServerReadinessStatus2["NotReady"] = "NotReady";
+})(LandscapeServerReadinessStatus || (LandscapeServerReadinessStatus = {}));
+var toLandscapeServerReadinessInfo = toObject({
+  status: toStringEnum("LandscapeServerReadinessStatus", LandscapeServerReadinessStatus),
+  server: toMsdServerName
+});
 var workspaceDeploymentService = {
   name: "Workspace",
   context: toHttpContext,
@@ -57412,6 +57507,11 @@ var workspaceDeploymentService = {
       response: toStartWorkspaceStatus,
       request: toStartWorkspaceServiceParams,
       defaultOptions: { timeout: duration({ seconds: 20 }) }
+    }),
+    landscapeServerReadinessStream: stream({
+      access: "public",
+      response: toLandscapeServerReadinessInfo,
+      request: toWorkspaceServiceArgs2
     })
   }
 };
@@ -57909,7 +58009,7 @@ var gitProvider = {
   url: toString,
   kind: toGitProviderKind
 };
-var toGitProvider = toObject(gitProvider);
+var toGitProvider2 = toObject(gitProvider);
 var authMethods = [
   "client_secret_basic",
   "client_secret_post",
@@ -58004,9 +58104,9 @@ var toAuthCode = readOnly(toObject({
   code: toString,
   provider: toGitProviderKind
 }));
-var toGitProviders = readOnly(toArray(toGitProvider));
+var toGitProviders = readOnly(toArray(toGitProvider2));
 var toGitAuthUrls = readOnly(toArray(toObject({
-  provider: toGitProvider,
+  provider: toGitProvider2,
   auth: toString,
   configure: toUndefOr(toString)
 })));
@@ -58942,156 +59042,6 @@ var toLogEntry = toObject({
   data: toString
 });
 
-// packages/utils/common/lib/path.js
-var import_path = require("path");
-var POSIX_PATH_REGEX = new RegExp("^/?(?:[^/\0]+/?)*$");
-var toPosixPath = (p) => {
-  const s = toString(p);
-  if (!POSIX_PATH_REGEX.test(s)) {
-    throw new TypeConversionFailure("POSIX path", p);
-  }
-  return s;
-};
-var toPathWithoutTraversal = (p) => {
-  const s = toPosixPath(p);
-  if (s.split(import_path.sep).includes("..")) {
-    throw new TypeConversionFailure("path without ..", p);
-  }
-  return s;
-};
-
-// packages/utils/common/lib/typing/url.js
-var prepareUrlPathRegex = () => {
-  const unReservedCharsGroup = "-._~a-zA-Z0-9";
-  const subDelims = "!$&'()*+,;=";
-  const other = ":@";
-  const pathDelimiter = "/";
-  const singleCharsClass = [
-    "[",
-    unReservedCharsGroup,
-    subDelims,
-    other,
-    pathDelimiter,
-    "]"
-  ].join("");
-  const regexp = [
-    "^\\/",
-    "(?:",
-    singleCharsClass,
-    "|",
-    "%[0-9A-F]{2}",
-    ")*$"
-  ].join("");
-  return new RegExp(regexp);
-};
-var validUrlPathRegex = prepareUrlPathRegex();
-var toUrlPath = toStringMatchingRegex("UrlPath", validUrlPathRegex);
-
-// packages/workspace-agent/common/lib/pipeline/types.js
-var singleRunningStageKinds = ["prepare", "test"];
-var multiRunningStageKinds = ["run"];
-var stageKinds = [
-  ...singleRunningStageKinds,
-  ...multiRunningStageKinds
-];
-var toStageKind = toLiteralUnion("stageKind", stageKinds);
-var toStep = toObject({
-  name: toUndefOr(toString),
-  command: toString
-});
-var toUrl = (x) => {
-  if (x instanceof URL) {
-    return x;
-  }
-  try {
-    return new URL(toString(x));
-  } catch {
-    throw new TypeConversionFailure("URL string", x);
-  }
-};
-var toStage = toObject({
-  steps: toArray(toStep),
-  healthEndpoint: toUndefOr(toUrl)
-});
-var toEnv = toRecord(toString);
-var toSimpleNetworkConfig = toObject({
-  path: toUrlPath,
-  stripPath: toUndefOr(toBoolean)
-});
-var toPortConfig = toObject({
-  port: toPositiveInteger,
-  isPublic: toBoolean
-});
-var toPathConfig = toObject({
-  port: toPositiveInteger,
-  path: toUrlPath,
-  stripPath: toUndefOr(toBoolean)
-});
-var toAdvancedNetworkConfig = toObject({
-  ports: toNonEmptyArray(toPortConfig),
-  paths: toArray(toPathConfig)
-});
-var toNetworkConfig = toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig);
-var toDeployStageServer = toObject({
-  steps: toArray(toStep),
-  healthEndpoint: toUndefOr(toUrl),
-  plan: toUndefOr(toPlanId),
-  replicas: toUndefOr(toPositiveInteger),
-  isPublic: toUndefOr(toBoolean),
-  mountSubPath: toUndefOr(toPathWithoutTraversal),
-  network: toUndefOr(toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig)),
-  env: toUndefOr(toEnv),
-  baseImage: toUndefOr(toString),
-  runAsUser: toUndefOr(toNonNegativeInteger),
-  runAsGroup: toUndefOr(toNonNegativeInteger)
-});
-var toManagedServiceConfig = toObject({
-  provider: toObject({
-    name: toString,
-    version: toString
-  }),
-  plan: toObject({
-    id: toNonNegativeInteger,
-    parameters: toRecord(toInteger)
-  }),
-  config: toRecord(toUnknown),
-  secrets: toRecord(toUnknown)
-});
-var isManagedServiceConfig = (x) => isOfType(x, toManagedServiceConfig);
-var toDeployStage = toRecord(toOr(toDeployStageServer, toManagedServiceConfig));
-var isDeployStage = (x) => isOfType(x, toDeployStage);
-var toPipelineConfigV01 = toObject({
-  prepare: toStage,
-  test: toStage,
-  run: toStage
-});
-var toPipelineConfigV02 = toObject({
-  schemaVersion: toLiteral("v0.2"),
-  prepare: toStage,
-  test: toStage,
-  run: toDeployStage
-});
-var toPipelineConfig = toOr(toPipelineConfigV02, toPipelineConfigV01);
-var pipelineProcessingStates = [
-  "waiting",
-  "running",
-  "success",
-  "failure",
-  "aborted"
-];
-var executionInfo = {
-  state: toLiteralUnion("state", pipelineProcessingStates),
-  startedAt: toUndefOr(toDate),
-  finishedAt: toUndefOr(toDate)
-};
-var toExecutionInfo = toObject(executionInfo);
-var stageExecutionInfo = {
-  ...executionInfo,
-  steps: toArray(toExecutionInfo)
-};
-var toStageExecutionInfo = toObject(stageExecutionInfo);
-var isAdvancedNetworkConfig = (c) => isOfType(c, toAdvancedNetworkConfig);
-
 // packages/workspace-agent/common/lib/api/pipeline.js
 var __decorate10 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -59783,7 +59733,7 @@ var sql = (dialect) => (parts, ...args) => {
 };
 var Database = class {
 };
-Database.ID = Symbol.for("Database");
+Database.ID = /* @__PURE__ */ Symbol.for("Database");
 var DatabaseImpl = class {
   static bindForInjection(c, db) {
     c.bind(Database.ID).toConstantValue(db);
@@ -60706,124 +60656,6 @@ var toUploadFileArgs2 = toObject({
   type: readOnly(toString),
   file: readOnly(toString)
 });
-
-// packages/workspace-service/common/lib/Workspace.js
-var GitProvider;
-(function(GitProvider2) {
-  GitProvider2["GitHub"] = "github";
-  GitProvider2["GitLab"] = "gitlab";
-  GitProvider2["Bitbucket"] = "bitbucket";
-})(GitProvider || (GitProvider = {}));
-var toGitProvider2 = toStringEnum("GitProvider", GitProvider);
-var workspace = {
-  id: readOnly(toNonNegativeInteger),
-  dataCenterId: readOnly(toNumber),
-  userId: readOnly(toInteger),
-  teamId: readOnly(toNonNegativeInteger),
-  name: toString,
-  gitUrl: readOnly(toNullOr(toString)),
-  isPrivateRepo: readOnly(toBoolean),
-  welcomeMessage: readOnly(toNullOr(toString)),
-  initialBranch: readOnly(toNullOr(toString)),
-  cloneDepth: toUndefOr(toPositiveInteger),
-  sourceWorkspaceId: readOnly(toNullOr(toNonNegativeInteger)),
-  planId: toPlanId,
-  replicas: toPositiveInteger,
-  vpnConfig: toNullOr(toString),
-  collectTraces: toBoolean,
-  restricted: toBoolean,
-  baseImage: toUndefOr(toString),
-  persistentLogs: toBoolean,
-  createdAt: toDate,
-  managedServiceId: toUndefOr(toUuid)
-};
-var toWorkspace = toObject(workspace);
-var validServerNameRegex = new RegExp("^(?:[a-z]|[a-z][-a-z0-9]{0,30}[a-z0-9])$");
-var toMsdServerName = toStringMatchingRegex("MsdServerName", validServerNameRegex);
-var toServerPath = toObject({
-  port: toPositiveInteger,
-  path: toUrlPath,
-  stripPath: toBoolean
-});
-var toServerPort = toObject({
-  port: toPositiveInteger,
-  isPublic: toBoolean
-});
-var toServerNetwork = toObject({
-  ports: toNonEmptyArray(toServerPort),
-  paths: toArray(toServerPath)
-});
-var server = {
-  name: readOnly(toMsdServerName),
-  planId: toPlanId,
-  replicas: toPositiveInteger,
-  mountSubPath: toUndefOr(toPathWithoutTraversal),
-  network: toServerNetwork,
-  baseImage: toUndefOr(toString),
-  env: toUndefOr(toEnv),
-  runAsUser: toUndefOr(toNonNegativeInteger),
-  runAsGroup: toUndefOr(toNonNegativeInteger)
-};
-var toServer = toObject(server);
-var serverV1 = {
-  name: readOnly(toMsdServerName),
-  planId: toPlanId,
-  replicas: toPositiveInteger,
-  stripPath: toBoolean,
-  isPublic: toUndefOr(toBoolean),
-  network: toUndefOr(toObject({
-    path: toUrlPath
-  }))
-};
-var toServerV1 = toObject(serverV1);
-var uniqueServerId = ({ workspaceId, name }) => `${workspaceId}-${name}`;
-var IDE_SERVER_NAME = "codesphere-ide";
-var DEFAULT_PORT = 3e3;
-var workspaceDevDomain = (workspaceId, workspaceHostingBaseDomain) => `${workspaceId}-${DEFAULT_PORT}.${workspaceHostingBaseDomain}`;
-var simpleNetworkToServerNetwork = (networkConfig, isPublic) => {
-  var _a;
-  return {
-    ports: [
-      {
-        port: DEFAULT_PORT,
-        isPublic: isPublic !== null && isPublic !== void 0 ? isPublic : true
-      }
-    ],
-    paths: !networkConfig || !(isPublic !== null && isPublic !== void 0 ? isPublic : true) ? [] : [
-      {
-        port: DEFAULT_PORT,
-        path: networkConfig.path,
-        stripPath: (_a = networkConfig.stripPath) !== null && _a !== void 0 ? _a : false
-      }
-    ]
-  };
-};
-var advancedNetworkToServerNetwork = (networkConfig) => ({
-  ...networkConfig,
-  paths: networkConfig.paths.map((p) => ({ stripPath: false, ...p }))
-});
-var configToLandscape = (config) => {
-  return Object.entries(config).map(([k, v]) => {
-    if (isManagedServiceConfig(v)) {
-      return;
-    }
-    return deployStageServerToLandscape(k, v);
-  }).filter((x) => x !== void 0);
-};
-var deployStageServerToLandscape = (name, config) => {
-  var _a, _b, _c;
-  return toServer({
-    name,
-    planId: config.plan,
-    replicas: (_a = config.replicas) !== null && _a !== void 0 ? _a : 1,
-    mountSubPath: config.mountSubPath || void 0,
-    env: config.env,
-    baseImage: config.baseImage || void 0,
-    runAsUser: (_b = config.runAsUser) !== null && _b !== void 0 ? _b : void 0,
-    runAsGroup: (_c = config.runAsGroup) !== null && _c !== void 0 ? _c : void 0,
-    network: config.network && isAdvancedNetworkConfig(config.network) ? advancedNetworkToServerNetwork(config.network) : simpleNetworkToServerNetwork(config.network, config.isPublic)
-  });
-};
 
 // packages/workspace-service/common/lib/api/workspaces.js
 var __decorate14 = function(decorators, target, key, desc) {
@@ -62226,7 +62058,8 @@ var teamService = {
     reactivateDeletedUserTeams: rpc({
       access: "public",
       request: toVoid,
-      response: toArray(toTeamWithRole)
+      response: toArray(toTeamWithRole),
+      defaultOptions: { timeout: { seconds: 20 } }
     }),
     hasMemberAccess: rpc({
       access: "public",
@@ -62556,8 +62389,14 @@ var SUPPORTED_FORMATS = [
   "date-time",
   "password"
 ];
-var compile = (schema) => {
-  const ajv = new import_ajv.Ajv({ allErrors: true, strict: true });
+var compile = (schema, options) => {
+  var _a;
+  const ajv = new import_ajv.Ajv({
+    allErrors: true,
+    strict: false,
+    useDefaults: true,
+    removeAdditional: (_a = options === null || options === void 0 ? void 0 : options.removeAdditional) !== null && _a !== void 0 ? _a : false
+  });
   addFormats(ajv, [...SUPPORTED_FORMATS]);
   const validate = ajv.compile(schema);
   return { ajv, validate };
@@ -62636,7 +62475,6 @@ var toUpdateManagedServiceArgs = toObject({
 });
 var toListManagedServiceArgs = toObject({
   ...teamServiceArgs,
-  scope: toUndefOr(toString),
   includeDeleted: toUndefOr(toBoolean)
 });
 var toListByLandscapeArgs = toObject({
@@ -62687,7 +62525,8 @@ var toManagedServiceLandscapeProvider = toObject({
 var toManagedServiceProvider = toOr(toManagedServiceRestProvider, toManagedServiceLandscapeProvider);
 var toCreateLandscapeProviderArgs = toManagedServiceLandscapeProvider;
 var toCreateLandscapeProviderByGitArgs = toObject({
-  gitUrl: toString
+  gitUrl: toString,
+  gitRef: toUndefOr(toString)
 });
 var managedServicesService = {
   name: "ManagedService",
@@ -62802,10 +62641,28 @@ var landscapeService = {
       response: toVoid,
       defaultOptions: { timeout: { seconds: 10 } }
     }),
+    scaleLandscapeServers: rpc({
+      access: "public",
+      request: toObject({
+        workspaceId: toNonNegativeInteger,
+        replicaCountsByServer: toRecord(toPositiveInteger)
+      }),
+      response: toVoid,
+      defaultOptions: { timeout: { seconds: 10 } }
+    }),
     syncLandscape: rpc({
       access: "public",
       request: toSyncLandscapeArgs,
       response: toVoid
+    }),
+    redeployLandscapeServers: rpc({
+      access: "public",
+      request: toObject({
+        workspaceId: toNonNegativeInteger,
+        servers: toArray(toString)
+      }),
+      response: toVoid,
+      defaultOptions: { timeout: { seconds: 15 } }
     })
   }
 };
