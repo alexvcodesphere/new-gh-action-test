@@ -60557,15 +60557,10 @@ var MAINTENANCE_MODE_EXP_NAME = "maintenance-mode";
 var AVAILABLE_EXPERIMENTS = [
   "ceph-subtree-pinning",
   "custom-service-image",
-  "exec-manager-react",
   "external-mounter",
   "git-panel",
   "gpu-plan",
   "hermetic",
-  "ide-filetree-react",
-  "ide-git-react",
-  "ide-react",
-  "ide-split-react",
   "language-server",
   "legacy-marketplace",
   "managed-services",
@@ -62507,7 +62502,8 @@ var managedServiceProviderCommonProperties = {
   displayName: toString,
   iconUrl: toString,
   plans: toArray(toManagedServicePlan),
-  version: toProviderVersion
+  version: toProviderVersion,
+  scope: toUndefOr(toLiteralUnion("ProviderScope", ["global", "team"]))
 };
 var toManagedServiceRestProvider = toObject({
   ...managedServiceProviderCommonProperties,
@@ -62523,10 +62519,25 @@ var toManagedServiceLandscapeProvider = toObject({
   backend: toLandscapeSettings
 });
 var toManagedServiceProvider = toOr(toManagedServiceRestProvider, toManagedServiceLandscapeProvider);
-var toCreateLandscapeProviderArgs = toManagedServiceLandscapeProvider;
+var toGlobalScope = toObject({
+  type: toLiteral("global")
+});
+var toTeamScope = toObject({
+  type: toLiteral("team"),
+  teamIds: toArray(toInteger)
+});
+var toProviderScopeArgs = toOr(toGlobalScope, toTeamScope);
+var toCreateLandscapeProviderArgs = toObject({
+  provider: toManagedServiceLandscapeProvider,
+  scope: toUndefOr(toProviderScopeArgs)
+});
 var toCreateLandscapeProviderByGitArgs = toObject({
   gitUrl: toString,
-  gitRef: toUndefOr(toString)
+  gitRef: toUndefOr(toString),
+  scope: toUndefOr(toProviderScopeArgs)
+});
+var toListProvidersArgs = toObject({
+  teamId: toUndefOr(toNumber)
 });
 var managedServicesService = {
   name: "ManagedService",
@@ -62566,7 +62577,7 @@ var managedServicesService = {
     }),
     listProviders: rpc({
       access: "public",
-      request: toVoid,
+      request: toListProvidersArgs,
       response: toArray(toManagedServiceProvider),
       defaultOptions: { timeout: { seconds: 20 } }
     }),
