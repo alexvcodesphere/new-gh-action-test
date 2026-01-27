@@ -9,6 +9,10 @@ This action creates a preview environment of your repository in Codesphere.
 
 ## Inputs
 
+### `apiUrl`
+
+Base domain of the target Codesphere instance (with https://)
+
 ### `email`
 
 **Required** email of the codesphere user.
