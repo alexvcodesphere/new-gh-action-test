@@ -56010,6 +56010,7 @@ var SimpleStreamyClient = class _SimpleStreamyClient {
     });
   }
   async callImmediately(service, method, data, context3, opts) {
+    var _a;
     const id = nextRequestId();
     const resp = this.rpcs[id] = resolvablePromise();
     try {
@@ -56028,19 +56029,21 @@ var SimpleStreamyClient = class _SimpleStreamyClient {
       resp.reject(toError(e));
       await resp;
     }
+    const traceId = (_a = trace.getActiveSpan()) === null || _a === void 0 ? void 0 : _a.spanContext().traceId;
+    const timeoutMsg = `timeout: service=${service}, method=${method}, id=${id}, traceId=${traceId}`;
     try {
       return await throwOnTimeout({
         timeoutMs: opts.timeout,
         promise: resp,
         interrupt: () => {
-          resp.reject(new RpcTimedOut(`timeout: service=${service}, method=${method}, id=${id}`));
+          resp.reject(new RpcTimedOut(timeoutMsg));
           delete this.rpcs[id];
         }
       });
     } catch (e) {
       if (e instanceof TimedOut) {
-        logE(`Rpc timed out, (service=${service}, method=${method}, id=${id})`);
-        throw new RpcTimedOut(`timeout: service=${service}, method=${method}, id=${id}`);
+        logW(`Rpc timed out, (${timeoutMsg})`);
+        throw new RpcTimedOut(timeoutMsg);
       }
       throw e;
     }
@@ -57944,6 +57947,10 @@ var toBrowserConfig = toObject({
   pipelineExampleUrl: toString,
   tosUrl: toString,
   brandTitle: toString,
+  brandLogoUrl: toString,
+  brandLogoNoTextUrl: toString,
+  brandLogoIconUrl: toString,
+  brandFaviconUrl: toString,
   stripePublishableKey: toString,
   recaptchaKey: toString,
   supportEmail: toString,
@@ -60565,7 +60572,6 @@ var AVAILABLE_EXPERIMENTS = [
   "legacy-marketplace",
   "managed-services",
   MAINTENANCE_MODE_EXP_NAME,
-  "metrics-react",
   "ms-in-ls",
   "msd",
   "o11y",
@@ -62385,12 +62391,13 @@ var SUPPORTED_FORMATS = [
   "password"
 ];
 var compile = (schema, options) => {
-  var _a;
+  var _a, _b;
   const ajv = new import_ajv.Ajv({
     allErrors: true,
     strict: false,
     useDefaults: true,
-    removeAdditional: (_a = options === null || options === void 0 ? void 0 : options.removeAdditional) !== null && _a !== void 0 ? _a : false
+    removeAdditional: (_a = options === null || options === void 0 ? void 0 : options.removeAdditional) !== null && _a !== void 0 ? _a : false,
+    coerceTypes: (_b = options === null || options === void 0 ? void 0 : options.coerceTypes) !== null && _b !== void 0 ? _b : false
   });
   addFormats(ajv, [...SUPPORTED_FORMATS]);
   const validate = ajv.compile(schema);
@@ -62449,6 +62456,12 @@ var toManagedServiceStatus = toOr(toObject({
   state: toLiteral("deleted"),
   deletedAt: toDate
 }), toObject({
+  state: toLiteral("pausing")
+}), toObject({
+  state: toLiteral("unpausing")
+}), toObject({
+  state: toLiteral("paused")
+}), toObject({
   state: toLiteral("unknown")
 }), toObject({
   state: toLiteral("invalid provider")
@@ -62458,6 +62471,7 @@ var toManagedService = toObject({
   creatorId: toInteger,
   ...immutablePropertiesConv,
   ...mutablePropertiesConv,
+  pause: toBoolean,
   status: toManagedServiceStatus,
   workspaceId: toUndefOr(toNonNegativeInteger)
 });
@@ -62465,6 +62479,7 @@ var toUpdateManagedServiceArgs = toObject({
   id: toUuid,
   config: toUndefOr(toRecord(toUnknown)),
   name: toUndefOr(toString),
+  pause: toUndefOr(toBoolean),
   plan: toUndefOr(toPlanSelection),
   secrets: toUndefOr(toRecord(toUnknown))
 });
@@ -62606,10 +62621,10 @@ var toUpdateLandscapeArgs = toObject({
   workspaceId: toNonNegativeInteger,
   servers: toArray(toServer)
 });
-var toReconcileError = toObject({ message: toString });
+var toSyncError = toObject({ message: toString });
 var toManagedService2 = toObject({
   config: toManagedServiceConfig,
-  status: toOr(toManagedServiceStatus, toReconcileError)
+  status: toOr(toManagedServiceStatus, toSyncError)
 });
 var toSyncLandscapeArgs = toObject({
   workspaceId: toNonNegativeInteger,
