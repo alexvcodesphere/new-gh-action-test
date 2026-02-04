@@ -3350,14 +3350,14 @@ var require_templates = __commonJS({
       return results;
     }
     function buildStyle(chalk2, styles) {
-      const enabled2 = {};
+      const enabled = {};
       for (const layer of styles) {
         for (const style of layer.styles) {
-          enabled2[style[0]] = layer.inverse ? null : style.slice(1);
+          enabled[style[0]] = layer.inverse ? null : style.slice(1);
         }
       }
       let current = chalk2;
-      for (const [styleName, styles2] of Object.entries(enabled2)) {
+      for (const [styleName, styles2] of Object.entries(enabled)) {
         if (!Array.isArray(styles2)) {
           continue;
         }
@@ -6625,8 +6625,8 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       (0, command_1.issueCommand)("set-output", { name }, (0, utils_1.toCommandValue)(value));
     }
     exports2.setOutput = setOutput;
-    function setCommandEcho(enabled2) {
-      (0, command_1.issue)("echo", enabled2 ? "on" : "off");
+    function setCommandEcho(enabled) {
+      (0, command_1.issue)("echo", enabled ? "on" : "off");
     }
     exports2.setCommandEcho = setCommandEcho;
     function setFailed(message) {
@@ -18709,15 +18709,15 @@ var require_request2 = __commonJS({
           signal = input[kSignal];
         }
         const origin = this[kRealm].settingsObject.origin;
-        let window2 = "client";
+        let window = "client";
         if (request3.window?.constructor?.name === "EnvironmentSettingsObject" && sameOrigin(request3.window, origin)) {
-          window2 = request3.window;
+          window = request3.window;
         }
         if (init2.window != null) {
-          throw new TypeError(`'window' option '${window2}' must be null`);
+          throw new TypeError(`'window' option '${window}' must be null`);
         }
         if ("window" in init2) {
-          window2 = "no-window";
+          window = "no-window";
         }
         request3 = makeRequest({
           // URL request’s URL.
@@ -18732,7 +18732,7 @@ var require_request2 = __commonJS({
           // client This’s relevant settings object.
           client: this[kRealm].settingsObject,
           // window window.
-          window: window2,
+          window,
           // priority request’s priority.
           priority: request3.priority,
           // origin request’s origin. The propagation of the origin is only significant for navigation requests
@@ -55045,9 +55045,6 @@ var JsonSerializer = class {
   }
 };
 
-// packages/streamy/common/lib/support/env.js
-var isBrowser = () => ![typeof document, typeof window].includes("undefined");
-
 // packages/streamy/common/lib/support/promise.js
 var rejectToNull = async (p) => {
   try {
@@ -55889,7 +55886,8 @@ var StreamyClient = class _StreamyClient {
   }
   async call({ service, method, data, context: context3, opts }) {
     this.throwIfClosed();
-    return await (await this.getClientInstance()).call(method, data, opts, service, context3);
+    const activeOtelContext = context.active();
+    return await (await this.getClientInstance()).call(method, data, opts, service, context3, activeOtelContext);
   }
   async stream({ service, method, context: context3, toResponse, toQuery }) {
     this.throwIfClosed();
@@ -55973,7 +55971,7 @@ var SimpleStreamyClient = class _SimpleStreamyClient {
       throw new Closed(`${this}`);
     }
   }
-  async call(method, data, opts, service = "", ctx) {
+  async call(method, data, opts, service = "", ctx, activeOtelContext) {
     while (this.contextUpdate) {
       await this.contextUpdate;
     }
@@ -55985,17 +55983,14 @@ var SimpleStreamyClient = class _SimpleStreamyClient {
       ctx !== null && ctx !== void 0 ? ctx : this.context,
       { ...this.rpcOptions, ...opts }
     ];
-    if (isBrowser()) {
-      return await this.callImmediately(...args);
-    }
-    return trace.getTracer("node.streamy.client").startActiveSpan(`${service}.${method}`, {
+    return trace.getTracer("streamy.client").startActiveSpan(`${service}.${method}`, {
       kind: SpanKind.CLIENT,
       attributes: {
         "rpc.system": "streamy",
         "rpc.method": method,
         "rpc.service": service
       }
-    }, async (span) => {
+    }, activeOtelContext !== null && activeOtelContext !== void 0 ? activeOtelContext : context.active(), async (span) => {
       try {
         const res = await this.callImmediately(...args);
         span.setStatus({ code: SpanStatusCode.OK });
@@ -56485,7 +56480,8 @@ var team = {
   avatarUrl: toUndefOr(toNullOr(toString)),
   isFirst: toUndefOr(toBoolean),
   deletionPending: toUndefOr(toBoolean),
-  createdAt: toUndefOr(toDate)
+  createdAt: toUndefOr(toDate),
+  organizationId: toUndefOr(toUuid)
 };
 var toTeam = toObject(team);
 var toTeamWithRole = toObject({
@@ -59397,14 +59393,18 @@ var SqlIn = class extends SqlPartWithValue {
     this.values = values;
   }
   toSql(dialect) {
-    return [
-      `${this.column.toSql()}`,
-      " IN",
-      ` (${this.values.map((v) => v.toSql(dialect)).join(", ")})`
-    ].join("");
+    var _a;
+    const hasUndefined = this.values.some((v) => v.getVal() === void 0);
+    const definedValues = this.values.filter((v) => v.getVal() !== void 0);
+    const inClause = definedValues.length > 0 ? `${this.column.toSql()} IN (${definedValues.map((v) => v.toSql(dialect)).join(", ")})` : void 0;
+    const nullClause = hasUndefined ? `${this.column.toSql()} IS NULL` : void 0;
+    if (inClause && nullClause) {
+      return `(${inClause} OR ${nullClause})`;
+    }
+    return (_a = inClause !== null && inClause !== void 0 ? inClause : nullClause) !== null && _a !== void 0 ? _a : "FALSE";
   }
   getVal() {
-    return this.values.map((v) => v.getVal());
+    return this.values.filter((v) => v.getVal() !== void 0).map((v) => v.getVal());
   }
 };
 var SqlBetween = class extends SqlPartWithValue {
@@ -60559,54 +60559,6 @@ var getTotalIdeReplicasOfPlan = async (db, teamId, idePlanId) => getTotalReplica
     AND ide_plan_id = ${idePlanId}
 `);
 
-// packages/utils/common/lib/experiments.js
-var MAINTENANCE_MODE_EXP_NAME = "maintenance-mode";
-var AVAILABLE_EXPERIMENTS = [
-  "ceph-subtree-pinning",
-  "custom-service-image",
-  "external-mounter",
-  "git-panel",
-  "gpu-plan",
-  "hermetic",
-  "language-server",
-  "legacy-marketplace",
-  "managed-services",
-  MAINTENANCE_MODE_EXP_NAME,
-  "ms-in-ls",
-  "msd",
-  "o11y",
-  "overview-react",
-  "persistent-logs",
-  "persistent-nix",
-  "privileged-ports",
-  "public-api",
-  "react-create-ws",
-  "react-user-settings",
-  "recaptcha-v3",
-  "recursive-watcher",
-  "restricted-domains",
-  "secret-management",
-  "streamy-token-refresh",
-  "sub-path-mount",
-  "time-gen-access-token",
-  "time-sameDc",
-  "tcp-udp",
-  "usage-history",
-  "vcluster",
-  "virtual-machines",
-  "vpn",
-  "ws-vscode-server"
-];
-var availableExperiments = [...AVAILABLE_EXPERIMENTS];
-var toExperimentName = toLiteralUnion("ExperimentName", availableExperiments);
-var enabled;
-var isEnabled = (name) => {
-  if (!enabled) {
-    throw new Uninitialized("initExperiments() was not called");
-  }
-  return enabled.has(name);
-};
-
 // packages/workspace-service/common/lib/api/workspaces.js
 var import_inversify10 = __toESM(require_inversify(), 1);
 
@@ -60619,7 +60571,8 @@ var toTeamServiceArgs = toObject(teamServiceArgs);
 var toCreateTeamArgs = toObject({
   name: readOnly(toNonEmptyStringWithMaxLength(MAX_TEAM_NAME_LENGTH)),
   dc: toUndefOr(toNumber),
-  firstTeamToken: readOnly(toUndefOr(toString))
+  firstTeamToken: readOnly(toUndefOr(toString)),
+  organizationId: toUndefOr(toUuid)
 });
 var toUpdateTeamArgs = toObject({
   ...teamServiceArgs,
@@ -60870,37 +60823,35 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
           return new VpnConfigNotFound(`Failed to create workspace. VPN config '${vpnConfig}' doesn't exist.`, { scope: "public" });
         }
       ]));
-      if (isEnabled("usage-history")) {
-        const beginDate = /* @__PURE__ */ new Date();
-        await tx.insert("workspaceService.workspaceUsage", {
-          teamId,
-          beginDate,
-          beginInitiatorId: initiatorUserId,
-          beginInitiatorEmail: initiatorUserEmail,
-          workspaceId: ws.id,
-          workspaceName: name,
-          dataCenterId,
-          wsOwnerUserId: ownerUserId,
-          wsOwnerUserEmail: ownerUserEmail,
-          sourceWorkspaceId: sourceWorkspaceId !== null && sourceWorkspaceId !== void 0 ? sourceWorkspaceId : void 0,
-          initialRepoUrl: gitUrl !== null && gitUrl !== void 0 ? gitUrl : void 0,
-          initialBranch: initialBranch !== null && initialBranch !== void 0 ? initialBranch : void 0,
-          baseImage: baseImage2
-        });
-        await this.startIdeServerUsage({
-          teamId,
-          beginDate,
-          initiatorUserId,
-          initiatorUserEmail,
-          planId,
-          replicas,
-          workspaceId: ws.id,
-          dataCenterId,
-          ownerUserId,
-          ownerUserEmail,
-          workspaceName: ws.name
-        }, tx);
-      }
+      const beginDate = /* @__PURE__ */ new Date();
+      await tx.insert("workspaceService.workspaceUsage", {
+        teamId,
+        beginDate,
+        beginInitiatorId: initiatorUserId,
+        beginInitiatorEmail: initiatorUserEmail,
+        workspaceId: ws.id,
+        workspaceName: name,
+        dataCenterId,
+        wsOwnerUserId: ownerUserId,
+        wsOwnerUserEmail: ownerUserEmail,
+        sourceWorkspaceId: sourceWorkspaceId !== null && sourceWorkspaceId !== void 0 ? sourceWorkspaceId : void 0,
+        initialRepoUrl: gitUrl !== null && gitUrl !== void 0 ? gitUrl : void 0,
+        initialBranch: initialBranch !== null && initialBranch !== void 0 ? initialBranch : void 0,
+        baseImage: baseImage2
+      });
+      await this.startIdeServerUsage({
+        teamId,
+        beginDate,
+        initiatorUserId,
+        initiatorUserEmail,
+        planId,
+        replicas,
+        workspaceId: ws.id,
+        dataCenterId,
+        ownerUserId,
+        ownerUserEmail,
+        workspaceName: ws.name
+      }, tx);
       if (env && Object.keys(env).length) {
         await tx.insert("workspaceService.environmentVariables", Object.entries(env).map(([k, v]) => ({
           workspaceId: ws.id,
@@ -61022,14 +60973,12 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
           return new VpnConfigNotFound(`Failed to update workspace ${id}: VPN config '${update.vpnConfig}' does not exist.`, { scope: "public" });
         }
       ]);
-      if (isEnabled("usage-history")) {
-        await this.updateUsageHistory({
-          id,
-          initiatorUserId,
-          initiatorUserEmail,
-          update
-        }, tx);
-      }
+      await this.updateUsageHistory({
+        id,
+        initiatorUserId,
+        initiatorUserEmail,
+        update
+      }, tx);
     }, "REPEATABLE READ");
     return;
   }
@@ -61086,20 +61035,18 @@ var WorkspacesDAODatabase = class WorkspacesDAODatabase2 {
   async delete({ workspaceId, initiatorUserId, initiatorUserEmail }) {
     await this.db.transaction(async (tx) => {
       await tx.remove("workspaceService.workspaces", { id: workspaceId });
-      if (isEnabled("usage-history")) {
-        const endDate = /* @__PURE__ */ new Date();
-        await tx.update("workspaceService.workspaceUsage", {
-          endDate,
-          endInitiatorId: `${initiatorUserId}`,
-          endInitiatorEmail: initiatorUserEmail
-        }, { workspaceId, endDate: void 0 });
-        await this.stopIdeServerUsage({
-          initiatorUserId,
-          initiatorUserEmail,
-          workspaceId,
-          endDate
-        }, tx);
-      }
+      const endDate = /* @__PURE__ */ new Date();
+      await tx.update("workspaceService.workspaceUsage", {
+        endDate,
+        endInitiatorId: `${initiatorUserId}`,
+        endInitiatorEmail: initiatorUserEmail
+      }, { workspaceId, endDate: void 0 });
+      await this.stopIdeServerUsage({
+        initiatorUserId,
+        initiatorUserEmail,
+        workspaceId,
+        endDate
+      }, tx);
     });
     return;
   }
@@ -61865,6 +61812,7 @@ var FetchTeamsFailed_1;
 var SetDeletionPendingFailed_1;
 var ReactivateDeletedUserTeamsFailed_1;
 var FetchInvitationsFailed_1;
+var NotOrganizationMember_1;
 var FetchMembersFailed = FetchMembersFailed_1 = class FetchMembersFailed2 extends SimpleSerializableException {
   static create(opts) {
     return new FetchMembersFailed_1("Failed to fetch your team members please try again later", opts);
@@ -61995,6 +61943,14 @@ var DeleteTeamFailed = class DeleteTeamFailed2 extends SimpleSerializableExcepti
 DeleteTeamFailed = __decorate16([
   registerError()
 ], DeleteTeamFailed);
+var NotOrganizationMember = NotOrganizationMember_1 = class NotOrganizationMember2 extends SimpleSerializableException {
+  static create(opts) {
+    return new NotOrganizationMember_1("You are not a member of this organization.", opts);
+  }
+};
+NotOrganizationMember = NotOrganizationMember_1 = __decorate16([
+  registerError()
+], NotOrganizationMember);
 var DomainDeletionFailed = class DomainDeletionFailed2 extends DeleteTeamFailed {
 };
 DomainDeletionFailed = __decorate16([
@@ -62415,6 +62371,9 @@ var toPlanSelection = toObject({
   id: toNonNegativeInteger,
   parameters: toRecord(toInteger)
 });
+var toCapabilities = toUndefOr(toObject({
+  pause: toUndefOr(toBoolean)
+}));
 var toConfig = toRecord(toUnknown);
 var toSecrets = toRecord(toUnknown);
 var toDetails = toRecord(toUnknown);
@@ -62509,6 +62468,7 @@ var toManagedServicePlan = toObject({
 var managedServiceProviderCommonProperties = {
   name: toProviderName,
   author: toString,
+  capabilities: toCapabilities,
   category: toString,
   configSchema: toSchemaObject,
   detailsSchema: toSchemaObject,
