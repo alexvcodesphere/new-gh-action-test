@@ -54962,9 +54962,6 @@ var import_inversify2 = __toESM(require_inversify(), 1);
 var import_inversify_binding_decorators = __toESM(require_lib3(), 1);
 var serviceId = (name) => Symbol.for(name);
 
-// packages/streamy/common/lib/protocol/client.js
-var import_fast_deep_equal = __toESM(require_fast_deep_equal(), 1);
-
 // packages/streamy/common/lib/api.js
 var StreamStatus;
 (function(StreamStatus2) {
@@ -55015,6 +55012,9 @@ var TemporarilyUnavailable = class extends RpcException {
     super(message);
   }
 };
+
+// packages/streamy/common/lib/protocol/client.js
+var import_fast_deep_equal = __toESM(require_fast_deep_equal(), 1);
 
 // packages/streamy/common/lib/extensions/typing.js
 var toStringOrArray = toOr(toString, toArray(toString));
@@ -56277,6 +56277,15 @@ var AuthnStub = class extends BaseStub {
     this.refreshTokenOpts = refreshTokenOpts;
   }
 };
+var isTokenExpired = (e, expiredException) => {
+  if (e instanceof expiredException) {
+    return true;
+  }
+  if (e instanceof StreamClosed && e.cause instanceof expiredException) {
+    return true;
+  }
+  return false;
+};
 var callAndMaybeRefreshToken = async (f, refreshOpts) => {
   const refreshTokenOpts = refreshOpts();
   if (!refreshTokenOpts) {
@@ -56285,7 +56294,7 @@ var callAndMaybeRefreshToken = async (f, refreshOpts) => {
   try {
     return await f();
   } catch (e) {
-    if (e instanceof refreshTokenOpts.expiredException) {
+    if (isTokenExpired(e, refreshTokenOpts.expiredException)) {
       const creds = await refreshTokenOpts.refreshToken();
       await refreshTokenOpts.authenticate(creds);
       logD("AutnStub: Refreshed access token. Now retrying call.");
@@ -57132,6 +57141,8 @@ var toAdvancedNetworkConfig = toObject({
   paths: toArray(toPathConfig)
 });
 var toNetworkConfig = toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig);
+var MAX_USER_GROUP_ID = 2 ** 31 - 1;
+var toUserGroupId = toRestrictedNumber("toUserGroupId", (n) => n > 0 && n <= MAX_USER_GROUP_ID);
 var toDeployStageServerFields = {
   steps: toArray(toStep),
   healthEndpoint: toUndefOr(toUrl),
@@ -57142,8 +57153,8 @@ var toDeployStageServerFields = {
   network: toUndefOr(toOr(toSimpleNetworkConfig, toAdvancedNetworkConfig)),
   env: toUndefOr(toEnv),
   baseImage: toUndefOr(toString),
-  runAsUser: toUndefOr(toNonNegativeInteger),
-  runAsGroup: toUndefOr(toNonNegativeInteger)
+  runAsUser: toUndefOr(toUserGroupId),
+  runAsGroup: toUndefOr(toUserGroupId)
 };
 var toDeployStageServer = toObject(toDeployStageServerFields);
 var toManagedServiceConfigFields = {
@@ -58097,7 +58108,7 @@ var NotConnectedToProvider = class NotConnectedToProvider2 extends SimpleSeriali
   static create(provider, opts) {
     var _a;
     const providerName = (_a = Object.entries(GitProviderKind).find(([, v]) => v === provider)) === null || _a === void 0 ? void 0 : _a[0];
-    return new this(`Not connected to git provider: ${providerName}. Connect to the provider in the create workspace modal.`, opts);
+    return new this(`Not connected to git provider: ${providerName}. Connect to the provider in User Settings`, opts);
   }
 };
 NotConnectedToProvider = __decorate6([
@@ -62344,7 +62355,9 @@ var SUPPORTED_FORMATS = [
   "binary",
   "date",
   "date-time",
-  "password"
+  "password",
+  "uri",
+  "hostname"
 ];
 var compile = (schema, options) => {
   var _a, _b;
@@ -62367,6 +62380,15 @@ var toSchemaObject = (x) => {
 };
 
 // packages/marketplace/common/lib/api/managedService.js
+var __decorate20 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata9 = function(k, v) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var toPlanSelection = toObject({
   id: toNonNegativeInteger,
   parameters: toRecord(toInteger)
@@ -62494,6 +62516,15 @@ var toManagedServiceLandscapeProvider = toObject({
   backend: toLandscapeSettings
 });
 var toManagedServiceProvider = toOr(toManagedServiceRestProvider, toManagedServiceLandscapeProvider);
+var MissingProviderCapabilities = class MissingProviderCapabilities2 extends InvalidArgument {
+  constructor(provider, missingCaps) {
+    super(`The operation couldn't be performed because the provider ${provider.name} / ${provider.version} doesn't have capabilities: ${missingCaps.join(", ")}.`, { scope: "public" });
+  }
+};
+MissingProviderCapabilities = __decorate20([
+  registerError(),
+  __metadata9("design:paramtypes", [Object, Array])
+], MissingProviderCapabilities);
 var toGlobalScope = toObject({
   type: toLiteral("global")
 });
@@ -62571,7 +62602,7 @@ var managedServicesService = {
 var managedServicesStub = createAuthnStubClass("ManagedServiceStub", managedServicesService);
 
 // packages/workspace-service/common/lib/api/landscape.js
-var __decorate20 = function(decorators, target, key, desc) {
+var __decorate21 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
@@ -62655,7 +62686,7 @@ var landscapeService = {
 var landscapeStub = createAuthnStubClass("LandscapeStub", landscapeService);
 var LandscapeStub = class LandscapeStub2 extends landscapeStub {
 };
-LandscapeStub = __decorate20([
+LandscapeStub = __decorate21([
   (0, import_inversify16.injectable)()
 ], LandscapeStub);
 
