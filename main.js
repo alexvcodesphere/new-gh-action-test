@@ -41729,6 +41729,302 @@ var require_lib5 = __commonJS({
   }
 });
 
+// node_modules/@opentelemetry/api-logs/build/src/types/LogRecord.js
+var require_LogRecord = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/types/LogRecord.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.SeverityNumber = void 0;
+    var SeverityNumber2;
+    (function(SeverityNumber3) {
+      SeverityNumber3[SeverityNumber3["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+      SeverityNumber3[SeverityNumber3["TRACE"] = 1] = "TRACE";
+      SeverityNumber3[SeverityNumber3["TRACE2"] = 2] = "TRACE2";
+      SeverityNumber3[SeverityNumber3["TRACE3"] = 3] = "TRACE3";
+      SeverityNumber3[SeverityNumber3["TRACE4"] = 4] = "TRACE4";
+      SeverityNumber3[SeverityNumber3["DEBUG"] = 5] = "DEBUG";
+      SeverityNumber3[SeverityNumber3["DEBUG2"] = 6] = "DEBUG2";
+      SeverityNumber3[SeverityNumber3["DEBUG3"] = 7] = "DEBUG3";
+      SeverityNumber3[SeverityNumber3["DEBUG4"] = 8] = "DEBUG4";
+      SeverityNumber3[SeverityNumber3["INFO"] = 9] = "INFO";
+      SeverityNumber3[SeverityNumber3["INFO2"] = 10] = "INFO2";
+      SeverityNumber3[SeverityNumber3["INFO3"] = 11] = "INFO3";
+      SeverityNumber3[SeverityNumber3["INFO4"] = 12] = "INFO4";
+      SeverityNumber3[SeverityNumber3["WARN"] = 13] = "WARN";
+      SeverityNumber3[SeverityNumber3["WARN2"] = 14] = "WARN2";
+      SeverityNumber3[SeverityNumber3["WARN3"] = 15] = "WARN3";
+      SeverityNumber3[SeverityNumber3["WARN4"] = 16] = "WARN4";
+      SeverityNumber3[SeverityNumber3["ERROR"] = 17] = "ERROR";
+      SeverityNumber3[SeverityNumber3["ERROR2"] = 18] = "ERROR2";
+      SeverityNumber3[SeverityNumber3["ERROR3"] = 19] = "ERROR3";
+      SeverityNumber3[SeverityNumber3["ERROR4"] = 20] = "ERROR4";
+      SeverityNumber3[SeverityNumber3["FATAL"] = 21] = "FATAL";
+      SeverityNumber3[SeverityNumber3["FATAL2"] = 22] = "FATAL2";
+      SeverityNumber3[SeverityNumber3["FATAL3"] = 23] = "FATAL3";
+      SeverityNumber3[SeverityNumber3["FATAL4"] = 24] = "FATAL4";
+    })(SeverityNumber2 = exports2.SeverityNumber || (exports2.SeverityNumber = {}));
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/NoopLogger.js
+var require_NoopLogger = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/NoopLogger.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.NOOP_LOGGER = exports2.NoopLogger = void 0;
+    var NoopLogger = class {
+      emit(_logRecord) {
+      }
+    };
+    exports2.NoopLogger = NoopLogger;
+    exports2.NOOP_LOGGER = new NoopLogger();
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/NoopLoggerProvider.js
+var require_NoopLoggerProvider = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/NoopLoggerProvider.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.NOOP_LOGGER_PROVIDER = exports2.NoopLoggerProvider = void 0;
+    var NoopLogger_1 = require_NoopLogger();
+    var NoopLoggerProvider = class {
+      getLogger(_name, _version, _options) {
+        return new NoopLogger_1.NoopLogger();
+      }
+    };
+    exports2.NoopLoggerProvider = NoopLoggerProvider;
+    exports2.NOOP_LOGGER_PROVIDER = new NoopLoggerProvider();
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/ProxyLogger.js
+var require_ProxyLogger = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/ProxyLogger.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ProxyLogger = void 0;
+    var NoopLogger_1 = require_NoopLogger();
+    var ProxyLogger = class {
+      constructor(_provider, name, version, options) {
+        this._provider = _provider;
+        this.name = name;
+        this.version = version;
+        this.options = options;
+      }
+      /**
+       * Emit a log record. This method should only be used by log appenders.
+       *
+       * @param logRecord
+       */
+      emit(logRecord) {
+        this._getLogger().emit(logRecord);
+      }
+      /**
+       * Try to get a logger from the proxy logger provider.
+       * If the proxy logger provider has no delegate, return a noop logger.
+       */
+      _getLogger() {
+        if (this._delegate) {
+          return this._delegate;
+        }
+        const logger = this._provider._getDelegateLogger(this.name, this.version, this.options);
+        if (!logger) {
+          return NoopLogger_1.NOOP_LOGGER;
+        }
+        this._delegate = logger;
+        return this._delegate;
+      }
+    };
+    exports2.ProxyLogger = ProxyLogger;
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/ProxyLoggerProvider.js
+var require_ProxyLoggerProvider = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/ProxyLoggerProvider.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ProxyLoggerProvider = void 0;
+    var NoopLoggerProvider_1 = require_NoopLoggerProvider();
+    var ProxyLogger_1 = require_ProxyLogger();
+    var ProxyLoggerProvider = class {
+      getLogger(name, version, options) {
+        var _a;
+        return (_a = this._getDelegateLogger(name, version, options)) !== null && _a !== void 0 ? _a : new ProxyLogger_1.ProxyLogger(this, name, version, options);
+      }
+      /**
+       * Get the delegate logger provider.
+       * Used by tests only.
+       * @internal
+       */
+      _getDelegate() {
+        var _a;
+        return (_a = this._delegate) !== null && _a !== void 0 ? _a : NoopLoggerProvider_1.NOOP_LOGGER_PROVIDER;
+      }
+      /**
+       * Set the delegate logger provider
+       * @internal
+       */
+      _setDelegate(delegate) {
+        this._delegate = delegate;
+      }
+      /**
+       * @internal
+       */
+      _getDelegateLogger(name, version, options) {
+        var _a;
+        return (_a = this._delegate) === null || _a === void 0 ? void 0 : _a.getLogger(name, version, options);
+      }
+    };
+    exports2.ProxyLoggerProvider = ProxyLoggerProvider;
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/platform/node/globalThis.js
+var require_globalThis = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/platform/node/globalThis.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2._globalThis = void 0;
+    exports2._globalThis = typeof globalThis === "object" ? globalThis : global;
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/platform/node/index.js
+var require_node = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/platform/node/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2._globalThis = void 0;
+    var globalThis_1 = require_globalThis();
+    Object.defineProperty(exports2, "_globalThis", { enumerable: true, get: function() {
+      return globalThis_1._globalThis;
+    } });
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/platform/index.js
+var require_platform2 = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/platform/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2._globalThis = void 0;
+    var node_1 = require_node();
+    Object.defineProperty(exports2, "_globalThis", { enumerable: true, get: function() {
+      return node_1._globalThis;
+    } });
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/internal/global-utils.js
+var require_global_utils = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/internal/global-utils.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.API_BACKWARDS_COMPATIBILITY_VERSION = exports2.makeGetter = exports2._global = exports2.GLOBAL_LOGS_API_KEY = void 0;
+    var platform_1 = require_platform2();
+    exports2.GLOBAL_LOGS_API_KEY = /* @__PURE__ */ Symbol.for("io.opentelemetry.js.api.logs");
+    exports2._global = platform_1._globalThis;
+    function makeGetter(requiredVersion, instance, fallback) {
+      return (version) => version === requiredVersion ? instance : fallback;
+    }
+    exports2.makeGetter = makeGetter;
+    exports2.API_BACKWARDS_COMPATIBILITY_VERSION = 1;
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/api/logs.js
+var require_logs = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/api/logs.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.LogsAPI = void 0;
+    var global_utils_1 = require_global_utils();
+    var NoopLoggerProvider_1 = require_NoopLoggerProvider();
+    var ProxyLoggerProvider_1 = require_ProxyLoggerProvider();
+    var LogsAPI = class _LogsAPI {
+      constructor() {
+        this._proxyLoggerProvider = new ProxyLoggerProvider_1.ProxyLoggerProvider();
+      }
+      static getInstance() {
+        if (!this._instance) {
+          this._instance = new _LogsAPI();
+        }
+        return this._instance;
+      }
+      setGlobalLoggerProvider(provider) {
+        if (global_utils_1._global[global_utils_1.GLOBAL_LOGS_API_KEY]) {
+          return this.getLoggerProvider();
+        }
+        global_utils_1._global[global_utils_1.GLOBAL_LOGS_API_KEY] = (0, global_utils_1.makeGetter)(global_utils_1.API_BACKWARDS_COMPATIBILITY_VERSION, provider, NoopLoggerProvider_1.NOOP_LOGGER_PROVIDER);
+        this._proxyLoggerProvider._setDelegate(provider);
+        return provider;
+      }
+      /**
+       * Returns the global logger provider.
+       *
+       * @returns LoggerProvider
+       */
+      getLoggerProvider() {
+        var _a, _b;
+        return (_b = (_a = global_utils_1._global[global_utils_1.GLOBAL_LOGS_API_KEY]) === null || _a === void 0 ? void 0 : _a.call(global_utils_1._global, global_utils_1.API_BACKWARDS_COMPATIBILITY_VERSION)) !== null && _b !== void 0 ? _b : this._proxyLoggerProvider;
+      }
+      /**
+       * Returns a logger from the global logger provider.
+       *
+       * @returns Logger
+       */
+      getLogger(name, version, options) {
+        return this.getLoggerProvider().getLogger(name, version, options);
+      }
+      /** Remove the global logger provider */
+      disable() {
+        delete global_utils_1._global[global_utils_1.GLOBAL_LOGS_API_KEY];
+        this._proxyLoggerProvider = new ProxyLoggerProvider_1.ProxyLoggerProvider();
+      }
+    };
+    exports2.LogsAPI = LogsAPI;
+  }
+});
+
+// node_modules/@opentelemetry/api-logs/build/src/index.js
+var require_src = __commonJS({
+  "node_modules/@opentelemetry/api-logs/build/src/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.logs = exports2.ProxyLoggerProvider = exports2.ProxyLogger = exports2.NoopLoggerProvider = exports2.NOOP_LOGGER_PROVIDER = exports2.NoopLogger = exports2.NOOP_LOGGER = exports2.SeverityNumber = void 0;
+    var LogRecord_1 = require_LogRecord();
+    Object.defineProperty(exports2, "SeverityNumber", { enumerable: true, get: function() {
+      return LogRecord_1.SeverityNumber;
+    } });
+    var NoopLogger_1 = require_NoopLogger();
+    Object.defineProperty(exports2, "NOOP_LOGGER", { enumerable: true, get: function() {
+      return NoopLogger_1.NOOP_LOGGER;
+    } });
+    Object.defineProperty(exports2, "NoopLogger", { enumerable: true, get: function() {
+      return NoopLogger_1.NoopLogger;
+    } });
+    var NoopLoggerProvider_1 = require_NoopLoggerProvider();
+    Object.defineProperty(exports2, "NOOP_LOGGER_PROVIDER", { enumerable: true, get: function() {
+      return NoopLoggerProvider_1.NOOP_LOGGER_PROVIDER;
+    } });
+    Object.defineProperty(exports2, "NoopLoggerProvider", { enumerable: true, get: function() {
+      return NoopLoggerProvider_1.NoopLoggerProvider;
+    } });
+    var ProxyLogger_1 = require_ProxyLogger();
+    Object.defineProperty(exports2, "ProxyLogger", { enumerable: true, get: function() {
+      return ProxyLogger_1.ProxyLogger;
+    } });
+    var ProxyLoggerProvider_1 = require_ProxyLoggerProvider();
+    Object.defineProperty(exports2, "ProxyLoggerProvider", { enumerable: true, get: function() {
+      return ProxyLoggerProvider_1.ProxyLoggerProvider;
+    } });
+    var logs_1 = require_logs();
+    exports2.logs = logs_1.LogsAPI.getInstance();
+  }
+});
+
 // node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
   "node_modules/ajv/dist/compile/codegen/code.js"(exports2) {
@@ -53460,6 +53756,8 @@ var isBoolean = (x) => "boolean" === typeof x;
 var isNumber = (x) => "number" === typeof x;
 var isObject = (x) => "object" === typeof x;
 var isString = (x) => "string" === typeof x;
+var isPositiveInteger = (x) => isNumber(x) && Number.isInteger(x) && x > 0;
+var isRecord = (x) => x !== null && isObject(x) && !Array.isArray(x);
 
 // packages/utils/common/lib/datetime.js
 import_dayjs.default.extend(dayjsDuration.default);
@@ -53471,6 +53769,10 @@ var toDuration = (tMs) => {
 };
 
 // packages/utils/common/lib/errors/registry.js
+var isSerializableError = (x) => {
+  const s = x;
+  return typeof (s === null || s === void 0 ? void 0 : s.toJSON) === "function";
+};
 var MUTABLE_REGISTRY = /* @__PURE__ */ new Map();
 var REGISTRY = MUTABLE_REGISTRY;
 var doRegisterError = (name, target) => {
@@ -53511,6 +53813,15 @@ var randomString = (length = 7) => {
 };
 var matchesRandomString = (s, length) => isString(s) && (void 0 === length || s.length === length) && !new RegExp(`[^${CHARACTERS}]`).test(s);
 
+// packages/utils/common/lib/string.js
+var stringifyPretty = (x) => JSON.stringify(x, void 0, 2);
+var pp = (ss, ...vals) => ss[0] + vals.map((v, i) => `${v instanceof RawString ? v.s : stringifyPretty(v)}${ss[i + 1]}`);
+var RawString = class {
+  constructor(s) {
+    this.s = s;
+  }
+};
+
 // packages/utils/common/lib/exceptions.js
 var __decorate = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -53522,6 +53833,7 @@ var __metadata = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var WeakPassword_1;
+var MultiException_1;
 var InternalException_1;
 var Exception = class extends Error {
   constructor(message, { scope = "internal", cause } = {}) {
@@ -53637,17 +53949,63 @@ var WeakPassword = WeakPassword_1 = class WeakPassword2 extends SimpleSerializab
 WeakPassword = WeakPassword_1 = __decorate([
   registerError()
 ], WeakPassword);
-var MultiException = class _MultiException extends Exception {
+var MultiException = MultiException_1 = class MultiException2 extends Exception {
   constructor(errors, summary) {
     super([has(summary) ? `${summary}:` : "", concatMessages(errors)].join("\n"));
     this.errors = errors;
+    this.summary = summary;
     this.stack = [this.stack, concatStacks(errors)].join("\n");
     const causes = errors.map(({ cause }) => cause).filter((e) => void 0 !== e).map(toError);
     if (causes.length > 0) {
-      this.cause = new _MultiException(causes);
+      this.cause = new MultiException_1(causes);
     }
   }
+  static toWireFormat(x) {
+    if (!isRecord(x)) {
+      throw new TypeError(`MultiException.fromJson: expected object, got ${typeof x}`);
+    }
+    const { summary, errors } = x;
+    if (!Array.isArray(errors)) {
+      throw new TypeError("MultiException.fromJson: expected errors array");
+    }
+    return {
+      summary: typeof summary === "string" ? summary : void 0,
+      errors: errors.map((item, i) => {
+        if (!isRecord(item) || typeof item.name !== "string") {
+          throw new TypeError(`MultiException: invalid item at index ${i}`);
+        }
+        return { name: item.name, data: item.data };
+      })
+    };
+  }
+  static fromJson(x) {
+    const { summary, errors: rawErrors } = this.toWireFormat(x);
+    const errors = rawErrors.map((error) => {
+      const registeredClass = REGISTRY.get(error.name);
+      if (registeredClass) {
+        return registeredClass.fromJson(error.data);
+      }
+      const data = error.data;
+      const err = new Error(isString(data) ? data : pp`${data}`);
+      err.name = error.name;
+      return err;
+    });
+    return new MultiException_1(errors, summary);
+  }
+  toJSON() {
+    return {
+      summary: this.summary,
+      errors: this.errors.map((e) => ({
+        name: e.name,
+        data: isSerializableError(e) && logError(() => e.toJSON()) || e.message
+      }))
+    };
+  }
 };
+MultiException = MultiException_1 = __decorate([
+  registerError(),
+  __metadata("design:paramtypes", [Array, String])
+], MultiException);
 var INTERNAL_EXCEPTION_MSG = "Internal server error";
 var getOtelTraceId = () => {
   var _a;
@@ -53892,15 +54250,6 @@ var activeSpanDetails = () => {
   return span === null || span === void 0 ? void 0 : span.spanContext();
 };
 
-// packages/utils/common/lib/string.js
-var stringifyPretty = (x) => JSON.stringify(x, void 0, 2);
-var pp = (ss, ...vals) => ss[0] + vals.map((v, i) => `${v instanceof RawString ? v.s : stringifyPretty(v)}${ss[i + 1]}`);
-var RawString = class {
-  constructor(s) {
-    this.s = s;
-  }
-};
-
 // packages/utils/common/lib/logging.js
 var logD = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Debug, message, options));
 var logI = (message, options) => LOGGER.log(LogEntry.create(LogLevel.Info, message, options));
@@ -54106,11 +54455,12 @@ var allSplit = async (promises) => {
   return [resolved, rejected];
 };
 var allThrowRejected = async (promises) => {
-  const [succeeded, rejected] = await allSplit(promises);
+  const all = await Promise.allSettled(promises);
+  const rejected = all.filter((r) => r.status === "rejected").map((r) => r.reason);
   if (rejected.length > 0) {
     throw new MultiException(rejected);
   }
-  return succeeded;
+  return all.filter((r) => r.status === "fulfilled").map((r) => r.value);
 };
 var awaitLater = (p) => {
   p.catch(() => {
@@ -54451,7 +54801,7 @@ var toNumber = (x) => {
 };
 var toRecord = (toValue) => {
   return (x) => {
-    if (!isRecord(x)) {
+    if (!isRecord2(x)) {
       throw new TypeConversionFailure("record", x);
     }
     const entries = Object.entries(x).map(([k, v]) => {
@@ -54494,11 +54844,11 @@ var toStringMatchingRegex = (name, regExp) => {
 var toIp = toStringMatchingRegex("v4 or v6 IP-Address", ip_regex_default({ exact: true }));
 var uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 var toUuid = (x) => toStringMatchingRegex("uuid", uuidRegex)(x);
-var isRecord = (x) => isObject(x);
+var isRecord2 = (x) => isObject(x);
 var toObject = (spec, options) => {
   return (obj) => {
     const expectedObj = pp`${mapEntries(spec, (name, convert) => [name, convert.name])}`;
-    if (!isRecord(obj)) {
+    if (!isRecord2(obj)) {
       throw new TypeConversionFailure(expectedObj, obj);
     }
     const entries = Object.entries(spec).map(([name, convert]) => {
@@ -54528,7 +54878,7 @@ var toObject = (spec, options) => {
 };
 var asObjectNoCopy = (spec) => {
   return (obj) => {
-    if (!isRecord(obj)) {
+    if (!isRecord2(obj)) {
       throw new TypeConversionFailure("object", obj);
     }
     const failures = Object.entries(spec).map(([name, convert]) => {
@@ -57961,6 +58311,7 @@ var toBrowserConfig = toObject({
   stripePublishableKey: toString,
   recaptchaKey: toString,
   supportEmail: toString,
+  incidentReportAddressConfigured: toUndefOr(toBoolean),
   oAuth: toPublicOAuthConfig,
   oAuthRedirectUri: toString,
   bitbucketClientId: toString,
@@ -59645,6 +59996,41 @@ var SqlConditionForJoin = class extends SqlPartWithValue {
     return new SqlAnd([this.conditions[0], this.conditions[1]]).toSql(dialect);
   }
 };
+var SqlLimit = class extends SqlPartWithValue {
+  constructor(limit, paramIndex) {
+    if (!isPositiveInteger(limit)) {
+      throw new InvalidArgument3("Limit must be positive integer.");
+    }
+    super();
+    this.limit = limit;
+    this.paramIndex = paramIndex;
+  }
+  toSql(dialect) {
+    return `LIMIT $${this.paramIndex.next().value}`;
+  }
+  getVal() {
+    return this.limit;
+  }
+};
+var SqlRefinement = class _SqlRefinement extends SqlPartWithValue {
+  static from(refinement, paramIndex) {
+    const refinements = [];
+    if (refinement.limit !== void 0) {
+      refinements.push(new SqlLimit(refinement.limit, paramIndex));
+    }
+    return new _SqlRefinement(refinements);
+  }
+  constructor(refinements) {
+    super();
+    this.refinements = refinements;
+  }
+  toSql(dialect) {
+    return this.refinements.map((p) => p.toSql(dialect)).join(" ");
+  }
+  getVal() {
+    return this.refinements.flatMap((x) => x.getVal());
+  }
+};
 var SqlJoinColumnsEquals = class extends SqlPart {
   constructor(leftColumn, rightColumn) {
     super();
@@ -59774,12 +60160,12 @@ var DatabaseImpl = class {
     const r = await this.dialect.selectOne(SqlTable.create(table, this.dbSpec, this.transformer), "ALL_COLUMNS_DISCOURAGED" === columns ? new AllColumns() : SqlColumns.forTable(table, columns, this.dbSpec, this.transformer), this.maybeSqlCondition(table, condition, createParamIndexGenerator()));
     return r.rows[0];
   }
-  async selectMany(tableOrJoin, columns, condition) {
+  async selectMany(tableOrJoin, columns, condition, refinement) {
     if (isOfType(tableOrJoin, toObject({
       leftJoin: toTuple(toString, toString),
       on: toObject(toAny)
     }))) {
-      return this.selectManyLeftJoin(tableOrJoin, columns, condition);
+      return this.selectManyLeftJoin(tableOrJoin, columns, condition, refinement);
     }
     if (isObject(tableOrJoin)) {
       throw new NotImplemented([
@@ -59787,10 +60173,11 @@ var DatabaseImpl = class {
         pp`not implemented: ${tableOrJoin}`
       ].join(""));
     }
-    const r = await this.dialect.selectMany(SqlTable.create(tableOrJoin, this.dbSpec, this.transformer), "ALL_COLUMNS_DISCOURAGED" === columns ? new AllColumns() : SqlColumns.forTable(tableOrJoin, columns, this.dbSpec, this.transformer), this.maybeSqlCondition(tableOrJoin, condition, createParamIndexGenerator()));
+    const paramIndexGenerator = createParamIndexGenerator();
+    const r = await this.dialect.selectMany(SqlTable.create(tableOrJoin, this.dbSpec, this.transformer), "ALL_COLUMNS_DISCOURAGED" === columns ? new AllColumns() : SqlColumns.forTable(tableOrJoin, columns, this.dbSpec, this.transformer), this.maybeSqlCondition(tableOrJoin, condition, paramIndexGenerator), refinement ? SqlRefinement.from(refinement, paramIndexGenerator) : void 0);
     return r.rows;
   }
-  async selectManyLeftJoin(join2, columns, condition) {
+  async selectManyLeftJoin(join2, columns, condition, refinement) {
     const paramIndexGenerator = createParamIndexGenerator();
     const tableLeft = {
       name: join2.leftJoin[0],
@@ -59810,7 +60197,7 @@ var DatabaseImpl = class {
     ], this.dbSpec, this.transformer), condEmpty ? void 0 : new SqlConditionForJoin([
       SqlCondition.forTable(tableLeft, condition[0], paramIndexGenerator, this.dbSpec, this.transformer),
       SqlCondition.forTable(tableRight, condition[1], paramIndexGenerator, this.dbSpec, this.transformer)
-    ]));
+    ]), refinement ? SqlRefinement.from(refinement, paramIndexGenerator) : void 0);
     return r.rows;
   }
   async insert(table, values) {
@@ -61428,7 +61815,8 @@ var deployWorkspace = async (workspaces, deployment, pipeline, replica, args) =>
   await waitForWorkspaceStatus(replica, ws.id, WorkspaceStatus.Running);
   if (created && args.runPrepareOnCreation) {
     await runPipelineStage("prepare", "success", pipeline, ws.id, {
-      processCleanupWaitTime: args.processCleanupWaitTime
+      processCleanupWaitTime: args.processCleanupWaitTime,
+      profile: args.profile
     });
   }
   return ws;
@@ -61444,14 +61832,15 @@ var getTeam = async (team2, name) => {
   }
   return teams[0];
 };
-var runPipelineStage = async (stage, targetState, pipeline, workspaceId, { processCleanupWaitTime = duration({ seconds: 15 }) } = {}) => {
-  logI(`Running pipeline stage "${stage}".`);
+var runPipelineStage = async (stage, targetState, pipeline, workspaceId, { processCleanupWaitTime = duration({ seconds: 15 }), profile } = {}) => {
+  logI(`Running pipeline stage "${stage}" with ${profile} profile.`);
   await pipeline.abortPipeline({ workspaceId, stage }, { timeout: duration({ seconds: 30 }) });
   await wait(processCleanupWaitTime);
-  await pipeline.startPipeline({ workspaceId, stage }, { timeout: duration({ seconds: 30 }) });
+  await pipeline.startPipeline({ workspaceId, stage, profile }, { timeout: duration({ seconds: 30 }) });
   const info = await pipeline.getLastExecutedStageConfig({
     workspaceId,
-    stage
+    stage,
+    profile
   });
   const config = isStageExecConfigV1(info) ? info.config : info;
   if (isDeployStage(config)) {
@@ -62111,6 +62500,10 @@ var toPipelineArgs = toObject({
   stage: toLiteralUnion("pipelineStageKinds", stageKinds),
   profile: toUndefOr(toString)
 });
+var toAbortPipelineArgs = toObject({
+  ...workspaceServiceArgs,
+  stage: toLiteralUnion("pipelineStageKinds", stageKinds)
+});
 var toSetConfigArgs2 = toObject({
   ...workspaceServiceArgs,
   pipeline: toNullOr(toPipelineConfig),
@@ -62189,7 +62582,7 @@ var pipelineProxyService = {
     abortPipeline: rpc({
       access: "public",
       response: toVoid,
-      request: toPipelineArgs,
+      request: toAbortPipelineArgs,
       defaultOptions: { timeout: duration({ seconds: 15 }) }
     }),
     getLastExecutedStageConfig: rpc({
@@ -62342,6 +62735,40 @@ ProcessProxyStub = __decorate19([
 // packages/workspace-service/common/lib/api/landscape.js
 var import_inversify16 = __toESM(require_inversify(), 1);
 
+// packages/utils/common/lib/eventLogger.js
+var otel = __toESM(require_src(), 1);
+var maxAttributeLengthChars = 1e3;
+var maxBodyLengthChars = 1e4;
+var maxAttributeCount = 256;
+var TargetType;
+(function(TargetType2) {
+  TargetType2["ManagedService"] = "ManagedService";
+})(TargetType || (TargetType = {}));
+var toAttributes = (x) => {
+  const obj = asObjectNoCopy({
+    teamId: toUndefOr(toString),
+    orgId: toUndefOr(toString),
+    workspaceId: toUndefOr(toString),
+    targetId: toString,
+    targetType: toStringEnum("Target Type", TargetType),
+    name: toUndefOr(toNonEmptyStringWithMaxLength(maxAttributeLengthChars)),
+    creator: toNonEmptyStringWithMaxLength(maxAttributeLengthChars)
+  })(x);
+  if (objectSize(obj) > maxAttributeCount) {
+    throw new TypeConversionFailure(`Less than or equal ${maxAttributeCount} attributes`, obj);
+  }
+  return obj;
+};
+var toEvent = toObject({
+  eventName: toNonEmptyStringWithMaxLength(maxAttributeLengthChars),
+  timestamp: toDate,
+  observedTimestamp: toDate,
+  severityNumber: toNumericEnum("SeverityNumber", otel.SeverityNumber),
+  body: toNonEmptyStringWithMaxLength(maxBodyLengthChars),
+  resource: toNonEmptyStringWithMaxLength(maxAttributeLengthChars),
+  attributes: toAttributes
+});
+
 // packages/utils/common/lib/typing/jsonSchema.js
 var import_ajv = __toESM(require_ajv(), 1);
 var import_ajv_formats = __toESM(require_dist2(), 1);
@@ -62386,9 +62813,6 @@ var __decorate20 = function(decorators, target, key, desc) {
   else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata9 = function(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var toPlanSelection = toObject({
   id: toNonNegativeInteger,
   parameters: toRecord(toInteger)
@@ -62396,6 +62820,7 @@ var toPlanSelection = toObject({
 var toCapabilities = toUndefOr(toObject({
   pause: toUndefOr(toBoolean)
 }));
+var toProviderScope = withDefault(toUndefOr(toLiteralUnion("ProviderScope", ["global", "team"])), () => "global");
 var toConfig = toRecord(toUnknown);
 var toSecrets = toRecord(toUnknown);
 var toDetails = toRecord(toUnknown);
@@ -62454,7 +62879,8 @@ var toManagedService = toObject({
   ...mutablePropertiesConv,
   pause: toBoolean,
   status: toManagedServiceStatus,
-  workspaceId: toUndefOr(toNonNegativeInteger)
+  workspaceId: toUndefOr(toNonNegativeInteger),
+  recentEvents: toUndefOr(toArray(toEvent))
 });
 var toUpdateManagedServiceArgs = toObject({
   id: toUuid,
@@ -62500,7 +62926,7 @@ var managedServiceProviderCommonProperties = {
   iconUrl: toString,
   plans: toArray(toManagedServicePlan),
   version: toProviderVersion,
-  scope: toUndefOr(toLiteralUnion("ProviderScope", ["global", "team"]))
+  scope: toProviderScope
 };
 var toManagedServiceRestProvider = toObject({
   ...managedServiceProviderCommonProperties,
@@ -62516,14 +62942,43 @@ var toManagedServiceLandscapeProvider = toObject({
   backend: toLandscapeSettings
 });
 var toManagedServiceProvider = toOr(toManagedServiceRestProvider, toManagedServiceLandscapeProvider);
+var toRestBackendConfig = toObject({
+  api: toObject({
+    endpoint: toString,
+    secret: toUndefOr(toString)
+  })
+});
+var managedServiceProviderConfigProperties = {
+  name: toProviderName,
+  version: toProviderVersion,
+  displayName: toUndefOr(toString),
+  description: toUndefOr(toString),
+  author: toUndefOr(toString),
+  iconUrl: toUndefOr(toString),
+  capabilities: toCapabilities,
+  category: toUndefOr(toString),
+  configSchema: toUndefOr(toSchemaObject),
+  detailsSchema: toUndefOr(toSchemaObject),
+  plans: toUndefOr(toArray(toManagedServicePlan)),
+  scope: toProviderScope,
+  secretsSchema: toUndefOr(toSchemaObject)
+};
+var toManagedServiceRestProviderConfig = toObject({
+  ...managedServiceProviderConfigProperties,
+  backend: toUndefOr(toRestBackendConfig)
+});
+var toManagedServiceLandscapeProviderConfig = toObject({
+  ...managedServiceProviderConfigProperties,
+  backend: toUndefOr(toLandscapeSettings)
+});
+var toManagedServiceProviderConfig = toOr(toManagedServiceRestProviderConfig, toManagedServiceLandscapeProviderConfig);
 var MissingProviderCapabilities = class MissingProviderCapabilities2 extends InvalidArgument {
-  constructor(provider, missingCaps) {
-    super(`The operation couldn't be performed because the provider ${provider.name} / ${provider.version} doesn't have capabilities: ${missingCaps.join(", ")}.`, { scope: "public" });
+  static create(provider, missingCaps) {
+    return new this(`The operation couldn't be performed because the provider ${provider.name} / ${provider.version} doesn't have capabilities: ${missingCaps.join(", ")}.`, { scope: "public" });
   }
 };
 MissingProviderCapabilities = __decorate20([
-  registerError(),
-  __metadata9("design:paramtypes", [Object, Array])
+  registerError()
 ], MissingProviderCapabilities);
 var toGlobalScope = toObject({
   type: toLiteral("global")
@@ -62545,6 +63000,11 @@ var toCreateLandscapeProviderByGitArgs = toObject({
 var toListProvidersArgs = toObject({
   teamId: toUndefOr(toNumber)
 });
+var toListEventsArgs = toOr(toObject({
+  managedServiceId: toUuid
+}), toObject({
+  teamId: toNonNegativeInteger
+}));
 var managedServicesService = {
   name: "ManagedService",
   context: toHttpContext,
@@ -62596,6 +63056,11 @@ var managedServicesService = {
       access: "public",
       request: toCreateLandscapeProviderByGitArgs,
       response: toManagedServiceLandscapeProvider
+    }),
+    listEvents: rpc({
+      access: "public",
+      request: toListEventsArgs,
+      response: toArray(toEvent)
     })
   }
 };
@@ -62782,14 +63247,16 @@ var serviceUrlCreators = (apiUrl) => {
   };
   return { serviceUrl, serviceUrlDc };
 };
-var runWorkspacePipeline = async (pipeline, workspace2) => {
+var runWorkspacePipeline = async (pipeline, workspace2, profile) => {
   logI("Running Pipeline");
-  await runPipelineStage("prepare", "success", pipeline, workspace2.id);
-  await runPipelineStage("run", "running", pipeline, workspace2.id);
+  await runPipelineStage("prepare", "success", pipeline, workspace2.id, {
+    profile
+  });
+  await runPipelineStage("run", "running", pipeline, workspace2.id, { profile });
 };
-var getCiLandscape = async (pipeline, workspaceId) => {
+var getCiLandscape = async (pipeline, workspaceId, profile) => {
   const s = await pipeline.pipelineStream();
-  await s.send({ workspaceId });
+  await s.send({ workspaceId, profile });
   const config = await s.recv();
   if (!config || !isDeployStage(config.run)) {
     return null;
@@ -62866,6 +63333,7 @@ var createDeployment = async (creds, team2, c, status, serviceUrlDc) => {
         envVars: useBootstrapRepo ? { ...bootstrapRepoEnvVars(c), ...c.envVars } : c.envVars,
         teamId: team2.id,
         baseImage: c.baseImage,
+        profile: c.profile,
         planId: await planIdByConfig(products, c.planTitle, c.onDemand),
         restricted: c.restricted,
         workspaceName: (_a = c.workspaceName) !== null && _a !== void 0 ? _a : workspaceName(c.repository.name, c.pullRequest.number),
@@ -62878,7 +63346,7 @@ var createDeployment = async (creds, team2, c, status, serviceUrlDc) => {
       });
       await status.setWorkspace(w);
       await updateRepositoryInWorkspace(process2, w, c.repository.url, c.gitAuth, c.pullRequest);
-      const servers = await getCiLandscape(pipeline, w.id);
+      const servers = await getCiLandscape(pipeline, w.id, c.profile);
       if (servers) {
         logD([
           "Updating landscape servers",
@@ -62889,7 +63357,7 @@ var createDeployment = async (creds, team2, c, status, serviceUrlDc) => {
           servers
         });
       }
-      await runWorkspacePipeline(pipeline, w);
+      await runWorkspacePipeline(pipeline, w, c.profile);
       const { workspaceHostingBaseDomain } = await fromReplyRethrowing(() => config.getBrowserConfig(), (e) => new GetBrowserConfigFailed(e.message));
       await status.setDeployed(`https://${workspaceDevDomain(w.id, workspaceHostingBaseDomain)}`);
     });
@@ -62929,7 +63397,7 @@ var run = async (config, status) => {
 
 // packages/integrations/lib/github-action-deploy-workspace.js
 var getConfig = async () => {
-  var _a, _b, _c, _d, _e;
+  var _a, _b, _c, _d, _e, _f;
   const config = await fetchGitHubActionPrConfig();
   const envVars = (0, import_dotenv.parse)((_a = getActionInput("env")) !== null && _a !== void 0 ? _a : "");
   const cloneDepth = getActionInput("cloneDepth");
@@ -62942,12 +63410,13 @@ var getConfig = async () => {
     apiUrl: new URL((_b = getActionInput("apiUrl")) !== null && _b !== void 0 ? _b : "https://codesphere.com"),
     teamName: getActionInput("team", true),
     baseImage: (_c = getActionInput("baseImage")) !== null && _c !== void 0 ? _c : void 0,
-    planTitle: (_d = getActionInput("plan")) !== null && _d !== void 0 ? _d : void 0,
+    profile: (_d = getActionInput("ciProfile")) !== null && _d !== void 0 ? _d : void 0,
+    planTitle: (_e = getActionInput("plan")) !== null && _e !== void 0 ? _e : void 0,
     onDemand: "true" === getActionInput("onDemand"),
     restricted: "true" === getActionInput("restricted"),
     cloneDepth: cloneDepth ? Number(cloneDepth) : void 0,
     envVars,
-    vpnConfigName: (_e = getActionInput("vpnConfig")) !== null && _e !== void 0 ? _e : void 0,
+    vpnConfigName: (_f = getActionInput("vpnConfig")) !== null && _f !== void 0 ? _f : void 0,
     authentication: {
       email: getActionInput("email", true),
       password: getActionInput("password", true)
