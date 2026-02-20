@@ -15,24 +15,18 @@ permissions:
   deployments: write
 
 jobs:
-  test-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deploy-step.outputs.deployment-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Deploy to Codesphere
-        id: deploy
+        id: deploy-step
         uses: ./
         with:
           token: ${{ secrets.CS_TOKEN }}
           teamId: ${{ secrets.CS_TEAM_ID }}
-
-      - name: Create GitHub Deployment Status
-        if: steps.deploy.outputs.deployment-url != ''
-        uses: chrnorm/deployment-status@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment-url: ${{ steps.deploy.outputs.deployment-url }}
-          environment: preview
-          state: success

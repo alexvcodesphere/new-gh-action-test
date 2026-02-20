@@ -200,14 +200,13 @@ create_workspace() {
   echo "  Running: ${cmd[*]}"
   "${cmd[@]}"
 
-  # Look up the newly created workspace to get its dev domain for the deployment URL
+  # Look up the newly created workspace to output the deployment URL
   local result
   result=$(find_workspace "$target_branch")
   if [ -n "$result" ]; then
-    local ws_id dev_domain
+    local ws_id
     ws_id=$(echo "$result" | awk '{print $1}')
-    dev_domain=$(echo "$result" | awk '{print $2}')
-    output_deployment_url "$dev_domain" "$ws_id"
+    output_deployment_url "$ws_id"
   fi
 }
 
@@ -217,7 +216,6 @@ create_workspace() {
 update_workspace() {
   local workspace_id="$1"
   local target_branch="$2"
-  local dev_domain="${3:-}"
 
   echo "🔄 Updating workspace ${workspace_id}..."
 
@@ -251,10 +249,8 @@ update_workspace() {
     "${cmd[@]}"
   fi
 
-  # Output the deployment URL for GitHub Deployments integration
-  if [ -n "$dev_domain" ]; then
-    output_deployment_url "$dev_domain" "$workspace_id"
-  fi
+  # Output the deployment URL
+  output_deployment_url "$workspace_id"
 }
 
 # ---------------------------------------------------------------------------
@@ -275,18 +271,13 @@ delete_workspace() {
 # Write deployment URL to GitHub Actions output and step summary
 #
 # This enables:
-#   - The "View deployment" button on PRs (via chrnorm/deployment-status)
+#   - The "View deployment" button on PRs (via environment.url in the workflow)
 #   - Accessing the URL in downstream steps via ${{ steps.deploy.outputs.deployment-url }}
 # ---------------------------------------------------------------------------
 output_deployment_url() {
-  local dev_domain="$1"
-  local workspace_id="$2"
+  local workspace_id="$1"
+  local url="https://${workspace_id}-3000.2.codesphere.com/"
 
-  if [ -z "$dev_domain" ]; then
-    return
-  fi
-
-  local url="https://${dev_domain}"
   echo "🔗 Deployment URL: ${url}"
 
   # Write to GitHub Actions outputs (accessible by subsequent steps)
@@ -359,10 +350,9 @@ main() {
   result=$(find_workspace "$target_branch")
 
   if [ -n "$result" ]; then
-    local ws_id dev_domain
+    local ws_id
     ws_id=$(echo "$result" | awk '{print $1}')
-    dev_domain=$(echo "$result" | awk '{print $2}')
-    update_workspace "$ws_id" "$target_branch" "$dev_domain"
+    update_workspace "$ws_id" "$target_branch"
     run_pipeline "$ws_id"
     echo "✅ Workspace ${ws_id} updated."
   else
