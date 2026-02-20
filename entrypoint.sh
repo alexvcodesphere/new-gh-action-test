@@ -55,17 +55,10 @@ PR_NUMBER="${PR_NUMBER:-}"
 #
 # Change this function to alter how workspaces are named. The name is used
 # both when creating new workspaces and when looking up existing ones.
-#
-# For PRs:     "<repo-name>-#<pr-number>"  (e.g. "my-app-#42")
-# For pushes:  "<repo-name>-<branch>"      (e.g. "my-app-main")
+# Format: "<repo-name>-#<pr-number>"  (e.g. "my-app-#42")
 # ---------------------------------------------------------------------------
 workspace_name() {
-  local branch="$1"
-  if [ -n "$PR_NUMBER" ]; then
-    echo "${GITHUB_REPOSITORY##*/}-#${PR_NUMBER}"
-  else
-    echo "${GITHUB_REPOSITORY##*/}-${branch}"
-  fi
+  echo "${GITHUB_REPOSITORY##*/}-#${PR_NUMBER}"
 }
 
 # ---------------------------------------------------------------------------
