@@ -29,7 +29,7 @@ inputs:
 
       Example:
         MY_VAR=hello
-        MY_SECRET=${{ secrets.MY_SECRET }}
+        MY_SECRET=<your-secret-value>
     required: false
   vpnConfig:
     description: >
