@@ -77,6 +77,15 @@ resolve_branch() {
 }
 
 # ---------------------------------------------------------------------------
+# Workspace naming convention (single source of truth)
+# Change this function to alter how workspaces are named across the action.
+# ---------------------------------------------------------------------------
+workspace_name() {
+  local branch="$1"
+  echo "${GITHUB_REPOSITORY##*/}-${branch}"
+}
+
+# ---------------------------------------------------------------------------
 # Step 3: Find existing workspace for this repo + branch
 #
 # Returns two values via stdout (space-separated): WORKSPACE_ID DEV_DOMAIN
@@ -85,9 +94,10 @@ resolve_branch() {
 # ---------------------------------------------------------------------------
 find_workspace() {
   local target_branch="$1"
-  local workspace_name="${GITHUB_REPOSITORY##*/}-${target_branch}"
+  local ws_name
+  ws_name=$(workspace_name "$target_branch")
 
-  echo "🔍 Searching for workspace matching name '${workspace_name}'..." >&2
+  echo "🔍 Searching for workspace '${ws_name}'..." >&2
 
   # List workspaces and find one matching our repository
   local workspaces
@@ -115,7 +125,7 @@ find_workspace() {
   # convention: "<repo-name>-<branch>". This ensures each branch/PR gets
   # its own workspace instead of reusing one from a different branch.
   local match
-  match=$(echo "$workspaces" | grep -i "$workspace_name" | head -1 || echo "")
+  match=$(echo "$workspaces" | grep -i "$ws_name" | head -1 || echo "")
 
   # Fallback: if no name match, try matching by repo URL
   if [ -z "$match" ]; then
@@ -151,11 +161,12 @@ find_workspace() {
 # ---------------------------------------------------------------------------
 create_workspace() {
   local target_branch="$1"
-  local workspace_name="${GITHUB_REPOSITORY##*/}-${target_branch}"
+  local ws_name
+  ws_name=$(workspace_name "$target_branch")
 
-  echo "🚀 Creating workspace '${workspace_name}'..."
+  echo "🚀 Creating workspace '${ws_name}'..."
 
-  local cmd=(cs create workspace "$workspace_name"
+  local cmd=(cs create workspace "$ws_name"
     -a "$CS_API_URL"
     -t "$CS_TEAM_ID"
     -p "$PLAN_ID"
