@@ -37,9 +37,9 @@ inputs:
       The VPN configuration must be set up in the team beforehand.
     required: false
   apiUrl:
-    description: "Codesphere API URL"
+    description: "Codesphere API URL (must include /api path)"
     required: false
-    default: "https://codesphere.com"
+    default: "https://codesphere.com/api"
   branch:
     description: >
       Git branch to deploy.

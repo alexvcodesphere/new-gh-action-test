@@ -16,7 +16,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Configuration (set by action.yml)
 # ---------------------------------------------------------------------------
-CS_API_URL="${INPUT_APIURL:-https://codesphere.com}"
+CS_API_URL="${INPUT_APIURL:-https://codesphere.com/api}"
 CS_TOKEN="${INPUT_TOKEN}"
 CS_TEAM_ID="${INPUT_TEAMID}"
 PLAN_ID="${INPUT_PLANID:-8}"
