@@ -246,22 +246,29 @@ async function runPipeline(workspaceId, stages) {
     }
 
     // Poll until the stage completes
+    // Status endpoint returns an array (one entry per replica), each with
+    // .state: "waiting" | "running" | "success" | "failure" | "aborted"
     const timeoutMs = 1800000; // 30 minutes
     const start = Date.now();
 
     while (Date.now() - start < timeoutMs) {
-      const status = await getPipelineStatus(workspaceId, stage);
+      await sleep(5000);
+      const replicas = await getPipelineStatus(workspaceId, stage);
 
-      if (status.status === "success" || status.state === "success") {
+      const states = Array.isArray(replicas)
+        ? replicas.map((r) => r.state)
+        : [replicas.state || "unknown"];
+
+      if (states.every((s) => s === "success")) {
         console.log(`  ✅ '${stage}' completed.`);
         break;
       }
 
-      if (status.status === "failed" || status.state === "failed" || status.status === "error") {
-        throw new Error(`Pipeline stage '${stage}' failed.`);
+      if (states.some((s) => s === "failure" || s === "aborted")) {
+        throw new Error(`Pipeline stage '${stage}' failed (states: ${states.join(", ")}).`);
       }
 
-      await sleep(5000);
+      // Still waiting or running — continue polling
     }
   }
 }
