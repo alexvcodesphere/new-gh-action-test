@@ -43,7 +43,7 @@ PLAN_ID="${INPUT_PLANID:-8}"
 ENV_VARS="${INPUT_ENV:-}"
 VPN_CONFIG="${INPUT_VPNCONFIG:-}"
 BRANCH="${INPUT_BRANCH:-}"
-STAGES="${INPUT_STAGES:-prepare test run}"
+STAGES="${INPUT_STAGES:-prepare run}"
 
 # GitHub context (automatically set by GitHub Actions runner)
 REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"

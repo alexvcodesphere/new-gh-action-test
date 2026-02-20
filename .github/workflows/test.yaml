@@ -30,3 +30,8 @@ jobs:
         with:
           token: ${{ secrets.CS_TOKEN }}
           teamId: ${{ secrets.CS_TEAM_ID }}
+
+      - name: Debug Outputs
+        run: |
+          echo "deployment-url=${{ steps.deploy-step.outputs.deployment-url }}"
+          echo "workspace-id=${{ steps.deploy-step.outputs.workspace-id }}"

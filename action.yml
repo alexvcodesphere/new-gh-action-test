@@ -50,7 +50,7 @@ inputs:
       Pipeline stages to run after deployment.
       Space-separated list of: prepare, test, run.
     required: false
-    default: "prepare test run"
+    default: "prepare run"
 
 runs:
   using: "composite"
