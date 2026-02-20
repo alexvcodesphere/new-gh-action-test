@@ -1,0 +1,17 @@
+name: Test Deploy Action
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Codesphere
+        uses: ./
+        with:
+          token: ${{ secrets.CS_TOKEN }}
+          teamId: ${{ secrets.CS_TEAM_ID }}
