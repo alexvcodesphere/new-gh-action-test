@@ -166,8 +166,16 @@ update_workspace() {
   local workspace_id="$1"
   local target_branch="$2"
 
-  echo "🔄 Updating workspace ${workspace_id} (pulling branch '${target_branch}')..."
+  echo "🔄 Updating workspace ${workspace_id}..."
 
+  # Ensure workspace is running before pulling
+  echo "  ⏰ Waking up workspace..."
+  cs wake-up \
+    -a "$CS_API_URL" \
+    -w "$workspace_id" \
+    --timeout 5m || echo "  (workspace may already be running)"
+
+  echo "  📥 Pulling branch '${target_branch}'..."
   cs git pull \
     -a "$CS_API_URL" \
     -w "$workspace_id" \
