@@ -127,12 +127,6 @@ find_workspace() {
   local match
   match=$(echo "$workspaces" | grep -i "$ws_name" | head -1 || echo "")
 
-  # Fallback: if no name match, try matching by repo URL
-  if [ -z "$match" ]; then
-    echo "  No workspace matched by name, trying repo URL match..." >&2
-    match=$(echo "$workspaces" | grep -i "$GITHUB_REPOSITORY" | head -1 || echo "")
-  fi
-
   if [ -z "$match" ]; then
     echo ""
     return
