@@ -43,6 +43,7 @@ PLAN_ID="${INPUT_PLANID:-8}"
 ENV_VARS="${INPUT_ENV:-}"
 VPN_CONFIG="${INPUT_VPNCONFIG:-}"
 BRANCH="${INPUT_BRANCH:-}"
+STAGES="${INPUT_STAGES:-prepare test run}"
 
 # GitHub context (automatically set by GitHub Actions runner)
 REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
@@ -307,6 +308,26 @@ output_deployment_url() {
   fi
 }
 
+# ---------------------------------------------------------------------------
+# Run pipeline stages (prepare, test, run)
+# ---------------------------------------------------------------------------
+run_pipeline() {
+  local workspace_id="$1"
+
+  if [ -z "$STAGES" ]; then
+    echo "  ⏭️  No pipeline stages to run."
+    return
+  fi
+
+  echo "🔧 Running pipeline stages: ${STAGES}..."
+
+  # shellcheck disable=SC2086
+  cs start pipeline \
+    -a "$CS_API_URL" \
+    -w "$workspace_id" \
+    $STAGES
+}
+
 # =============================================================================
 # Main — orchestrate the deployment lifecycle
 # =============================================================================
@@ -342,9 +363,17 @@ main() {
     ws_id=$(echo "$result" | awk '{print $1}')
     dev_domain=$(echo "$result" | awk '{print $2}')
     update_workspace "$ws_id" "$target_branch" "$dev_domain"
+    run_pipeline "$ws_id"
     echo "✅ Workspace ${ws_id} updated."
   else
     create_workspace "$target_branch"
+    # Look up the workspace we just created to get its ID for the pipeline
+    result=$(find_workspace "$target_branch")
+    if [ -n "$result" ]; then
+      local ws_id_new
+      ws_id_new=$(echo "$result" | awk '{print $1}')
+      run_pipeline "$ws_id_new"
+    fi
     echo "✅ New workspace created."
   fi
 }

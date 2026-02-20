@@ -45,6 +45,12 @@ inputs:
       Git branch to deploy.
       Auto-detected from the PR head branch or push ref if not specified.
     required: false
+  stages:
+    description: >
+      Pipeline stages to run after deployment.
+      Space-separated list of: prepare, test, run.
+    required: false
+    default: "prepare test run"
 
 runs:
   using: "composite"
@@ -61,6 +67,7 @@ runs:
         INPUT_VPNCONFIG: ${{ inputs.vpnConfig }}
         INPUT_APIURL: ${{ inputs.apiUrl }}
         INPUT_BRANCH: ${{ inputs.branch }}
+        INPUT_STAGES: ${{ inputs.stages }}
         PR_ACTION: ${{ github.event.action }}
         PR_NUMBER: ${{ github.event.number }}
       run: bash ${{ github.action_path }}/entrypoint.sh
