@@ -83,7 +83,7 @@ find_workspace() {
 
   echo "🔍 Searching for existing workspace..." >&2
 
-  # List workspaces as JSON and find one matching our repo URL
+  # List workspaces and find one matching our repository
   local workspaces
   workspaces=$(cs list workspaces -t "$CS_TEAM_ID" -a "$CS_API_URL" 2>/dev/null || echo "")
 
@@ -92,10 +92,34 @@ find_workspace() {
     return
   fi
 
-  # Parse workspace ID from output — the CLI outputs a table, so we grep
-  # for lines containing our repo URL. This is a best-effort match.
-  # The exact output format may vary; adjust parsing if needed.
-  echo "$workspaces" | grep -i "$GITHUB_REPOSITORY" | head -1 | awk '{print $1}' || echo ""
+  # Debug: show raw output so we can verify parsing
+  echo "  Raw workspace list:" >&2
+  echo "$workspaces" | head -5 >&2
+
+  # The CLI outputs a pipe-separated table like:
+  #   | ID   | NAME       | REPO                          | ...
+  #   | 1234 | my-ws      | github.com/org/repo           | ...
+  #
+  # We grep for our repo, split by '|', and extract the ID (2nd field).
+  local match
+  match=$(echo "$workspaces" | grep -i "$GITHUB_REPOSITORY" | head -1 || echo "")
+
+  if [ -z "$match" ]; then
+    echo ""
+    return
+  fi
+
+  # Extract the numeric workspace ID from the pipe-separated row
+  local ws_id
+  ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+
+  # Validate it's actually a number
+  if [[ "$ws_id" =~ ^[0-9]+$ ]]; then
+    echo "$ws_id"
+  else
+    echo "  ⚠️  Could not parse workspace ID from: $match" >&2
+    echo ""
+  fi
 }
 
 # ---------------------------------------------------------------------------
