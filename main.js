@@ -1,32 +1,30 @@
 // =============================================================================
-// Codesphere Deploy Action — main.js
+// Codesphere Deploy Action
 // https://github.com/codesphere-cloud/gh-action-deploy
 //
-// Manages workspace lifecycle using the Codesphere REST API directly.
+// Manages workspace lifecycle via the Codesphere REST API.
 // Zero external dependencies — uses only Node.js built-in modules.
 //
 // API docs: https://codesphere.com/api/scalar-ui/
 // =============================================================================
 
 const https = require("https");
-const http = require("http");
 const fs = require("fs");
 
 // ---------------------------------------------------------------------------
-// Load GitHub event payload (contains PR number, action, etc.)
+// GitHub event payload (PR number, action, etc.)
 // ---------------------------------------------------------------------------
 let ghEvent = {};
 try {
-  const eventPath = process.env.GITHUB_EVENT_PATH;
-  if (eventPath) {
-    ghEvent = JSON.parse(fs.readFileSync(eventPath, "utf8"));
+  if (process.env.GITHUB_EVENT_PATH) {
+    ghEvent = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
   }
 } catch {
-  // Not running in GitHub Actions — that's fine for local testing
+  // Not in GitHub Actions
 }
 
 // ---------------------------------------------------------------------------
-// Configuration
+// Configuration (from action.yml inputs + GitHub context)
 // ---------------------------------------------------------------------------
 const config = {
   apiUrl: process.env.INPUT_APIURL || "https://codesphere.com/api",
@@ -38,7 +36,6 @@ const config = {
   branch: process.env.INPUT_BRANCH || "",
   stages: (process.env.INPUT_STAGES || "prepare run").split(/\s+/).filter(Boolean),
 
-  // GitHub context
   repoUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}.git`,
   repository: process.env.GITHUB_REPOSITORY || "",
   eventName: process.env.GITHUB_EVENT_NAME || "",
@@ -49,105 +46,89 @@ const config = {
 };
 
 // ---------------------------------------------------------------------------
-// Workspace naming — SINGLE SOURCE OF TRUTH
-// Format: "<repo-name>-#<pr-number>" (e.g. "my-app-#42")
+// Helpers
 // ---------------------------------------------------------------------------
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Workspace name — SINGLE SOURCE OF TRUTH
+// Format: "<repo>-#<pr>" (e.g. "my-app-#42")
 function workspaceName() {
-  const repo = config.repository.split("/").pop();
-  return `${repo}-#${config.prNumber}`;
+  return `${config.repository.split("/").pop()}-#${config.prNumber}`;
 }
 
-// ---------------------------------------------------------------------------
-// Target branch resolution
-// ---------------------------------------------------------------------------
 function resolveBranch() {
-  if (config.branch) return config.branch;
-  return config.headRef || config.refName;
+  return config.branch || config.headRef || config.refName;
 }
 
-// ---------------------------------------------------------------------------
-// Parse env vars from multiline "KEY=VALUE" input
-// ---------------------------------------------------------------------------
 function parseEnvVars(input) {
   if (!input.trim()) return [];
   return input
     .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line && line.includes("="))
-    .map((line) => {
-      const idx = line.indexOf("=");
-      return { name: line.slice(0, idx), value: line.slice(idx + 1) };
+    .map((l) => l.trim())
+    .filter((l) => l && l.includes("="))
+    .map((l) => {
+      const i = l.indexOf("=");
+      return { name: l.slice(0, i), value: l.slice(i + 1) };
     });
 }
 
 // ---------------------------------------------------------------------------
-// HTTP client for the Codesphere API
+// HTTP client — Codesphere API
 // ---------------------------------------------------------------------------
 function api(method, path, body = null) {
   return new Promise((resolve, reject) => {
-    // Ensure apiUrl has no trailing slash, path has a leading slash
     const base = config.apiUrl.replace(/\/+$/, "");
-    const fullPath = path.startsWith("/") ? path : `/${path}`;
-    const url = new URL(`${base}${fullPath}`);
-    const transport = url.protocol === "https:" ? https : http;
+    const url = new URL(`${base}${path.startsWith("/") ? path : `/${path}`}`);
 
-    const options = {
-      method,
-      hostname: url.hostname,
-      port: url.port,
-      path: url.pathname + url.search,
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
+    const req = https.request(
+      {
+        method,
+        hostname: url.hostname,
+        port: url.port,
+        path: url.pathname + url.search,
+        headers: {
+          Authorization: `Bearer ${config.token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       },
-    };
-
-    const req = transport.request(options, (res) => {
-      let data = "";
-      res.on("data", (chunk) => (data += chunk));
-      res.on("end", () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          try {
-            resolve(data ? JSON.parse(data) : null);
-          } catch {
-            resolve(data);
+      (res) => {
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            try {
+              resolve(data ? JSON.parse(data) : null);
+            } catch {
+              resolve(data);
+            }
+          } else {
+            // Truncate HTML error pages to keep logs readable
+            const detail = data.length > 200 ? data.slice(0, 200) + "..." : data;
+            reject(new Error(`${method} ${path} → ${res.statusCode}: ${detail}`));
           }
-        } else {
-          const msg = `API ${method} ${path} returned ${res.statusCode}: ${data}`;
-          reject(new Error(msg));
-        }
-      });
-    });
+        });
+      }
+    );
 
     req.on("error", reject);
-
-    if (body) {
-      req.write(JSON.stringify(body));
-    }
+    if (body) req.write(JSON.stringify(body));
     req.end();
   });
 }
 
 // ---------------------------------------------------------------------------
-// Workspace API functions
+// Workspace operations
 // ---------------------------------------------------------------------------
-
-async function listWorkspaces() {
-  return api("GET", `/workspaces/team/${config.teamId}`);
-}
-
 async function findWorkspace() {
   const name = workspaceName();
   console.log(`🔍 Looking for workspace '${name}'...`);
 
-  const workspaces = await listWorkspaces();
-  const match = workspaces.find((ws) => ws.name === name);
+  const workspaces = await api("GET", `/workspaces/team/${config.teamId}`);
+  const ws = workspaces.find((w) => w.name === name);
 
-  if (match) {
-    console.log(`  Found: id=${match.id}, name=${match.name}`);
-  }
-  return match || null;
+  if (ws) console.log(`  Found: id=${ws.id}`);
+  return ws || null;
 }
 
 async function createWorkspace(branch) {
@@ -164,153 +145,99 @@ async function createWorkspace(branch) {
     initialBranch: branch,
   };
 
-  const envVars = parseEnvVars(config.envVars);
-  if (envVars.length > 0) {
-    body.env = envVars;
-  }
+  const env = parseEnvVars(config.envVars);
+  if (env.length) body.env = env;
+  if (config.vpnConfig) body.vpnConfig = config.vpnConfig;
 
-  if (config.vpnConfig) {
-    body.vpnConfig = config.vpnConfig;
-  }
-
-  const workspace = await api("POST", "/workspaces", body);
-  console.log(`  Created: id=${workspace.id}`);
-  return workspace;
+  const ws = await api("POST", "/workspaces", body);
+  console.log(`  Created: id=${ws.id}`);
+  return ws;
 }
 
-async function deleteWorkspace(workspaceId) {
-  console.log(`🗑️  Deleting workspace ${workspaceId}...`);
-  await api("DELETE", `/workspaces/${workspaceId}`);
+async function deleteWorkspace(id) {
+  console.log(`🗑️  Deleting workspace ${id}...`);
+  await api("DELETE", `/workspaces/${id}`);
 }
 
-async function getWorkspaceStatus(workspaceId) {
-  return api("GET", `/workspaces/${workspaceId}/status`);
-}
+async function waitForRunning(id, timeoutMs = 300_000) {
+  console.log("  ⏰ Waiting for workspace to be running...");
+  const deadline = Date.now() + timeoutMs;
 
-async function waitForRunning(workspaceId, timeoutMs = 300000) {
-  console.log(`  ⏰ Waiting for workspace to be running...`);
-  const start = Date.now();
-
-  while (Date.now() - start < timeoutMs) {
-    const status = await getWorkspaceStatus(workspaceId);
-    if (status.isRunning) {
-      console.log(`  ✅ Workspace is running.`);
+  while (Date.now() < deadline) {
+    const { isRunning } = await api("GET", `/workspaces/${id}/status`);
+    if (isRunning) {
+      console.log("  ✅ Workspace is running.");
       return;
     }
     await sleep(5000);
   }
 
-  throw new Error(`Workspace ${workspaceId} did not become running within ${timeoutMs / 1000}s`);
+  throw new Error(`Workspace ${id} did not start within ${timeoutMs / 1000}s`);
 }
 
-async function gitPull(workspaceId, branch) {
+async function gitPull(id, branch) {
   console.log(`  📥 Pulling branch '${branch}'...`);
-  await api("POST", `/workspaces/${workspaceId}/git/pull/origin/${branch}`);
-  console.log(`  ✅ Git pull completed.`);
+  await api("POST", `/workspaces/${id}/git/pull/origin/${branch}`);
 }
 
-async function setEnvVars(workspaceId, vars) {
-  if (vars.length === 0) return;
+async function setEnvVars(id, vars) {
+  if (!vars.length) return;
   console.log(`  🔧 Setting ${vars.length} environment variable(s)...`);
-  await api("PUT", `/workspaces/${workspaceId}/env-vars`, vars);
+  await api("PUT", `/workspaces/${id}/env-vars`, vars);
 }
 
 // ---------------------------------------------------------------------------
-// Pipeline execution
+// Pipeline
 // ---------------------------------------------------------------------------
-
-async function getPipelineStatus(workspaceId, stage) {
-  return api("GET", `/workspaces/${workspaceId}/pipeline/${stage}`);
-}
-
-async function startPipelineStage(workspaceId, stage) {
-  await api("POST", `/workspaces/${workspaceId}/pipeline/${stage}/start`);
-}
-
-async function runPipeline(workspaceId, stages) {
-  if (stages.length === 0) {
-    console.log("  ⏭️  No pipeline stages to run.");
-    return;
-  }
-
-  console.log(`🔧 Running pipeline stages: ${stages.join(" → ")}...`);
+async function runPipeline(id, stages) {
+  if (!stages.length) return;
+  console.log(`🔧 Running pipeline: ${stages.join(" → ")}`);
 
   for (const stage of stages) {
     console.log(`  ▶ Starting '${stage}'...`);
-    await startPipelineStage(workspaceId, stage);
+    await api("POST", `/workspaces/${id}/pipeline/${stage}/start`);
 
-    // 'run' stage is fire-and-forget — don't wait for it
+    // 'run' is fire-and-forget
     if (stage === "run") {
-      console.log(`  ✅ '${stage}' triggered (running).`);
+      console.log(`  ✅ '${stage}' triggered.`);
       continue;
     }
 
-    // Poll until the stage completes
-    // Status endpoint returns an array (one entry per replica), each with
-    // .state: "waiting" | "running" | "success" | "failure" | "aborted"
-    const timeoutMs = 1800000; // 30 minutes
-    const start = Date.now();
-
-    while (Date.now() - start < timeoutMs) {
+    // Poll until done (status returns array of replicas, each with .state)
+    const deadline = Date.now() + 1_800_000; // 30 min
+    while (Date.now() < deadline) {
       await sleep(5000);
-      const replicas = await getPipelineStatus(workspaceId, stage);
-
-      const states = Array.isArray(replicas)
-        ? replicas.map((r) => r.state)
-        : [replicas.state || "unknown"];
+      const replicas = await api("GET", `/workspaces/${id}/pipeline/${stage}`);
+      const states = (Array.isArray(replicas) ? replicas : [replicas]).map((r) => r.state);
 
       if (states.every((s) => s === "success")) {
         console.log(`  ✅ '${stage}' completed.`);
         break;
       }
-
       if (states.some((s) => s === "failure" || s === "aborted")) {
-        throw new Error(`Pipeline stage '${stage}' failed (states: ${states.join(", ")}).`);
+        throw new Error(`Pipeline '${stage}' failed (${states.join(", ")})`);
       }
-
-      // Still waiting or running — continue polling
     }
   }
 }
 
 // ---------------------------------------------------------------------------
-// GitHub Actions output
+// GitHub Actions outputs
 // ---------------------------------------------------------------------------
-
-function outputDeploymentUrl(workspaceId) {
+function setOutputs(workspaceId) {
   const url = `https://${workspaceId}-3000.2.codesphere.com/`;
   console.log(`🔗 Deployment URL: ${url}`);
 
-  // Write to GITHUB_OUTPUT
-  const outputFile = process.env.GITHUB_OUTPUT;
-  if (outputFile) {
-    fs.appendFileSync(outputFile, `deployment-url=${url}\n`);
-    fs.appendFileSync(outputFile, `workspace-id=${workspaceId}\n`);
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `deployment-url=${url}\nworkspace-id=${workspaceId}\n`);
   }
 
-  // Write to GITHUB_STEP_SUMMARY
-  const summaryFile = process.env.GITHUB_STEP_SUMMARY;
-  if (summaryFile) {
+  if (process.env.GITHUB_STEP_SUMMARY) {
     fs.appendFileSync(
-      summaryFile,
-      [
-        "### 🚀 Codesphere Deployment",
-        "",
-        "| Property | Value |",
-        "|----------|-------|",
-        `| **URL** | [${url}](${url}) |`,
-        `| **Workspace ID** | \`${workspaceId}\` |`,
-        "",
-      ].join("\n")
+      process.env.GITHUB_STEP_SUMMARY,
+      `### 🚀 Codesphere Deployment\n\n| Property | Value |\n|----------|-------|\n| **URL** | [${url}](${url}) |\n| **Workspace** | \`${workspaceId}\` |\n`
     );
   }
-}
-
-// ---------------------------------------------------------------------------
-// Utilities
-// ---------------------------------------------------------------------------
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ---------------------------------------------------------------------------
@@ -320,7 +247,7 @@ async function main() {
   const branch = resolveBranch();
   console.log(`🌿 Target branch: ${branch}`);
 
-  // --- PR closed → delete workspace ---
+  // PR closed → clean up
   if (config.eventName === "pull_request" && config.prAction === "closed") {
     const ws = await findWorkspace();
     if (ws) {
@@ -332,21 +259,20 @@ async function main() {
     return;
   }
 
-  // --- PR opened/updated → create or update workspace ---
+  // PR opened/updated → create or update
   const existing = await findWorkspace();
 
   if (existing) {
-    const wsId = existing.id;
-    await waitForRunning(wsId);
-    await gitPull(wsId, branch);
-    await setEnvVars(wsId, parseEnvVars(config.envVars));
-    outputDeploymentUrl(wsId);
-    await runPipeline(wsId, config.stages);
-    console.log(`✅ Workspace ${wsId} updated.`);
+    await waitForRunning(existing.id);
+    await gitPull(existing.id, branch);
+    await setEnvVars(existing.id, parseEnvVars(config.envVars));
+    setOutputs(existing.id);
+    await runPipeline(existing.id, config.stages);
+    console.log(`✅ Workspace ${existing.id} updated.`);
   } else {
     const ws = await createWorkspace(branch);
     await waitForRunning(ws.id);
-    outputDeploymentUrl(ws.id);
+    setOutputs(ws.id);
     await runPipeline(ws.id, config.stages);
     console.log("✅ New workspace created.");
   }

@@ -1,14 +1,15 @@
 # Codesphere Deployment Action
 
-This action creates a preview environment of your repository in [Codesphere](https://codesphere.com) using the official [Codesphere CLI (`cs-go`)](https://github.com/codesphere-cloud/cs-go).
+This action creates a preview environment of your repository in [Codesphere](https://codesphere.com) using the [Codesphere REST API](https://codesphere.com/api/scalar-ui/).
 
 ## How it works
 
-1. **Installs** the Codesphere CLI from [GitHub releases](https://github.com/codesphere-cloud/cs-go/releases)
-2. **Creates** a new workspace for your repo — or **updates** an existing one via `git pull`
-3. **Deletes** the workspace when a PR is closed
+1. **Creates** a new workspace for your repo — or **updates** an existing one via `git pull`
+2. **Runs** pipeline stages (`prepare` → `run`) to build and start your app
+3. **Outputs** the deployment URL for the "View deployment" button on PRs
+4. **Deletes** the workspace when a PR is closed
 
-All logic lives in [`entrypoint.sh`](entrypoint.sh) — a readable shell script you can audit yourself.
+All logic lives in [`main.js`](main.js) — a single file with zero external dependencies.
 
 ## :warning: Prerequisites
 
@@ -33,7 +34,7 @@ Discover available plans with `cs list plans`.
 
 ### `apiUrl`
 
-Base URL of the Codesphere instance. Default: `https://codesphere.com`.
+Codesphere API URL. Default: `https://codesphere.com/api`.
 
 ### `env`
 
