@@ -1,5 +1,5 @@
 name: "Codesphere Deploy"
-description: "Deploys the repository in Codesphere using the Codesphere CLI (cs-go)"
+description: "Deploys the repository in Codesphere using the Codesphere Go SDK (cs-go)"
 branding:
   icon: "circle"
   color: "purple"
@@ -55,11 +55,15 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Build deploy binary
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: go build -o "$RUNNER_TEMP/cs-deploy" .
+
     - name: Deploy to Codesphere
       id: deploy
       shell: bash
       env:
-        CS_TOKEN: ${{ inputs.token }}
         INPUT_TOKEN: ${{ inputs.token }}
         INPUT_TEAMID: ${{ inputs.teamId }}
         INPUT_PLANID: ${{ inputs.planId }}
@@ -68,9 +72,7 @@ runs:
         INPUT_APIURL: ${{ inputs.apiUrl }}
         INPUT_BRANCH: ${{ inputs.branch }}
         INPUT_STAGES: ${{ inputs.stages }}
-        PR_ACTION: ${{ github.event.action }}
-        PR_NUMBER: ${{ github.event.number }}
-      run: bash ${{ github.action_path }}/entrypoint.sh
+      run: "$RUNNER_TEMP/cs-deploy"
 
 outputs:
   deployment-url:
