@@ -85,7 +85,10 @@ function parseEnvVars(input) {
 // ---------------------------------------------------------------------------
 function api(method, path, body = null) {
   return new Promise((resolve, reject) => {
-    const url = new URL(path, config.apiUrl);
+    // Ensure apiUrl has no trailing slash, path has a leading slash
+    const base = config.apiUrl.replace(/\/+$/, "");
+    const fullPath = path.startsWith("/") ? path : `/${path}`;
+    const url = new URL(`${base}${fullPath}`);
     const transport = url.protocol === "https:" ? https : http;
 
     const options = {
