@@ -112,7 +112,7 @@ resolve_branch() {
 # Find an existing workspace by name
 #
 # Looks for a workspace whose NAME matches our naming convention.
-# Returns: "WORKSPACE_ID DEV_DOMAIN" (space-separated) or empty string.
+# Returns: WORKSPACE_ID (numeric) or empty string.
 #
 # ⚠️  FRAGILE: Parses pipe-separated table output from `cs list workspaces`.
 #     Replace with JSON parsing when the CLI supports `--output json`.
@@ -144,16 +144,15 @@ find_workspace() {
 
   echo "  Found: $match" >&2
 
-  # Extract workspace ID and dev domain from the matched table row.
+  # Extract workspace ID from the matched table row.
   # Expected column order: | TEAM ID | ID | NAME | REPOSITORY | DEV DOMAIN |
   # Field indices after splitting by '|': $2=TEAM_ID $3=ID $4=NAME $5=REPO $6=DEV_DOMAIN
-  local ws_id dev_domain
+  local ws_id
   ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')
-  dev_domain=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $6); print $6}')
 
   # Validate that the extracted ID is actually numeric
   if [[ "$ws_id" =~ ^[0-9]+$ ]]; then
-    echo "${ws_id} ${dev_domain}"
+    echo "$ws_id"
   else
     echo "❌ Failed to parse workspace ID from table row: $match" >&2
     echo "   Expected a numeric ID in column 3, got: '${ws_id}'" >&2
@@ -201,11 +200,9 @@ create_workspace() {
   "${cmd[@]}"
 
   # Look up the newly created workspace to output the deployment URL
-  local result
-  result=$(find_workspace "$target_branch")
-  if [ -n "$result" ]; then
-    local ws_id
-    ws_id=$(echo "$result" | awk '{print $1}')
+  local ws_id
+  ws_id=$(find_workspace "$target_branch")
+  if [ -n "$ws_id" ]; then
     output_deployment_url "$ws_id"
   fi
 }
@@ -331,12 +328,10 @@ main() {
 
   # --- PR closed → clean up workspace ---
   if [ "$EVENT_NAME" = "pull_request" ] && [ "$PR_ACTION" = "closed" ]; then
-    local result
-    result=$(find_workspace "$target_branch")
+    local ws_id
+    ws_id=$(find_workspace "$target_branch")
 
-    if [ -n "$result" ]; then
-      local ws_id
-      ws_id=$(echo "$result" | awk '{print $1}')
+    if [ -n "$ws_id" ]; then
       delete_workspace "$ws_id"
       echo "✅ Workspace deleted."
     else
@@ -346,23 +341,19 @@ main() {
   fi
 
   # --- PR opened/updated or push → create or update workspace ---
-  local result
-  result=$(find_workspace "$target_branch")
+  local ws_id
+  ws_id=$(find_workspace "$target_branch")
 
-  if [ -n "$result" ]; then
-    local ws_id
-    ws_id=$(echo "$result" | awk '{print $1}')
+  if [ -n "$ws_id" ]; then
     update_workspace "$ws_id" "$target_branch"
     run_pipeline "$ws_id"
     echo "✅ Workspace ${ws_id} updated."
   else
     create_workspace "$target_branch"
-    # Look up the workspace we just created to get its ID for the pipeline
-    result=$(find_workspace "$target_branch")
-    if [ -n "$result" ]; then
-      local ws_id_new
-      ws_id_new=$(echo "$result" | awk '{print $1}')
-      run_pipeline "$ws_id_new"
+    # Look up the workspace we just created to run the pipeline
+    ws_id=$(find_workspace "$target_branch")
+    if [ -n "$ws_id" ]; then
+      run_pipeline "$ws_id"
     fi
     echo "✅ New workspace created."
   fi

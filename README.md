@@ -53,6 +53,19 @@ Name of the VPN config to connect the workspace to. Must be configured in the te
 
 Git branch to deploy. Auto-detected from the PR head branch or push ref if not specified.
 
+### `stages`
+
+Pipeline stages to run after deployment. Space-separated list. Default: `prepare run`.
+
+Available stages: `prepare`, `test`, `run`. Set to empty string to skip pipeline execution.
+
+## Outputs
+
+| Output           | Description                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
+| `deployment-url` | Full URL of the workspace (e.g. `https://12345-3000.2.codesphere.com/`) |
+| `workspace-id`   | Numeric ID of the workspace                                             |
+
 ## Example usage
 
 ### Action
@@ -90,11 +103,15 @@ jobs:
   deploy:
     concurrency: codesphere
     runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Deploy
+        id: deploy
         uses: codesphere-cloud/gh-action-deploy@main
         with:
           token: ${{ secrets.CS_TOKEN }}
@@ -104,6 +121,8 @@ jobs:
             MY_ENV=test
             MY_SECRET=${{ secrets.MY_SECRET }}
 ```
+
+This will show a **"View deployment"** button on your PR linking directly to the workspace.
 
 ## Migration from v1 (email/password)
 
