@@ -96,7 +96,12 @@ find_workspace() {
   echo "  Raw workspace list:" >&2
   echo "$workspaces" | head -5 >&2
 
-  # The CLI outputs a pipe-separated table like:
+  # TODO(dev): This table parsing is FRAGILE — it depends on the exact column
+  # order of `cs list workspaces`. If the CLI ever adds a `--output json` or
+  # `-o json` flag, replace this entire block with:
+  #   cs list workspaces -t "$CS_TEAM_ID" -a "$CS_API_URL" -o json | jq '...'
+  #
+  # Current table format (as of cs-go v0.x):
   #   | TEAM ID | ID   | NAME       | REPOSITORY                    | ...
   #   | 123     | 4567 | my-ws      | https://github.com/org/repo   | ...
   #
@@ -109,7 +114,9 @@ find_workspace() {
     return
   fi
 
-  # Extract the numeric workspace ID from the pipe-separated row
+  # TODO(dev): fragile — column index $3 assumes TEAM ID is first, ID is second.
+  # If the CLI changes column order, this will break silently (the numeric
+  # validation below will catch it, but no workspace will be found).
   local ws_id
   ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')
 
