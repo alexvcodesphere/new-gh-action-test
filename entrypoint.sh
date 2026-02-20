@@ -97,10 +97,10 @@ find_workspace() {
   echo "$workspaces" | head -5 >&2
 
   # The CLI outputs a pipe-separated table like:
-  #   | ID   | NAME       | REPO                          | ...
-  #   | 1234 | my-ws      | github.com/org/repo           | ...
+  #   | TEAM ID | ID   | NAME       | REPOSITORY                    | ...
+  #   | 123     | 4567 | my-ws      | https://github.com/org/repo   | ...
   #
-  # We grep for our repo, split by '|', and extract the ID (2nd field).
+  # We grep for our repo, split by '|', and extract the ID (3rd field).
   local match
   match=$(echo "$workspaces" | grep -i "$GITHUB_REPOSITORY" | head -1 || echo "")
 
@@ -111,7 +111,7 @@ find_workspace() {
 
   # Extract the numeric workspace ID from the pipe-separated row
   local ws_id
-  ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+  ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')
 
   # Validate it's actually a number
   if [[ "$ws_id" =~ ^[0-9]+$ ]]; then
