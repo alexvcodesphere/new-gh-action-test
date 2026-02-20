@@ -1,88 +1,85 @@
 # Codesphere Deployment Action
 
-This action creates a preview environment of your repository in Codesphere.
+This action creates a preview environment of your repository in [Codesphere](https://codesphere.com) using the official [Codesphere CLI (`cs-go`)](https://github.com/codesphere-cloud/cs-go).
+
+## How it works
+
+1. **Installs** the Codesphere CLI from [GitHub releases](https://github.com/codesphere-cloud/cs-go/releases)
+2. **Creates** a new workspace for your repo — or **updates** an existing one via `git pull`
+3. **Deletes** the workspace when a PR is closed
+
+All logic lives in [`entrypoint.sh`](entrypoint.sh) — a readable shell script you can audit yourself.
 
 ## :warning: Prerequisites
 
-- Configure a user in Codesphere https://codesphere.com with username and password.
-- Connect your user account with GitHub and allow access to your repository.
+- A Codesphere account with an **API token** (generate one from your account settings)
+- Your GitHub repository connected to your Codesphere account
 
 ## Inputs
 
+### `token`
+
+**Required.** Codesphere API token. Store as a [GitHub secret](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions).
+
+### `teamId`
+
+**Required.** Numeric ID of your Codesphere team. Find it in the Codesphere UI or by running `cs list teams`.
+
+### `planId`
+
+Numeric plan ID for the workspace. Default: `8`.
+
+Discover available plans with `cs list plans`.
+
 ### `apiUrl`
 
-Base domain of the target Codesphere instance (with https://), e.g. `https://codesphere.com`, or `https://my-custom-codesphere.com`
-
-### `email`
-
-**Required** email of the codesphere user.
-
-### `password`
-
-**Required** Password of the codesphere user account.
-
-### `team`
-
-**Required** Name of the codesphere team.
-
-### `plan`
-
-Plan of the created workspace. 
-
-Available options:
-- Micro
-- Boost
-- Pro
-
-Default `"Boost"`.
+Base URL of the Codesphere instance. Default: `https://codesphere.com`.
 
 ### `env`
 
-Set environment variables in your workspace.
-      
-Use dotenv like environment variables definition.
-See https://www.npmjs.com/package/dotenv for details.
+Environment variables to set in the workspace. One per line, in `KEY=VALUE` format. Works with GitHub secrets:
+
+```yaml
+env: |
+  MY_VAR=hello
+  MY_SECRET=${{ secrets.MY_SECRET }}
+```
 
 ### `vpnConfig`
 
-Name of the vpn config the workspace should connect to.
-The vpn configuration has to be configured in the team before.
+Name of the VPN config to connect the workspace to. Must be configured in the team first.
 
+### `branch`
+
+Git branch to deploy. Auto-detected from the PR head branch or push ref if not specified.
 
 ## Example usage
 
-This integration can either be used as an action or as a workflow.
-
-#### Action
+### Action
 
 ```yaml
 # .github/workflows/codesphere.yaml
 uses: codesphere-cloud/gh-action-deploy@main
 with:
-  email: 'bot@example.com'
-  password: '123'
-  team: 'MyTeam'
-  plan: 'Boost'
+  token: ${{ secrets.CS_TOKEN }}
+  teamId: "12345"
+  planId: "8"
   env: |
     MY_ENV=test
 ```
 
-#### Workflow
+### Workflow
 
 ```yaml
 # .github/workflows/codesphere.yaml
 on:
   workflow_dispatch:
-  # open, reopen and synchronize will deploy a workspace for the current commit.
-  # If a workspce is already deployed, that workspace is updated to the newest version.
-  #
-  # closed: Workspace will be deleted
   pull_request:
     types:
-    - closed
-    - opened
-    - reopened
-    - synchronize
+      - closed # → deletes the workspace
+      - opened # → creates a workspace
+      - reopened # → creates a workspace
+      - synchronize # → updates the workspace
 
 permissions:
   contents: read
@@ -91,26 +88,35 @@ permissions:
 
 jobs:
   deploy:
-    # prevent multiple workspaces to be created for the same branch
     concurrency: codesphere
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy
         uses: codesphere-cloud/gh-action-deploy@main
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-            email: ${{ secrets.CS_EMAIL }}
-            password: ${{ secrets.CS_PASSWORD }}
-            team: 'My Team'
-            plan: 'Boost'
-            env: |
-              MY_ENV=test
-              MY_SECRET=${{ secrets.MY_SECRET }}
+          token: ${{ secrets.CS_TOKEN }}
+          teamId: ${{ secrets.CS_TEAM_ID }}
+          planId: "8"
+          env: |
+            MY_ENV=test
+            MY_SECRET=${{ secrets.MY_SECRET }}
 ```
+
+## Migration from v1 (email/password)
+
+If you're upgrading from the previous version that used email/password authentication:
+
+| Old input                  | New input         | Change                                                    |
+| -------------------------- | ----------------- | --------------------------------------------------------- |
+| `email` + `password`       | `token`           | Generate an API token in your Codesphere account settings |
+| `team` (name)              | `teamId` (number) | Use `cs list teams` to find your team ID                  |
+| `plan` (name like "Boost") | `planId` (number) | Use `cs list plans` to find plan IDs                      |
+| `onDemand`                 | —                 | Removed                                                   |
+| `restricted`               | —                 | Removed (use `--public-dev-domain` via CLI directly)      |
+| `cloneDepth`               | —                 | Removed                                                   |
 
 ## Use with private submodules
 

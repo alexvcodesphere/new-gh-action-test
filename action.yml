@@ -1,58 +1,66 @@
-name: 'Codesphere Deploy'
-description: 'Deploys the repository in Codesphere'
+name: "Codesphere Deploy"
+description: "Deploys the repository in Codesphere using the Codesphere CLI (cs-go)"
 branding:
-  icon: 'circle'
-  color: 'purple'
-runs:
-  using: 'node20'
-  main: 'main.js'
-inputs:
-  email:
-    description: 'email of the codesphere user'
-    required: true
-  password:
-    description: 'Password of the codesphere user account'
-    required: true
-  team:
-    description: 'Name of the codesphere team'
-    required: true
-  plan:
-    description: |
-      Plan of the created workspace. 
+  icon: "circle"
+  color: "purple"
 
-      Available options:
-      - Micro
-      - Boost
-      - Pro
+inputs:
+  token:
+    description: >
+      Codesphere API token for authentication.
+      Generate one from your Codesphere account settings.
+    required: true
+  teamId:
+    description: >
+      Numeric ID of the Codesphere team.
+      Find your team ID via `cs list teams` or in the Codesphere UI.
+    required: true
+  planId:
+    description: |
+      Numeric plan ID for the workspace.
+
+      Discover available plans with `cs list plans`.
     required: false
-    default: 'Boost'
-  onDemand:
-    description: Use a Codesphere onDemand workspace that shuts down if unused.
-    required: false
-    default: 'false'
-  restricted:
-    description: | 
-      Wheter the dev domain of the workspace is restricted to team members of
-      the workspace or public.
-    required: false
-    default: 'false'
-  cloneDepth:
-    description: Whether the repository clone should be shallow or not.
-    required: false
+    default: "8"
   env:
     description: |
-      Set environment variables in your workspace.
-      
-      Use dotenv like environment variables definition.
-      See https://www.npmjs.com/package/dotenv for details.
+      Environment variables to set in the workspace.
+      One variable per line in KEY=VALUE format.
+
+      Example:
+        MY_VAR=hello
+        MY_SECRET=${{ secrets.MY_SECRET }}
     required: false
   vpnConfig:
-    description: |
-      Name of the vpn config the workspace should connect to.
-      The vpn configuration has to be configured in the team before.
+    description: >
+      Name of the VPN config the workspace should connect to.
+      The VPN configuration must be set up in the team beforehand.
     required: false
   apiUrl:
-    description: 'codesphere url'
+    description: "Codesphere API URL"
     required: false
-    default: 'https://codesphere.com'
+    default: "https://codesphere.com"
+  branch:
+    description: >
+      Git branch to deploy.
+      Auto-detected from the PR head branch or push ref if not specified.
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Deploy to Codesphere
+      shell: bash
+      env:
+        CS_TOKEN: ${{ inputs.token }}
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_TEAMID: ${{ inputs.teamId }}
+        INPUT_PLANID: ${{ inputs.planId }}
+        INPUT_ENV: ${{ inputs.env }}
+        INPUT_VPNCONFIG: ${{ inputs.vpnConfig }}
+        INPUT_APIURL: ${{ inputs.apiUrl }}
+        INPUT_BRANCH: ${{ inputs.branch }}
+        PR_ACTION: ${{ github.event.action }}
+      run: bash ${{ github.action_path }}/entrypoint.sh
+
 outputs: {}
