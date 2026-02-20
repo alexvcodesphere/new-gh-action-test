@@ -62,6 +62,7 @@ runs:
         INPUT_APIURL: ${{ inputs.apiUrl }}
         INPUT_BRANCH: ${{ inputs.branch }}
         PR_ACTION: ${{ github.event.action }}
+        PR_NUMBER: ${{ github.event.number }}
       run: bash ${{ github.action_path }}/entrypoint.sh
 
 outputs:
