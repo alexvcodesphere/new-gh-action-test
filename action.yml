@@ -1,5 +1,5 @@
 name: "Codesphere Deploy"
-description: "Deploys the repository in Codesphere using the Codesphere CLI (cs-go)"
+description: "Deploys the repository in Codesphere using the Codesphere REST API"
 branding:
   icon: "circle"
   color: "purple"
@@ -53,29 +53,11 @@ inputs:
     default: "prepare run"
 
 runs:
-  using: "composite"
-  steps:
-    - name: Deploy to Codesphere
-      id: deploy
-      shell: bash
-      env:
-        CS_TOKEN: ${{ inputs.token }}
-        INPUT_TOKEN: ${{ inputs.token }}
-        INPUT_TEAMID: ${{ inputs.teamId }}
-        INPUT_PLANID: ${{ inputs.planId }}
-        INPUT_ENV: ${{ inputs.env }}
-        INPUT_VPNCONFIG: ${{ inputs.vpnConfig }}
-        INPUT_APIURL: ${{ inputs.apiUrl }}
-        INPUT_BRANCH: ${{ inputs.branch }}
-        INPUT_STAGES: ${{ inputs.stages }}
-        PR_ACTION: ${{ github.event.action }}
-        PR_NUMBER: ${{ github.event.number }}
-      run: bash ${{ github.action_path }}/entrypoint.sh
+  using: "node20"
+  main: "main.js"
 
 outputs:
   deployment-url:
     description: "URL of the deployed workspace (https://<dev-domain>)"
-    value: ${{ steps.deploy.outputs.deployment-url }}
   workspace-id:
     description: "Numeric ID of the created/updated workspace"
-    value: ${{ steps.deploy.outputs.workspace-id }}
