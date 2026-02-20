@@ -9,6 +9,7 @@ set -euo pipefail
 #   1. Installing the CLI from GitHub releases
 #   2. Creating or updating a workspace for the current repo/branch
 #   3. Deleting workspaces when a PR is closed
+#   4. Outputting the workspace URL for GitHub Deployments
 #
 # All inputs are passed via environment variables set by the composite action.
 # =============================================================================
@@ -76,12 +77,17 @@ resolve_branch() {
 }
 
 # ---------------------------------------------------------------------------
-# Step 3: Find existing workspace for this repo
+# Step 3: Find existing workspace for this repo + branch
+#
+# Returns two values via stdout (space-separated): WORKSPACE_ID DEV_DOMAIN
+# Example: "74941 74941-3000.2.codesphere.com"
+# Returns empty string if no matching workspace is found.
 # ---------------------------------------------------------------------------
 find_workspace() {
   local target_branch="$1"
+  local workspace_name="${GITHUB_REPOSITORY##*/}-${target_branch}"
 
-  echo "🔍 Searching for existing workspace..." >&2
+  echo "🔍 Searching for workspace matching name '${workspace_name}'..." >&2
 
   # List workspaces and find one matching our repository
   local workspaces
@@ -94,7 +100,7 @@ find_workspace() {
 
   # Debug: show raw output so we can verify parsing
   echo "  Raw workspace list:" >&2
-  echo "$workspaces" | head -5 >&2
+  echo "$workspaces" | head -10 >&2
 
   # TODO(dev): This table parsing is FRAGILE — it depends on the exact column
   # order of `cs list workspaces`. If the CLI ever adds a `--output json` or
@@ -102,27 +108,38 @@ find_workspace() {
   #   cs list workspaces -t "$CS_TEAM_ID" -a "$CS_API_URL" -o json | jq '...'
   #
   # Current table format (as of cs-go v0.x):
-  #   | TEAM ID | ID   | NAME       | REPOSITORY                    | ...
-  #   | 123     | 4567 | my-ws      | https://github.com/org/repo   | ...
+  #   | TEAM ID | ID   | NAME       | REPOSITORY                    | DEV DOMAIN                |
+  #   | 123     | 4567 | my-ws      | https://github.com/org/repo   | 4567-3000.2.codesphere.com|
   #
-  # We grep for our repo, split by '|', and extract the ID (3rd field).
+  # We match on the workspace NAME (column $4) which follows our naming
+  # convention: "<repo-name>-<branch>". This ensures each branch/PR gets
+  # its own workspace instead of reusing one from a different branch.
   local match
-  match=$(echo "$workspaces" | grep -i "$GITHUB_REPOSITORY" | head -1 || echo "")
+  match=$(echo "$workspaces" | grep -i "$workspace_name" | head -1 || echo "")
+
+  # Fallback: if no name match, try matching by repo URL
+  if [ -z "$match" ]; then
+    echo "  No workspace matched by name, trying repo URL match..." >&2
+    match=$(echo "$workspaces" | grep -i "$GITHUB_REPOSITORY" | head -1 || echo "")
+  fi
 
   if [ -z "$match" ]; then
     echo ""
     return
   fi
 
-  # TODO(dev): fragile — column index $3 assumes TEAM ID is first, ID is second.
-  # If the CLI changes column order, this will break silently (the numeric
-  # validation below will catch it, but no workspace will be found).
-  local ws_id
-  ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')
+  echo "  Matched row: $match" >&2
 
-  # Validate it's actually a number
+  # TODO(dev): fragile — column indices assume this order:
+  #   $2=TEAM ID, $3=ID, $4=NAME, $5=REPOSITORY, $6=DEV DOMAIN
+  # If the CLI changes column order, this will break silently.
+  local ws_id dev_domain
+  ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')
+  dev_domain=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $6); print $6}')
+
+  # Validate workspace ID is a number
   if [[ "$ws_id" =~ ^[0-9]+$ ]]; then
-    echo "$ws_id"
+    echo "${ws_id} ${dev_domain}"
   else
     echo "  ⚠️  Could not parse workspace ID from: $match" >&2
     echo ""
@@ -164,6 +181,16 @@ create_workspace() {
 
   echo "  Command: ${cmd[*]}"
   "${cmd[@]}"
+
+  # After creation, look up the workspace to get its dev domain
+  local result
+  result=$(find_workspace "$target_branch")
+  if [ -n "$result" ]; then
+    local ws_id dev_domain
+    ws_id=$(echo "$result" | awk '{print $1}')
+    dev_domain=$(echo "$result" | awk '{print $2}')
+    set_deployment_url "$dev_domain" "$ws_id"
+  fi
 }
 
 # ---------------------------------------------------------------------------
@@ -172,6 +199,7 @@ create_workspace() {
 update_workspace() {
   local workspace_id="$1"
   local target_branch="$2"
+  local dev_domain="${3:-}"
 
   echo "🔄 Updating workspace ${workspace_id}..."
 
@@ -203,6 +231,11 @@ update_workspace() {
 
     "${cmd[@]}"
   fi
+
+  # Output deployment URL
+  if [ -n "$dev_domain" ]; then
+    set_deployment_url "$dev_domain" "$workspace_id"
+  fi
 }
 
 # ---------------------------------------------------------------------------
@@ -219,6 +252,40 @@ delete_workspace() {
     --yes
 }
 
+# ---------------------------------------------------------------------------
+# Step 7: Set deployment URL as GitHub output and summary
+# ---------------------------------------------------------------------------
+set_deployment_url() {
+  local dev_domain="$1"
+  local workspace_id="$2"
+
+  if [ -z "$dev_domain" ]; then
+    return
+  fi
+
+  local url="https://${dev_domain}"
+
+  echo "🔗 Deployment URL: ${url}"
+
+  # Set as GitHub Action output
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "deployment-url=${url}" >> "$GITHUB_OUTPUT"
+    echo "workspace-id=${workspace_id}" >> "$GITHUB_OUTPUT"
+  fi
+
+  # Add to GitHub Step Summary
+  if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+    {
+      echo "### 🚀 Codesphere Deployment"
+      echo ""
+      echo "| Property | Value |"
+      echo "|----------|-------|"
+      echo "| **URL** | [${url}](${url}) |"
+      echo "| **Workspace ID** | ${workspace_id} |"
+    } >> "$GITHUB_STEP_SUMMARY"
+  fi
+}
+
 # =============================================================================
 # Main
 # =============================================================================
@@ -231,10 +298,12 @@ main() {
 
   # Handle PR close → delete workspace
   if [ "$EVENT_NAME" = "pull_request" ] && [ "$PR_ACTION" = "closed" ]; then
-    local ws_id
-    ws_id=$(find_workspace "$target_branch")
+    local result
+    result=$(find_workspace "$target_branch")
 
-    if [ -n "$ws_id" ]; then
+    if [ -n "$result" ]; then
+      local ws_id
+      ws_id=$(echo "$result" | awk '{print $1}')
       delete_workspace "$ws_id"
       echo "✅ Workspace deleted."
     else
@@ -244,11 +313,14 @@ main() {
   fi
 
   # Create or update workspace
-  local ws_id
-  ws_id=$(find_workspace "$target_branch")
+  local result
+  result=$(find_workspace "$target_branch")
 
-  if [ -n "$ws_id" ]; then
-    update_workspace "$ws_id" "$target_branch"
+  if [ -n "$result" ]; then
+    local ws_id dev_domain
+    ws_id=$(echo "$result" | awk '{print $1}')
+    dev_domain=$(echo "$result" | awk '{print $2}')
+    update_workspace "$ws_id" "$target_branch" "$dev_domain"
     echo "✅ Workspace ${ws_id} updated."
   else
     create_workspace "$target_branch"

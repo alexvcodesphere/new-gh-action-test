@@ -50,6 +50,7 @@ runs:
   using: "composite"
   steps:
     - name: Deploy to Codesphere
+      id: deploy
       shell: bash
       env:
         CS_TOKEN: ${{ inputs.token }}
@@ -63,4 +64,10 @@ runs:
         PR_ACTION: ${{ github.event.action }}
       run: bash ${{ github.action_path }}/entrypoint.sh
 
-outputs: {}
+outputs:
+  deployment-url:
+    description: "URL of the deployed workspace (https://<dev-domain>)"
+    value: ${{ steps.deploy.outputs.deployment-url }}
+  workspace-id:
+    description: "Numeric ID of the created/updated workspace"
+    value: ${{ steps.deploy.outputs.workspace-id }}
