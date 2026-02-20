@@ -3,19 +3,38 @@ set -euo pipefail
 
 # =============================================================================
 # Codesphere Deploy Action — Entrypoint
+# https://github.com/codesphere-cloud/gh-action-deploy
 #
 # This script orchestrates workspace lifecycle management using the Codesphere
-# CLI (cs-go). It handles:
-#   1. Installing the CLI from GitHub releases
-#   2. Creating or updating a workspace for the current repo/branch
-#   3. Deleting workspaces when a PR is closed
-#   4. Outputting the workspace URL for GitHub Deployments
+# CLI (cs-go): https://github.com/codesphere-cloud/cs-go
 #
-# All inputs are passed via environment variables set by the composite action.
+# What it does:
+#   1. Downloads and installs the Codesphere CLI
+#   2. Determines which branch to deploy (from PR or push context)
+#   3. Finds an existing workspace by name, or creates a new one
+#   4. For existing workspaces: wakes up → pulls latest code → sets env vars
+#   5. Outputs the workspace URL for GitHub Deployments integration
+#   6. On PR close: deletes the workspace
+#
+# All inputs are passed as environment variables by the composite action
+# defined in action.yml.
+#
+# =============================================================================
+# KNOWN LIMITATIONS / TODO for developers:
+#
+# 1. WORKSPACE LOOKUP parses the CLI's pipe-separated table output using awk.
+#    This is FRAGILE and depends on the exact column order. When the CLI adds
+#    `--output json` support, replace the table parsing in find_workspace()
+#    with: cs list workspaces ... -o json | jq '.[] | select(.name == "...")'
+#    See: https://github.com/codesphere-cloud/cs-go/issues
+#
+# 2. CLI INSTALLATION downloads the latest release on every run (~15MB).
+#    Consider pinning to a specific version for reproducibility, or caching
+#    the binary across workflow runs.
 # =============================================================================
 
 # ---------------------------------------------------------------------------
-# Configuration (set by action.yml)
+# Configuration (set by action.yml inputs)
 # ---------------------------------------------------------------------------
 CS_API_URL="${INPUT_APIURL:-https://codesphere.com/api}"
 CS_TOKEN="${INPUT_TOKEN}"
@@ -25,13 +44,25 @@ ENV_VARS="${INPUT_ENV:-}"
 VPN_CONFIG="${INPUT_VPNCONFIG:-}"
 BRANCH="${INPUT_BRANCH:-}"
 
-# GitHub context
+# GitHub context (automatically set by GitHub Actions runner)
 REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
 EVENT_NAME="${GITHUB_EVENT_NAME:-}"
 PR_ACTION="${PR_ACTION:-}"
 
 # ---------------------------------------------------------------------------
-# Step 1: Install the Codesphere CLI
+# Workspace naming convention — SINGLE SOURCE OF TRUTH
+#
+# Change this function to alter how workspaces are named. The name is used
+# both when creating new workspaces and when looking up existing ones.
+# Current format: "<repo-name>-<branch>"  (e.g. "my-app-feature-login")
+# ---------------------------------------------------------------------------
+workspace_name() {
+  local branch="$1"
+  echo "${GITHUB_REPOSITORY##*/}-${branch}"
+}
+
+# ---------------------------------------------------------------------------
+# Install the Codesphere CLI binary from GitHub releases
 # ---------------------------------------------------------------------------
 install_cli() {
   echo "📦 Installing Codesphere CLI..."
@@ -48,7 +79,7 @@ install_cli() {
     | sed 's/".*//')
 
   if [ -z "$download_url" ]; then
-    echo "❌ Failed to find CLI download URL"
+    echo "❌ Failed to resolve CLI download URL from GitHub releases"
     exit 1
   fi
 
@@ -60,7 +91,7 @@ install_cli() {
 }
 
 # ---------------------------------------------------------------------------
-# Step 2: Resolve the target branch
+# Determine the target branch from the GitHub Actions event context
 # ---------------------------------------------------------------------------
 resolve_branch() {
   if [ -n "$BRANCH" ]; then
@@ -68,7 +99,7 @@ resolve_branch() {
     return
   fi
 
-  # For PRs, use the head branch; for pushes, use the ref name
+  # For PRs, use the head (source) branch; for pushes, use the ref name
   if [ -n "${GITHUB_HEAD_REF:-}" ]; then
     echo "$GITHUB_HEAD_REF"
   else
@@ -77,81 +108,61 @@ resolve_branch() {
 }
 
 # ---------------------------------------------------------------------------
-# Workspace naming convention (single source of truth)
-# Change this function to alter how workspaces are named across the action.
-# ---------------------------------------------------------------------------
-workspace_name() {
-  local branch="$1"
-  echo "${GITHUB_REPOSITORY##*/}-${branch}"
-}
-
-# ---------------------------------------------------------------------------
-# Step 3: Find existing workspace for this repo + branch
+# Find an existing workspace by name
 #
-# Returns two values via stdout (space-separated): WORKSPACE_ID DEV_DOMAIN
-# Example: "74941 74941-3000.2.codesphere.com"
-# Returns empty string if no matching workspace is found.
+# Looks for a workspace whose NAME matches our naming convention.
+# Returns: "WORKSPACE_ID DEV_DOMAIN" (space-separated) or empty string.
+#
+# ⚠️  FRAGILE: Parses pipe-separated table output from `cs list workspaces`.
+#     Replace with JSON parsing when the CLI supports `--output json`.
+#     See the KNOWN LIMITATIONS section at the top of this file.
 # ---------------------------------------------------------------------------
 find_workspace() {
   local target_branch="$1"
   local ws_name
   ws_name=$(workspace_name "$target_branch")
 
-  echo "🔍 Searching for workspace '${ws_name}'..." >&2
+  echo "🔍 Looking for workspace '${ws_name}'..." >&2
 
-  # List workspaces and find one matching our repository
   local workspaces
   workspaces=$(cs list workspaces -t "$CS_TEAM_ID" -a "$CS_API_URL" 2>/dev/null || echo "")
 
   if [ -z "$workspaces" ]; then
-    echo ""
+    echo "" # No workspaces found
     return
   fi
 
-  # Debug: show raw output so we can verify parsing
-  echo "  Raw workspace list:" >&2
-  echo "$workspaces" | head -10 >&2
-
-  # TODO(dev): This table parsing is FRAGILE — it depends on the exact column
-  # order of `cs list workspaces`. If the CLI ever adds a `--output json` or
-  # `-o json` flag, replace this entire block with:
-  #   cs list workspaces -t "$CS_TEAM_ID" -a "$CS_API_URL" -o json | jq '...'
-  #
-  # Current table format (as of cs-go v0.x):
-  #   | TEAM ID | ID   | NAME       | REPOSITORY                    | DEV DOMAIN                |
-  #   | 123     | 4567 | my-ws      | https://github.com/org/repo   | 4567-3000.2.codesphere.com|
-  #
-  # We match on the workspace NAME (column $4) which follows our naming
-  # convention: "<repo-name>-<branch>". This ensures each branch/PR gets
-  # its own workspace instead of reusing one from a different branch.
+  # Match by workspace name (exact naming convention match)
   local match
   match=$(echo "$workspaces" | grep -i "$ws_name" | head -1 || echo "")
 
   if [ -z "$match" ]; then
-    echo ""
+    echo "" # No workspace with this name
     return
   fi
 
-  echo "  Matched row: $match" >&2
+  echo "  Found: $match" >&2
 
-  # TODO(dev): fragile — column indices assume this order:
-  #   $2=TEAM ID, $3=ID, $4=NAME, $5=REPOSITORY, $6=DEV DOMAIN
-  # If the CLI changes column order, this will break silently.
+  # Extract workspace ID and dev domain from the matched table row.
+  # Expected column order: | TEAM ID | ID | NAME | REPOSITORY | DEV DOMAIN |
+  # Field indices after splitting by '|': $2=TEAM_ID $3=ID $4=NAME $5=REPO $6=DEV_DOMAIN
   local ws_id dev_domain
   ws_id=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')
   dev_domain=$(echo "$match" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $6); print $6}')
 
-  # Validate workspace ID is a number
+  # Validate that the extracted ID is actually numeric
   if [[ "$ws_id" =~ ^[0-9]+$ ]]; then
     echo "${ws_id} ${dev_domain}"
   else
-    echo "  ⚠️  Could not parse workspace ID from: $match" >&2
-    echo ""
+    echo "❌ Failed to parse workspace ID from table row: $match" >&2
+    echo "   Expected a numeric ID in column 3, got: '${ws_id}'" >&2
+    echo "   The CLI table format may have changed. See KNOWN LIMITATIONS in entrypoint.sh." >&2
+    exit 1
   fi
 }
 
 # ---------------------------------------------------------------------------
-# Step 4: Create a new workspace
+# Create a new workspace for the given branch
 # ---------------------------------------------------------------------------
 create_workspace() {
   local target_branch="$1"
@@ -160,16 +171,17 @@ create_workspace() {
 
   echo "🚀 Creating workspace '${ws_name}'..."
 
+  # Build the command with required flags
   local cmd=(cs create workspace "$ws_name"
     -a "$CS_API_URL"
     -t "$CS_TEAM_ID"
     -p "$PLAN_ID"
     -r "$REPO_URL"
     -b "$target_branch"
-    -P
+    -P  # Private repository (safe default — works for both public and private repos)
   )
 
-  # Add environment variables
+  # Append optional environment variables
   if [ -n "$ENV_VARS" ]; then
     while IFS= read -r line; do
       line=$(echo "$line" | xargs)  # trim whitespace
@@ -179,27 +191,27 @@ create_workspace() {
     done <<< "$ENV_VARS"
   fi
 
-  # Add VPN config if specified
+  # Append optional VPN config
   if [ -n "$VPN_CONFIG" ]; then
     cmd+=(--vpn "$VPN_CONFIG")
   fi
 
-  echo "  Command: ${cmd[*]}"
+  echo "  Running: ${cmd[*]}"
   "${cmd[@]}"
 
-  # After creation, look up the workspace to get its dev domain
+  # Look up the newly created workspace to get its dev domain for the deployment URL
   local result
   result=$(find_workspace "$target_branch")
   if [ -n "$result" ]; then
     local ws_id dev_domain
     ws_id=$(echo "$result" | awk '{print $1}')
     dev_domain=$(echo "$result" | awk '{print $2}')
-    set_deployment_url "$dev_domain" "$ws_id"
+    output_deployment_url "$dev_domain" "$ws_id"
   fi
 }
 
 # ---------------------------------------------------------------------------
-# Step 5: Update an existing workspace (pull latest code)
+# Update an existing workspace: wake up → pull code → set env vars
 # ---------------------------------------------------------------------------
 update_workspace() {
   local workspace_id="$1"
@@ -208,22 +220,23 @@ update_workspace() {
 
   echo "🔄 Updating workspace ${workspace_id}..."
 
-  # Ensure workspace is running before pulling
+  # Wake up the workspace if it's stopped (e.g. on-demand workspaces)
   echo "  ⏰ Waking up workspace..."
   cs wake-up \
     -a "$CS_API_URL" \
     -w "$workspace_id" \
     --timeout 5m || echo "  (workspace may already be running)"
 
+  # Pull the latest code from the target branch
   echo "  📥 Pulling branch '${target_branch}'..."
   cs git pull \
     -a "$CS_API_URL" \
     -w "$workspace_id" \
     --branch "$target_branch"
 
-  # Update environment variables if specified
+  # Set environment variables if provided
   if [ -n "$ENV_VARS" ]; then
-    echo "🔧 Setting environment variables..."
+    echo "  🔧 Setting environment variables..."
 
     local cmd=(cs set-env -a "$CS_API_URL" -w "$workspace_id")
 
@@ -237,14 +250,14 @@ update_workspace() {
     "${cmd[@]}"
   fi
 
-  # Output deployment URL
+  # Output the deployment URL for GitHub Deployments integration
   if [ -n "$dev_domain" ]; then
-    set_deployment_url "$dev_domain" "$workspace_id"
+    output_deployment_url "$dev_domain" "$workspace_id"
   fi
 }
 
 # ---------------------------------------------------------------------------
-# Step 6: Delete workspace (on PR close)
+# Delete a workspace (called on PR close)
 # ---------------------------------------------------------------------------
 delete_workspace() {
   local workspace_id="$1"
@@ -258,9 +271,13 @@ delete_workspace() {
 }
 
 # ---------------------------------------------------------------------------
-# Step 7: Set deployment URL as GitHub output and summary
+# Write deployment URL to GitHub Actions output and step summary
+#
+# This enables:
+#   - The "View deployment" button on PRs (via chrnorm/deployment-status)
+#   - Accessing the URL in downstream steps via ${{ steps.deploy.outputs.deployment-url }}
 # ---------------------------------------------------------------------------
-set_deployment_url() {
+output_deployment_url() {
   local dev_domain="$1"
   local workspace_id="$2"
 
@@ -269,16 +286,15 @@ set_deployment_url() {
   fi
 
   local url="https://${dev_domain}"
-
   echo "🔗 Deployment URL: ${url}"
 
-  # Set as GitHub Action output
+  # Write to GitHub Actions outputs (accessible by subsequent steps)
   if [ -n "${GITHUB_OUTPUT:-}" ]; then
     echo "deployment-url=${url}" >> "$GITHUB_OUTPUT"
     echo "workspace-id=${workspace_id}" >> "$GITHUB_OUTPUT"
   fi
 
-  # Add to GitHub Step Summary
+  # Write a summary table (visible in the Actions run page)
   if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
     {
       echo "### 🚀 Codesphere Deployment"
@@ -286,13 +302,13 @@ set_deployment_url() {
       echo "| Property | Value |"
       echo "|----------|-------|"
       echo "| **URL** | [${url}](${url}) |"
-      echo "| **Workspace ID** | ${workspace_id} |"
+      echo "| **Workspace ID** | \`${workspace_id}\` |"
     } >> "$GITHUB_STEP_SUMMARY"
   fi
 }
 
 # =============================================================================
-# Main
+# Main — orchestrate the deployment lifecycle
 # =============================================================================
 main() {
   install_cli
@@ -301,7 +317,7 @@ main() {
   target_branch=$(resolve_branch)
   echo "🌿 Target branch: ${target_branch}"
 
-  # Handle PR close → delete workspace
+  # --- PR closed → clean up workspace ---
   if [ "$EVENT_NAME" = "pull_request" ] && [ "$PR_ACTION" = "closed" ]; then
     local result
     result=$(find_workspace "$target_branch")
@@ -312,12 +328,12 @@ main() {
       delete_workspace "$ws_id"
       echo "✅ Workspace deleted."
     else
-      echo "⚠️  No workspace found to delete."
+      echo "ℹ️  No workspace found for branch '${target_branch}' — nothing to delete."
     fi
     exit 0
   fi
 
-  # Create or update workspace
+  # --- PR opened/updated or push → create or update workspace ---
   local result
   result=$(find_workspace "$target_branch")
 
@@ -329,7 +345,7 @@ main() {
     echo "✅ Workspace ${ws_id} updated."
   else
     create_workspace "$target_branch"
-    echo "✅ Workspace created."
+    echo "✅ New workspace created."
   fi
 }
 
